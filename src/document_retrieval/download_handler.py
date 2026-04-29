@@ -46,7 +46,7 @@ def search_reports(session, start_date, end_date, state):
     """
     payload = {
         "organization": "",
-        "facility": "jayhawk",
+        "facility": "",
         "startdate": start_date,
         "enddate": end_date,
         "state": state,
@@ -206,7 +206,7 @@ def fetch_all_reports(start_date, end_date, state):
             'date': report['date'],
             'success': success,
             'file_path': str(filepath),
-            'pad_file_type': file_type, # Wait, I'm seeing a phantom "pad_file_type" ... no, let me check m0002 again.
+            'pad_file_type': file_type,
             'error': file_type if not success else None,
         }
         results.append(result)

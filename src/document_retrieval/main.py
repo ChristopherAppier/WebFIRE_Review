@@ -2,8 +2,7 @@ import yaml
 from pathlib import Path
 from timer_manager import check_timer
 from download_handler import fetch_all_reports
-#from extract_processor import extract_and_route_files
-
+from zip_extract import extract_and_route_files
 
 def load_config():
     """Load configuration from settings.yaml."""
@@ -45,13 +44,15 @@ def main():
     #print(f"Start Date: {start_date}; End Date: {end_date}")
     
     # Downloading reports from WebFIRE API for each state
-    results = fetch_all_reports(start_date, end_date, "KS")
-    #results = fetch_all_reports(start_date, end_date, "MO")
-    #results = fetch_all_reports(start_date, end_date, "NE")
-    #results = fetch_all_reports(start_date, end_date, "IA")
+    state_names = [state['name'] for state in config['states']]
+    for state_name in state_names:
+        fetch_all_reports(start_date, end_date, state_name)
+        fetch_all_reports(start_date, end_date, state_name)
+        fetch_all_reports(start_date, end_date, state_name)
+        fetch_all_reports(start_date, end_date, state_name)
 
     # Unzipping files and routing them into either spreadsheet or pdf folders for processing
-    #extract_and_route_files(config)
+    extract_and_route_files()
 
     # Placeholders for future functions
     #apply_ocr_if_needed()
