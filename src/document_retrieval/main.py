@@ -3,6 +3,7 @@ from pathlib import Path
 from timer_manager import check_timer
 from download_handler import fetch_all_reports
 from zip_extract import extract_and_route_files
+from ocr_handler import apply_ocr
 
 def load_config():
     """Load configuration from settings.yaml."""
@@ -32,6 +33,8 @@ def main():
     # Load configuration
     config = load_config()
     
+    project_root = Path(__file__).parent.parent.parent
+    
     # Debug printing
     #print_system_status(config)
     
@@ -41,21 +44,18 @@ def main():
     end_date = timer_info['end_date']
     
     # Debug printing
-    #print(f"Start Date: {start_date}; End Date: {end_date}")
+    print(f"Start Date: {start_date}; End Date: {end_date}")
     
     # Downloading reports from WebFIRE API for each state
     state_names = [state['name'] for state in config['states']]
     for state_name in state_names:
-        fetch_all_reports(start_date, end_date, state_name)
-        fetch_all_reports(start_date, end_date, state_name)
-        fetch_all_reports(start_date, end_date, state_name)
-        fetch_all_reports(start_date, end_date, state_name)
+        fetch_all_reports(start_date, end_date, state_name, project_root)
 
     # Unzipping files and routing them into either spreadsheet or pdf folders for processing
-    extract_and_route_files()
+    extract_and_route_files(project_root)
 
     # Placeholders for future functions
-    #apply_ocr_if_needed()
+    apply_ocr(project_root)
 
 if __name__ == "__main__":
     main()

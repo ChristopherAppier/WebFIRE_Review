@@ -162,7 +162,7 @@ def download_report(session, doc_id, output_dir):
         return False, None, str(e)
     
     
-def fetch_all_reports(start_date, end_date, state):
+def fetch_all_reports(start_date, end_date, state, project_root):
     """
     Main entry point: fetch all reports for date range.
     Args:
@@ -173,8 +173,6 @@ def fetch_all_reports(start_date, end_date, state):
     """
     session = build_session()
     
-    
-    project_root = Path(__file__).parent.parent.parent # Finds the root folder of the project
     download_path = project_root / "data" / "raw"
     
     output_dir = Path(download_path)

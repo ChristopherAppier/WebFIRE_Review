@@ -1,0 +1,2662 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" generated="2025-05-29T11:41:42">
+<tblTestPlan>
+<TestPlanID>1</TestPlanID>
+<TestPlanDate>2025-05-15T00:00:00</TestPlanDate>
+<TestPlanTitle>Merit Energy Company Hugoton Compressor Station APC 164 JJJJ 5-15-2025</TestPlanTitle>
+<FacName>Hugoton Compressor Station</FacName>
+<FacAddress1>1400 Cemetery Rd</FacAddress1>
+<FacCity>Hugoton</FacCity>
+<FacCounty>Stevens Co</FacCounty>
+<FacState>KS</FacState>
+<FacZip>67951</FacZip>
+<FacPOC>Bailey Sharp</FacPOC>
+<FacPhone>(972) 628-1454</FacPhone>
+<FacEmail>bailey.sharp@meritenergy.com</FacEmail>
+<FINS>110066825555</FINS>
+<TestCoName>GAS</TestCoName>
+<TestCoAddress1>303 W. 3rd Street</TestCoAddress1>
+<TestCoCity>Elk City</TestCoCity>
+<TestCoState>OK</TestCoState>
+<TestCoZip>73644</TestCoZip>
+<TestCoPOC>GAS CEDRI Division</TestCoPOC>
+<TestCoPhone>(580) 225-0403</TestCoPhone>
+<TestCoEmail>CEDRI@gasinc.us</TestCoEmail>
+<PermittedSourceID>APC-164</PermittedSourceID>
+<PermittedMaxProcessRate>1232hp</PermittedMaxProcessRate>
+<MaxNormalOpRate>1232hp</MaxNormalOpRate>
+<TargetProcessTestRate>90% of Maximum Achievable</TargetProcessTestRate>
+<Part60>0</Part60>
+<Part61>0</Part61>
+<Part63>1</Part63>
+<Part65>0</Part65>
+<NSRPSD>0</NSRPSD>
+<SIP>0</SIP>
+<Section114>0</Section114>
+<StateRule>0</StateRule>
+<Other>0</Other>
+<RATA>0</RATA>
+<SourceDesc>Refer to attached test report</SourceDesc>
+<TestInAccordanceYN>0</TestInAccordanceYN>
+<MeetMinReqYN>1</MeetMinReqYN>
+<MeetMinReq>(a) Alternatively, for NOX, CO, Total VOC as Propane, O2, and moisture measurement, ducts ≤6 inches in diameter may be sampled at a single point located at the duct centroid and ducts &gt;6 and ≤12 inches in diameter may be sampled at 3 traverse points located at 16.7, 50.0, and 83.3% of the measurement line (`3-point long line&apos;). If the duct is &gt;12 inches in diameter and the sampling port location meets the two and half-diameter criterion of Section 11.1.1 of Method 1 of 40 CFR part 60, Appendix A, the duct may be sampled at `3-point long line&apos;; otherwise, conduct the stratification testing and select sampling points according to Section 8.1.2 of Method 7E of 40 CFR part 60, Appendix A.</MeetMinReq>
+<CyclonicFlowYN>1</CyclonicFlowYN>
+<OxygenConcDetYN>0</OxygenConcDetYN>
+<OxygenConcDet3or3a>M3A-instrumental</OxygenConcDet3or3a>
+<EPASampleAuditYN>0</EPASampleAuditYN>
+<EqupCalibrationYN>1</EqupCalibrationYN>
+<CalibGasCertifiedYN>1</CalibGasCertifiedYN>
+<DilutionProposedYN>2</DilutionProposedYN>
+<TestSchedule>The proposed test schedule date is the same as the Test Plan Date</TestSchedule>
+<TestRepName>GAS CEDRI Division</TestRepName>
+<TestRepEmail>CEDRI@gasinc.us</TestRepEmail>
+<TestRepTitle>CEDRI Division</TestRepTitle>
+<TestRepCompany>GAS</TestRepCompany>
+<SCC>20200253</SCC>
+<HrsPerYear>8760</HrsPerYear>
+<OpenExpanded>1</OpenExpanded>
+<OpenExpandedRun>0</OpenExpandedRun>
+<OpenExpandedSA>0</OpenExpandedSA>
+<OpenExpandedTR>0</OpenExpandedTR>
+<OpenExpandedPD>0</OpenExpandedPD>
+<OpenExpandedQAQ>0</OpenExpandedQAQ>
+<PDSiD>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSiD>
+<PDSiDDate>2025-04-02T00:00:00</PDSiDDate>
+</tblTestPlan>
+<tblEmisConcs>
+<Location>Exhaust Stack</Location>
+<Method>ASTM D6348</Method>
+<EmisConc>percent(%)</EmisConc>
+<CorrAnal> </CorrAnal>
+<CorrPerc>0</CorrPerc>
+<ProcessParamID>0</ProcessParamID>
+</tblEmisConcs>
+<tblEmisConcs>
+<Location>Exhaust Stack</Location>
+<Method>Method 3A O2</Method>
+<EmisConc>percent(%)</EmisConc>
+<CorrAnal> </CorrAnal>
+<CorrPerc>0</CorrPerc>
+<ProcessParamID>0</ProcessParamID>
+</tblEmisConcs>
+<tblEmisConcs>
+<Location>Exhaust Stack</Location>
+<Method>ASTM D6348</Method>
+<EmisConc>ppb</EmisConc>
+<CorrAnal> </CorrAnal>
+<CorrPerc>0</CorrPerc>
+<ProcessParamID>0</ProcessParamID>
+</tblEmisConcs>
+<tblLocation>
+<TestPlanID>1</TestPlanID>
+<Location>Exhaust Stack</Location>
+<DuctDiam>12.5</DuctDiam>
+<UpStreamDist>23</UpStreamDist>
+<DwnStreamDist>10</DwnStreamDist>
+<NumTravPorts>0</NumTravPorts>
+<NumPoints>16</NumPoints>
+<Controlled>1</Controlled>
+<VUpStreamDist>0</VUpStreamDist>
+<VdwnStreamDist>0</VdwnStreamDist>
+<Temp>833</Temp>
+<ACFM>1207</ACFM>
+<AssumedMoisturePct>18.18</AssumedMoisturePct>
+<AssumedStackO2Pct>0</AssumedStackO2Pct>
+<InletOutlet>Outlet</InletOutlet>
+<NPTraverse>1</NPTraverse>
+</tblLocation>
+<tblLocation>
+<TestPlanID>1</TestPlanID>
+<Location>Exahust Stack</Location>
+<DuctDiam>0</DuctDiam>
+<DuctLength>0</DuctLength>
+<UpStreamDist>0</UpStreamDist>
+<DwnStreamDist>0</DwnStreamDist>
+<NumTravPorts>0</NumTravPorts>
+<NumPoints>0</NumPoints>
+<Controlled>1</Controlled>
+<VUpStreamDist>0</VUpStreamDist>
+<VdwnStreamDist>0</VdwnStreamDist>
+<Temp>0</Temp>
+<ACFM>0</ACFM>
+<AssumedMoisturePct>0</AssumedMoisturePct>
+<AssumedStackO2Pct>0</AssumedStackO2Pct>
+<InletOutlet>Inlet</InletOutlet>
+<NPTraverse>1</NPTraverse>
+</tblLocation>
+<tblMethodParams>
+<TestPlanID>1</TestPlanID>
+<Location>Exhaust Stack</Location>
+<TargetPoll>Oxygen</TargetPoll>
+<TestMethod>Method 3A O2</TestMethod>
+<NumTestRuns>3</NumTestRuns>
+<TestRunDuration>60</TestRunDuration>
+<NumSampPoints>0</NumSampPoints>
+<LbHrLimit>0</LbHrLimit>
+<CAS>7782-44-7</CAS>
+<Group>ITM</Group>
+</tblMethodParams>
+<tblMethodParams>
+<TestPlanID>1</TestPlanID>
+<Location>Exhaust Stack</Location>
+<TargetPoll>% Moisture</TargetPoll>
+<TestMethod>ASTM D6348</TestMethod>
+<NumTestRuns>3</NumTestRuns>
+<TestRunDuration>60</TestRunDuration>
+<NumSampPoints>0</NumSampPoints>
+<LbHrLimit>0</LbHrLimit>
+<CAS>% H2O</CAS>
+<Group>OTM</Group>
+</tblMethodParams>
+<tblMethodParams>
+<TestPlanID>1</TestPlanID>
+<Location>Exhaust Stack</Location>
+<TargetPoll>Formaldehyde</TargetPoll>
+<TestMethod>ASTM D6348</TestMethod>
+<NumTestRuns>3</NumTestRuns>
+<TestRunDuration>60</TestRunDuration>
+<NumSampPoints>0</NumSampPoints>
+<LbHrLimit>0</LbHrLimit>
+<CAS>50-00-0</CAS>
+<Group>OTM</Group>
+</tblMethodParams>
+<tblProcessParams>
+<ProcessParamID>1</ProcessParamID>
+<TestPlanID>1</TestPlanID>
+<Name>Work Output</Name>
+<TargetParam>0</TargetParam>
+<UOM>Horsepower-Hour/hr</UOM>
+<TargetValue>0</TargetValue>
+<TargetLow>0</TargetLow>
+<SCC>20200253</SCC>
+<U>0</U>
+<UDesc>Refer to attached test report.</UDesc>
+<PollUnit>g/hr</PollUnit>
+<TimeUnit>/hr</TimeUnit>
+<POLL_UNIT>g</POLL_UNIT>
+<MEASURE>Horsepower-Hour</MEASURE>
+<MATERIAL>Work</MATERIAL>
+<ACTION>Output</ACTION>
+</tblProcessParams>
+<tblRegs>
+<Part_SubPart>Part 63 Subpart ZZZZ</Part_SubPart>
+<RegDesc> Stationary Reciprocating Internal Combustion Engines</RegDesc>
+<Compound>Formaldehyde</Compound>
+<Limit>350</Limit>
+<Unit>ppb</Unit>
+</tblRegs>
+<tblAPCDParams>
+<tblAPCDParamID>1</tblAPCDParamID>
+<TestPlanID>0</TestPlanID>
+<APCDName>CATALYTIC CONVERTER</APCDName>
+<TargetParam>0</TargetParam>
+<TargetValue>0</TargetValue>
+<location>Exhaust Stack</location>
+</tblAPCDParams>
+<tblAPCDRunData>
+<APCDParamID>1</APCDParamID>
+<Run>1</Run>
+<Value>0</Value>
+</tblAPCDRunData>
+<tblCylInv>
+<CylID>CC440196</CylID>
+<Compound_x0028_Analyte_x0029_>Oxygen</Compound_x0028_Analyte_x0029_>
+<CertProcedure>EPA Protocol</CertProcedure>
+<CertValue>20.92</CertValue>
+<UncertainPercent>0.5</UncertainPercent>
+<ExpDate>2032-07-13T00:00:00</ExpDate>
+</tblCylInv>
+<tblCylInv>
+<CylID>CC507781</CylID>
+<Compound_x0028_Analyte_x0029_>Oxygen</Compound_x0028_Analyte_x0029_>
+<CertProcedure>EPA Protocol</CertProcedure>
+<CertValue>10.58</CertValue>
+<UncertainPercent>0.5</UncertainPercent>
+<ExpDate>2027-09-17T00:00:00</ExpDate>
+</tblCylInv>
+<tblCylInv>
+<CylID>Zero</CylID>
+<Compound_x0028_Analyte_x0029_>Nitrogen</Compound_x0028_Analyte_x0029_>
+<CertProcedure>CEM-CAL Zero</CertProcedure>
+<CertValue>0</CertValue>
+<UncertainPercent>0</UncertainPercent>
+<ExpDate>1904-01-01T00:00:00</ExpDate>
+</tblCylInv>
+<tblCylInv>
+<CylID>CC354435</CylID>
+<Compound_x0028_Analyte_x0029_>Oxygen</Compound_x0028_Analyte_x0029_>
+<CertProcedure>EPA Protocol</CertProcedure>
+<CertValue>21.08</CertValue>
+<UncertainPercent>0.5</UncertainPercent>
+<ExpDate>2032-09-10T00:00:00</ExpDate>
+</tblCylInv>
+<tblCylInv>
+<CylID>CC503832</CylID>
+<Compound_x0028_Analyte_x0029_>Oxygen</Compound_x0028_Analyte_x0029_>
+<CertProcedure>EPA Protocol</CertProcedure>
+<CertValue>10.59</CertValue>
+<UncertainPercent>0.5</UncertainPercent>
+<ExpDate>2027-08-16T00:00:00</ExpDate>
+</tblCylInv>
+<tblCylInv>
+<CylID>CC502013</CylID>
+<Compound_x0028_Analyte_x0029_>Oxygen</Compound_x0028_Analyte_x0029_>
+<CertProcedure>EPA Protocol</CertProcedure>
+<CertValue>10.59</CertValue>
+<UncertainPercent>0.5</UncertainPercent>
+<ExpDate>2028-02-12T00:00:00</ExpDate>
+</tblCylInv>
+<tblRunDataITM>
+<Location>Exhaust Stack</Location>
+<Method>Method 3A O2</Method>
+<Run>1</Run>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<StartTime>1899-12-30T10:40:00</StartTime>
+<EndTime>1899-12-30T11:54:00</EndTime>
+<Qsd>0</Qsd>
+<FlowRateRunID>- User Entered -</FlowRateRunID>
+<MoisturePerc>0</MoisturePerc>
+<MoistureRunID>- User Entered -</MoistureRunID>
+<PercCO2>0</PercCO2>
+<CO2RunID>- User Entered -</CO2RunID>
+<PercO2>0</PercO2>
+<O2RunID>- User Entered -</O2RunID>
+<AnalyzerMake>Gasmet</AnalyzerMake>
+<AnalyzerModel>PSS</AnalyzerModel>
+<AnalyzerSN>061030</AnalyzerSN>
+<OperRange>25</OperRange>
+<OperUnits>%</OperUnits>
+<Readings>60</Readings>
+<TimeInterval>Min</TimeInterval>
+<CalSet>1</CalSet>
+<CalPreZCylID>0</CalPreZCylID>
+<CalPreZRV>0</CalPreZRV>
+<CalPreZSysBias>0</CalPreZSysBias>
+<CalPreZDrift>0</CalPreZDrift>
+<CalPreHCylID>CC507781</CalPreHCylID>
+<CalPreHRV>10.7</CalPreHRV>
+<CalPreHSysBias>0.96</CalPreHSysBias>
+<CalPreHDrift>0</CalPreHDrift>
+<CalPostZCylID>0</CalPostZCylID>
+<CalPostZRV>0</CalPostZRV>
+<CalPostZSysBias>0</CalPostZSysBias>
+<CalPostZDrift>0</CalPostZDrift>
+<CalPostHCylID>CC507781</CalPostHCylID>
+<CalPostHRV>10.52</CalPostHRV>
+<CalPostHSysBias>0.1</CalPostHSysBias>
+<CalPostHDrift>0.86</CalPostHDrift>
+<Cavg>0</Cavg>
+<CavgUnits>%</CavgUnits>
+<Cgas>0</Cgas>
+<CgasUnits>%</CgasUnits>
+<FuelType>0.00</FuelType>
+<Cgasw>0</Cgasw>
+<ProcRunID>1</ProcRunID>
+<Exclude>0</Exclude>
+<CEMSO2Corr>0</CEMSO2Corr>
+</tblRunDataITM>
+<tblRunDataITM>
+<Location>Exhaust Stack</Location>
+<Method>Method 3A O2</Method>
+<Run>2</Run>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<StartTime>1899-12-30T11:56:00</StartTime>
+<EndTime>1899-12-30T13:05:00</EndTime>
+<Qsd>0</Qsd>
+<FlowRateRunID>- User Entered -</FlowRateRunID>
+<MoisturePerc>0</MoisturePerc>
+<MoistureRunID>- User Entered -</MoistureRunID>
+<PercCO2>0</PercCO2>
+<CO2RunID>- User Entered -</CO2RunID>
+<PercO2>0</PercO2>
+<O2RunID>- User Entered -</O2RunID>
+<AnalyzerMake>Gasmet</AnalyzerMake>
+<AnalyzerModel>PSS</AnalyzerModel>
+<AnalyzerSN>061030</AnalyzerSN>
+<OperRange>25</OperRange>
+<OperUnits>%</OperUnits>
+<Readings>60</Readings>
+<TimeInterval>Min</TimeInterval>
+<CalSet>1</CalSet>
+<CalPreZCylID>0</CalPreZCylID>
+<CalPreZRV>0</CalPreZRV>
+<CalPreZSysBias>0</CalPreZSysBias>
+<CalPreZDrift>0</CalPreZDrift>
+<CalPreHCylID>CC507781</CalPreHCylID>
+<CalPreHRV>10.52</CalPreHRV>
+<CalPreHSysBias>0.1</CalPreHSysBias>
+<CalPreHDrift>0</CalPreHDrift>
+<CalPostZCylID>0</CalPostZCylID>
+<CalPostZRV>0</CalPostZRV>
+<CalPostZSysBias>0</CalPostZSysBias>
+<CalPostZDrift>0</CalPostZDrift>
+<CalPostHCylID>CC507781</CalPostHCylID>
+<CalPostHRV>10.52</CalPostHRV>
+<CalPostHSysBias>0.1</CalPostHSysBias>
+<CalPostHDrift>0</CalPostHDrift>
+<Cavg>0</Cavg>
+<CavgUnits>%</CavgUnits>
+<Cgas>0</Cgas>
+<CgasUnits>%</CgasUnits>
+<FuelType>0.00</FuelType>
+<Cgasw>0</Cgasw>
+<ProcRunID>2</ProcRunID>
+<Exclude>0</Exclude>
+<CEMSO2Corr>0</CEMSO2Corr>
+</tblRunDataITM>
+<tblRunDataITM>
+<Location>Exhaust Stack</Location>
+<Method>Method 3A O2</Method>
+<Run>3</Run>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<StartTime>1899-12-30T13:07:00</StartTime>
+<EndTime>1899-12-30T14:40:00</EndTime>
+<Qsd>0</Qsd>
+<FlowRateRunID>- User Entered -</FlowRateRunID>
+<MoisturePerc>0</MoisturePerc>
+<MoistureRunID>- User Entered -</MoistureRunID>
+<PercCO2>0</PercCO2>
+<CO2RunID>- User Entered -</CO2RunID>
+<PercO2>0</PercO2>
+<O2RunID>- User Entered -</O2RunID>
+<AnalyzerMake>Gasmet</AnalyzerMake>
+<AnalyzerModel>PSS</AnalyzerModel>
+<AnalyzerSN>061030</AnalyzerSN>
+<OperRange>25</OperRange>
+<OperUnits>%</OperUnits>
+<Readings>60</Readings>
+<TimeInterval>Min</TimeInterval>
+<CalSet>1</CalSet>
+<CalPreZCylID>0</CalPreZCylID>
+<CalPreZRV>0</CalPreZRV>
+<CalPreZSysBias>0</CalPreZSysBias>
+<CalPreZDrift>0</CalPreZDrift>
+<CalPreHCylID>CC507781</CalPreHCylID>
+<CalPreHRV>10.52</CalPreHRV>
+<CalPreHSysBias>0.1</CalPreHSysBias>
+<CalPreHDrift>0</CalPreHDrift>
+<CalPostZCylID>0</CalPostZCylID>
+<CalPostZRV>0</CalPostZRV>
+<CalPostZSysBias>0</CalPostZSysBias>
+<CalPostZDrift>0</CalPostZDrift>
+<CalPostHCylID>CC507781</CalPostHCylID>
+<CalPostHRV>10.52</CalPostHRV>
+<CalPostHSysBias>0.1</CalPostHSysBias>
+<CalPostHDrift>0</CalPostHDrift>
+<Cavg>0</Cavg>
+<CavgUnits>%</CavgUnits>
+<Cgas>0</Cgas>
+<CgasUnits>%</CgasUnits>
+<FuelType>0.00</FuelType>
+<Cgasw>0</Cgasw>
+<ProcRunID>3</ProcRunID>
+<Exclude>0</Exclude>
+<CEMSO2Corr>0</CEMSO2Corr>
+</tblRunDataITM>
+<tblRunDataITM>
+<Location></Location>
+<Method></Method>
+<Run></Run>
+<Qsd>0</Qsd>
+<FlowRateRunID>- User Entered -</FlowRateRunID>
+<MoisturePerc>0</MoisturePerc>
+<MoistureRunID>- User Entered -</MoistureRunID>
+<PercCO2>0</PercCO2>
+<CO2RunID>- User Entered -</CO2RunID>
+<PercO2>0</PercO2>
+<O2RunID>- User Entered -</O2RunID>
+<AnalyzerMake></AnalyzerMake>
+<AnalyzerModel></AnalyzerModel>
+<AnalyzerSN></AnalyzerSN>
+<OperUnits></OperUnits>
+<TimeInterval></TimeInterval>
+<CalPreZCylID></CalPreZCylID>
+<CalPreZSysBias>0</CalPreZSysBias>
+<CalPreZDrift>0</CalPreZDrift>
+<CalPreHCylID></CalPreHCylID>
+<CalPreHSysBias>0</CalPreHSysBias>
+<CalPreHDrift>0</CalPreHDrift>
+<CalPostZCylID></CalPostZCylID>
+<CalPostZSysBias>0</CalPostZSysBias>
+<CalPostZDrift>0</CalPostZDrift>
+<CalPostHCylID></CalPostHCylID>
+<CalPostHSysBias>0</CalPostHSysBias>
+<CalPostHDrift>0</CalPostHDrift>
+<CavgUnits></CavgUnits>
+<Cgas>0</Cgas>
+<CgasUnits></CgasUnits>
+<FuelType></FuelType>
+<Cgasw>0</Cgasw>
+<Exclude>0</Exclude>
+<CEMSO2Corr>0</CEMSO2Corr>
+</tblRunDataITM>
+<tblCals>
+<Location>Exhaust Stack</Location>
+<Method>Method 3A O2</Method>
+<Set>1</Set>
+<Span>20.92</Span>
+<DZCylID>Zero</DZCylID>
+<DZRV>0</DZRV>
+<DZError>0.00</DZError>
+<DLCylID>0</DLCylID>
+<DLRV>0</DLRV>
+<DlError></DlError>
+<DMCylID>CC507781</DMCylID>
+<DMRV>10.5</DMRV>
+<DMError>-0.38</DMError>
+<DHCylID>CC440196</DHCylID>
+<DHRV>21.06</DHRV>
+<DHError>0.67</DHError>
+<SZCylID>0</SZCylID>
+<SZRV>0</SZRV>
+<SZError>0.00</SZError>
+<SHCylID>CC507781</SHCylID>
+<SHRV>10.78</SHRV>
+<SHError>1.34</SHError>
+</tblCals>
+<tblOtherMethodRunData>
+<Location>Exhaust Stack</Location>
+<RunNumber>1</RunNumber>
+<Method>ASTM D6348</Method>
+<Compound>% Moisture</Compound>
+<EmissionValue>18.28</EmissionValue>
+<UnitsOfMeasure>percent(%)</UnitsOfMeasure>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<ProcRunID>1</ProcRunID>
+</tblOtherMethodRunData>
+<tblOtherMethodRunData>
+<Location>Exhaust Stack</Location>
+<RunNumber>1</RunNumber>
+<Method>ASTM D6348</Method>
+<Compound>% Moisture</Compound>
+<EmissionValue>0</EmissionValue>
+<UnitsOfMeasure>ppb</UnitsOfMeasure>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<ProcRunID>1</ProcRunID>
+</tblOtherMethodRunData>
+<tblOtherMethodRunData>
+<Location>Exhaust Stack</Location>
+<RunNumber>1</RunNumber>
+<Method>ASTM D6348</Method>
+<Compound>Formaldehyde</Compound>
+<EmissionValue>0</EmissionValue>
+<UnitsOfMeasure>percent(%)</UnitsOfMeasure>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<ProcRunID>1</ProcRunID>
+</tblOtherMethodRunData>
+<tblOtherMethodRunData>
+<Location>Exhaust Stack</Location>
+<RunNumber>1</RunNumber>
+<Method>ASTM D6348</Method>
+<Compound>Formaldehyde</Compound>
+<EmissionValue>0.691</EmissionValue>
+<UnitsOfMeasure>ppb</UnitsOfMeasure>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<ProcRunID>1</ProcRunID>
+</tblOtherMethodRunData>
+<tblOtherMethodRunData>
+<Location>Exhaust Stack</Location>
+<RunNumber>2</RunNumber>
+<Method>ASTM D6348</Method>
+<Compound>% Moisture</Compound>
+<EmissionValue>18.16</EmissionValue>
+<UnitsOfMeasure>percent(%)</UnitsOfMeasure>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<ProcRunID>2</ProcRunID>
+</tblOtherMethodRunData>
+<tblOtherMethodRunData>
+<Location>Exhaust Stack</Location>
+<RunNumber>2</RunNumber>
+<Method>ASTM D6348</Method>
+<Compound>% Moisture</Compound>
+<EmissionValue>0</EmissionValue>
+<UnitsOfMeasure>ppb</UnitsOfMeasure>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<ProcRunID>2</ProcRunID>
+</tblOtherMethodRunData>
+<tblOtherMethodRunData>
+<Location>Exhaust Stack</Location>
+<RunNumber>2</RunNumber>
+<Method>ASTM D6348</Method>
+<Compound>Formaldehyde</Compound>
+<EmissionValue>0</EmissionValue>
+<UnitsOfMeasure>percent(%)</UnitsOfMeasure>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<ProcRunID>2</ProcRunID>
+</tblOtherMethodRunData>
+<tblOtherMethodRunData>
+<Location>Exhaust Stack</Location>
+<RunNumber>2</RunNumber>
+<Method>ASTM D6348</Method>
+<Compound>Formaldehyde</Compound>
+<EmissionValue>0.282</EmissionValue>
+<UnitsOfMeasure>ppb</UnitsOfMeasure>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<ProcRunID>2</ProcRunID>
+</tblOtherMethodRunData>
+<tblOtherMethodRunData>
+<Location>Exhaust Stack</Location>
+<RunNumber>3</RunNumber>
+<Method>ASTM D6348</Method>
+<Compound>% Moisture</Compound>
+<EmissionValue>18.11</EmissionValue>
+<UnitsOfMeasure>percent(%)</UnitsOfMeasure>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<ProcRunID>3</ProcRunID>
+</tblOtherMethodRunData>
+<tblOtherMethodRunData>
+<Location>Exhaust Stack</Location>
+<RunNumber>3</RunNumber>
+<Method>ASTM D6348</Method>
+<Compound>% Moisture</Compound>
+<EmissionValue>0</EmissionValue>
+<UnitsOfMeasure>ppb</UnitsOfMeasure>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<ProcRunID>3</ProcRunID>
+</tblOtherMethodRunData>
+<tblOtherMethodRunData>
+<Location>Exhaust Stack</Location>
+<RunNumber>3</RunNumber>
+<Method>ASTM D6348</Method>
+<Compound>Formaldehyde</Compound>
+<EmissionValue>0</EmissionValue>
+<UnitsOfMeasure>percent(%)</UnitsOfMeasure>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<ProcRunID>3</ProcRunID>
+</tblOtherMethodRunData>
+<tblOtherMethodRunData>
+<Location>Exhaust Stack</Location>
+<RunNumber>3</RunNumber>
+<Method>ASTM D6348</Method>
+<Compound>Formaldehyde</Compound>
+<EmissionValue>0</EmissionValue>
+<UnitsOfMeasure>ppb</UnitsOfMeasure>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<ProcRunID>3</ProcRunID>
+</tblOtherMethodRunData>
+<tblProcessRunData>
+<ProcessParamID>1</ProcessParamID>
+<Run>1</Run>
+<Value>1122</Value>
+</tblProcessRunData>
+<tblProcessRunData>
+<ProcessParamID>1</ProcessParamID>
+<Run>2</Run>
+<Value>1099</Value>
+</tblProcessRunData>
+<tblProcessRunData>
+<ProcessParamID>1</ProcessParamID>
+<Run>3</Run>
+<Value>1099</Value>
+</tblProcessRunData>
+<tblComments>
+<FieldID>Observer</FieldID>
+</tblComments>
+<tblComments>
+<FieldID>Tester</FieldID>
+</tblComments>
+<tblComments>
+<FieldID>Test Reviewer</FieldID>
+</tblComments>
+<tblStateQA>
+<TestPlanID>1</TestPlanID>
+</tblStateQA>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>AgencyComments</FieldID>
+<Accepted>0</Accepted>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>APCD</FieldID>
+<TestPlanSection>Item 7b</TestPlanSection>
+<Accepted>0</Accepted>
+<SortID>13</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>ApplRegs</FieldID>
+<TestPlanSection>Item 4</TestPlanSection>
+<Accepted>-</Accepted>
+<SortID>8</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>Attachments</FieldID>
+<TestPlanSection>Attachments Included</TestPlanSection>
+<Accepted>0</Accepted>
+<SortID>28</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>CalibGasCertifiedYN</FieldID>
+<TestPlanSection>Item 14</TestPlanSection>
+<Accepted>0</Accepted>
+<SortID>20</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>Comments</FieldID>
+<TestPlanSection>Item 18</TestPlanSection>
+<Accepted>-</Accepted>
+<SortID>24</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>CyclonicFlowYN</FieldID>
+<TestPlanSection>Item 10</TestPlanSection>
+<Accepted>0</Accepted>
+<SortID>16</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>DilutionProposedYN</FieldID>
+<TestPlanSection>Item 15</TestPlanSection>
+<Accepted>0</Accepted>
+<SortID>21</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>EmisCon</FieldID>
+<TestPlanSection>Item 2b</TestPlanSection>
+<SortID>6</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>EmisConc</FieldID>
+<TestPlanSection>Item 2b</TestPlanSection>
+<Accepted>0</Accepted>
+<SortID>6</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>EPASampleAuditYN</FieldID>
+<TestPlanSection>Item 12</TestPlanSection>
+<Accepted>-</Accepted>
+<SortID>18</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>EqupCalibrationYN</FieldID>
+<TestPlanSection>Item 13</TestPlanSection>
+<Accepted>0</Accepted>
+<SortID>19</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>FacName</FieldID>
+<TestPlanSection>Facility Information</TestPlanSection>
+<Accepted>-</Accepted>
+<SortID>1</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>FacRepName</FieldID>
+<TestPlanSection>Facility Signature</TestPlanSection>
+<Accepted>0</Accepted>
+<SortID>26</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>Gas</FieldID>
+<TestPlanSection>Item 16</TestPlanSection>
+<Accepted>0</Accepted>
+<SortID>22</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>Location</FieldID>
+<TestPlanSection>Item 1</TestPlanSection>
+<Accepted>-</Accepted>
+<SortID>4</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>MeetMinReqYN</FieldID>
+<TestPlanSection>Item 9</TestPlanSection>
+<Accepted>-</Accepted>
+<SortID>15</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>OtherRegPurposeDesc</FieldID>
+<TestPlanSection>Item 5</TestPlanSection>
+<Accepted>-</Accepted>
+<SortID>9</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>OxygenConcDet3or3a</FieldID>
+<TestPlanSection>Item 11</TestPlanSection>
+<Accepted>0</Accepted>
+<SortID>17</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>PermittedSourceID</FieldID>
+<TestPlanSection>Source Information</TestPlanSection>
+<Accepted>-</Accepted>
+<SortID>3</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>PPE</FieldID>
+<TestPlanSection>Item 19</TestPlanSection>
+<Accepted>-</Accepted>
+<SortID>25</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>Process</FieldID>
+<TestPlanSection>Item 6a</TestPlanSection>
+<Accepted>-</Accepted>
+<SortID>10</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>ProcessLab</FieldID>
+<TestPlanSection>Item 6b</TestPlanSection>
+<Accepted>0</Accepted>
+<SortID>11</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>SourceDesc</FieldID>
+<TestPlanSection>Item 7a</TestPlanSection>
+<Accepted>0</Accepted>
+<SortID>12</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>TargetParam</FieldID>
+<TestPlanSection>Item 2a</TestPlanSection>
+<Accepted>-</Accepted>
+<SortID>5</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>TestCoName</FieldID>
+<TestPlanSection>Testing Company Information</TestPlanSection>
+<Accepted>-</Accepted>
+<SortID>2</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>TesterComments</FieldID>
+<Accepted>0</Accepted>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>TestInAccordanceDesc</FieldID>
+<TestPlanSection>Item 8</TestPlanSection>
+<Accepted>0</Accepted>
+<SortID>14</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>TestPlanID</FieldID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>TestPurpose</FieldID>
+<TestPlanSection>Item 3</TestPlanSection>
+<Accepted>-</Accepted>
+<SortID>7</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>TestRepName</FieldID>
+<TestPlanSection>Testing Company Signature</TestPlanSection>
+<Accepted>0</Accepted>
+<SortID>27</SortID>
+</tblStateQACmts>
+<tblStateQACmts>
+<testPlanID>1</testPlanID>
+<FieldID>TestSchedule</FieldID>
+<TestPlanSection>Item 17</TestPlanSection>
+<Accepted>-</Accepted>
+<SortID>23</SortID>
+</tblStateQACmts>
+<apptblQAQs>
+<QID>1</QID>
+<Question>As described in ASTM D7036-12 Standard Practice for Competence of Air Emission Testing Bodies, does the testing firm meet the criteria as an AETB or is the person in charge of the field team a QI for the type of testing conducted? A certificate from an independent organization (e.g., Stack Testing Accreditation council (STAC), California Air Resources Board (CARB), National Environmental Laboratory Accreditation Program (NELAP) or self declaration provides documentation of competence as an AETB.</Question>
+<RevType>ERT</RevType>
+<QuestType>All</QuestType>
+<SortID>1</SortID>
+<DataType>attach</DataType>
+<DataLink>40</DataLink>
+<ERTCheck>Review certificate</ERTCheck>
+<AnsField>40</AnsField>
+<AnsTable>attach</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>2</QID>
+<LinkID>1</LinkID>
+<Question>As described in ASTM D7036-12 Standard Practice for Competence of Air Emission Testing Bodies, does the testing firm meet the criteria as an AETB or is the person in charge of the field team a QI for the type of testing conducted? A certificate from an independent organization (e.g., STAC, CARB, NELAP) or self declaration provides documentation of competence as an AETB.</Question>
+<RevType>3rd</RevType>
+<QuestType>All</QuestType>
+<SortID>2</SortID>
+<DataType>attach</DataType>
+<DataLink>40</DataLink>
+<ERTCheck>Review certificate</ERTCheck>
+<AnsField>40</AnsField>
+<AnsTable>attach</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>3</QID>
+<LinkID>1</LinkID>
+<Question>Was a representative of the regulatory agency on site during the test?</Question>
+<Yval>1</Yval>
+<Y2val>0</Y2val>
+<Nval>0</Nval>
+<RevType>3rd</RevType>
+<QuestType>All</QuestType>
+<SortID>3</SortID>
+<DataType>frm</DataType>
+<DataLink>ShowComments(&quot;Observer&quot;)</DataLink>
+<ERTCheck>Review Regulatory Observer Comments.</ERTCheck>
+<AnsField> </AnsField>
+<AnsTable> </AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>4</QID>
+<Question>Is a description and drawing of test location provided?</Question>
+<Yval>3</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>All</QuestType>
+<SortID>4</SortID>
+<DataType>Testplan</DataType>
+<DataLink>showfacility(4)</DataLink>
+<ERTCheck>(Test Plan Item 1 and/or Attachment) - Review dimensions and diagram.</ERTCheck>
+<AnsField>location</AnsField>
+<AnsTable>tbllocation</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>5</QID>
+<LinkID>4</LinkID>
+<Question>Is a description and drawing of test location provided?</Question>
+<Yval>1</Yval>
+<Y2val>3</Y2val>
+<Nval>-3</Nval>
+<RevType>3rd</RevType>
+<QuestType>All</QuestType>
+<SortID>5</SortID>
+<DataType>Testplan</DataType>
+<DataLink>showfacility(4)</DataLink>
+<ERTCheck>(Test Plan Item 1 and/or Attachment) - Review dimensions and diagram.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>6</QID>
+<Question>Has a description of deviations from published test methods been provided, or is there a statement that deviations were not required to obtain data representative of typical facility operation?</Question>
+<Yval>6</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>All</QuestType>
+<SortID>6</SortID>
+<DataType>Testplan</DataType>
+<DataLink>showfacility(5)</DataLink>
+<ERTCheck>(Test Plan Item 8 and Attachment) - Review test method documentation.</ERTCheck>
+<AnsField>TestInAccordanceDesc,2</AnsField>
+<AnsTable>tblTestPlan,tblattachments</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>7</QID>
+<LinkID>6</LinkID>
+<Question>Is there documentation that the source or the test company sought and obtained approval for deviations from the published test method prior to conducting the test or that the tester&apos;s assertion that deviations were not required to obtain data representative of operations that are typical for the facility?</Question>
+<Yval>2</Yval>
+<Y2val>6</Y2val>
+<Nval>-6</Nval>
+<RevType>3rd</RevType>
+<QuestType>All</QuestType>
+<SortID>7</SortID>
+<DataType>Testplan</DataType>
+<DataLink>showfacility(5)</DataLink>
+<ERTCheck>(Test Plan Item 8 and Attachment) - Review test method documentation.</ERTCheck>
+<AnsField> </AnsField>
+<AnsTable> </AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>8</QID>
+<LinkID>6</LinkID>
+<Question>Were all test method deviations acceptable?</Question>
+<Yval>0</Yval>
+<Y2val>6</Y2val>
+<Nval>-6</Nval>
+<RevType>3rd</RevType>
+<QuestType>All</QuestType>
+<SortID>8</SortID>
+<DataType>Testplan</DataType>
+<DataLink>showfacility(5)</DataLink>
+<ERTCheck>(Test Plan Item 8 and Attachment) - Assess deviations and approval documents.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>9</QID>
+<Question>Is a full description of the process and the unit being tested (including installed controls) provided?</Question>
+<Yval>3</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>All</QuestType>
+<SortID>9</SortID>
+<DataType>Testplan</DataType>
+<DataLink>showfacility(3)</DataLink>
+<ERTCheck>(Test Plan Item 7a &amp; 7b &amp; Attachment) - Review process documentation.</ERTCheck>
+<AnsField>SourceDesc,1</AnsField>
+<AnsTable>tblTestPlan,tblattachments</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>10</QID>
+<LinkID>9</LinkID>
+<Question>Is a full description of the process and the unit being tested (including installed controls) provided?</Question>
+<Yval>1</Yval>
+<Y2val>3</Y2val>
+<Nval>-3</Nval>
+<RevType>3rd</RevType>
+<QuestType>All</QuestType>
+<SortID>10</SortID>
+<DataType>Testplan</DataType>
+<DataLink>showfacility(3)</DataLink>
+<ERTCheck>(Test Plan Item 7a &amp; 7b &amp; Attachment) - Review process documentation.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>11</QID>
+<Question>Has a detailed discussion of source operating conditions, air pollution control device operations and the representativeness of measurements made during the test been provided?</Question>
+<Yval>6</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>All</QuestType>
+<SortID>11</SortID>
+<DataType>frm</DataType>
+<DataLink>ShowComments(&quot;Tester&quot;)</DataLink>
+<ERTCheck>Review the source/testers Test Data Quality Assessment.</ERTCheck>
+<AnsField>Tester</AnsField>
+<AnsTable>tblComments</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>12</QID>
+<LinkID>11</LinkID>
+<Question>Has a detailed discussion of source operating conditions, air pollution control device operations and the representativeness of measurements made during the test been provided?</Question>
+<Yval>2</Yval>
+<Y2val>6</Y2val>
+<Nval>-6</Nval>
+<RevType>3rd</RevType>
+<QuestType>All</QuestType>
+<SortID>12</SortID>
+<DataType>multfrm2</DataType>
+<DataLink>ShowComments(&quot;Tester&quot;)</DataLink>
+<ERTCheck>Review description of source operation, APCD operation and sampling for representativeness. (Process Run Data, APCD Run Data, Lab Data, Attachments, Tester DQ Assessment)</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>13</QID>
+<Question>Were the operating parameters for the tested process unit and associated controls described and reported?</Question>
+<Yval>60</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>All</QuestType>
+<SortID>13</SortID>
+<DataType>frm</DataType>
+<DataLink>frmProcessDataDetails</DataLink>
+<ERTCheck>Review Process Run Data.</ERTCheck>
+<AnsField>value,value</AnsField>
+<AnsTable>qryProcessParamRunData,qryAPCDParamRunData</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>14</QID>
+<LinkID>13</LinkID>
+<Question>Is there documentation that the required process monitors have been calibrated and that the calibration is acceptable?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>All</QuestType>
+<SortID>14</SortID>
+<DataType>multfrm3</DataType>
+<DataLink>frmProcessDataDetails</DataLink>
+<ERTCheck>Review process monitor calibration data &amp; Tester DQ Assessment.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>15</QID>
+<LinkID>13</LinkID>
+<Question>Was the process capacity documented?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>All</QuestType>
+<SortID>15</SortID>
+<DataType>testplan</DataType>
+<DataLink>showfacility(&quot;Permit/SCC&quot;)</DataLink>
+<ERTCheck>Review stated process capacity.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>16</QID>
+<LinkID>13</LinkID>
+<Question>Was the process operating within an appropriate range for the test program objective?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>All</QuestType>
+<SortID>16</SortID>
+<DataType>frm</DataType>
+<DataLink>frmProcessDataDetails</DataLink>
+<ERTCheck>Compare process rate during test with proposed range.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>17</QID>
+<LinkID>13</LinkID>
+<Question>Were process data concurrent with testing?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>All</QuestType>
+<SortID>17</SortID>
+<DataType>frm</DataType>
+<DataLink>frmProcessDataDetails</DataLink>
+<ERTCheck>Review process monitoring data.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>18</QID>
+<LinkID>13</LinkID>
+<Question>Were data included in the report for all parameters for which limits will be set?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>All</QuestType>
+<SortID>18</SortID>
+<DataType>frm</DataType>
+<DataLink>frmProcessDataDetails</DataLink>
+<ERTCheck>Compare Process, APCD, Lab data collected with requirement in the rules, CAM monitoring plan &amp; Title V permit.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>19</QID>
+<Question>Is there an assessment of the validity, representativeness, achievement of DQO&apos;s and usability of the data?</Question>
+<Yval>9</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>All</QuestType>
+<SortID>19</SortID>
+<DataType>frm</DataType>
+<DataLink>ShowComments(&quot;Tester&quot;)</DataLink>
+<ERTCheck>Review the Tester&apos;s DQ assessment</ERTCheck>
+<AnsField>tester</AnsField>
+<AnsTable>tblcomments</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>20</QID>
+<LinkID>19</LinkID>
+<Question>Did the report discuss the representativeness of the facility operations, control device operation, and the measurements of the target pollutants, and were any changes from published test methods or process and control device monitoring protocols identified?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>All</QuestType>
+<SortID>20</SortID>
+<DataType>frm</DataType>
+<DataLink>ShowComments(&quot;Tester&quot;)</DataLink>
+<ERTCheck>Review the Tester&apos;s DQ assessment</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>21</QID>
+<Question>Have field notes addressing issues that may influence data quality been provided?</Question>
+<Yval>0</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>All</QuestType>
+<SortID>21</SortID>
+<DataType>attach</DataType>
+<DataLink>44</DataLink>
+<ERTCheck>Review Field Notes.</ERTCheck>
+<AnsField>44</AnsField>
+<AnsTable>attach</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>22</QID>
+<LinkID>21</LinkID>
+<Question>Were all sampling issues handled such that data quality was not adversely affected?</Question>
+<Yval>0</Yval>
+<Y2val>0</Y2val>
+<Nval>-111</Nval>
+<RevType>3rd</RevType>
+<QuestType>All</QuestType>
+<SortID>22</SortID>
+<DataType>MultFrm1</DataType>
+<DataLink></DataLink>
+<ERTCheck>Review Field Notes and Regulatory Observer Comments for atypical conditions.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>23</QID>
+<Question>Have the following been included in the report: Dry Gas Meter (DGM) calibrations, pitot tuve and nozzle inspections?</Question>
+<Yval>54</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>MTM</QuestType>
+<SortID>23</SortID>
+<DataType>attach</DataType>
+<DataLink>5,6,7,8,9</DataLink>
+<ERTCheck>Review calibration documentation.</ERTCheck>
+<AnsField>5,6,7,8,9</AnsField>
+<AnsTable>attach</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>24</QID>
+<LinkID>23</LinkID>
+<Question>Was the DGM pre-test calibration within the criteria specified by the test method?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>24</SortID>
+<DataType>attach</DataType>
+<DataLink>5</DataLink>
+<ERTCheck>Review Pre-Test Meter Boxes/DGMs Calibrations</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>25</QID>
+<LinkID>23</LinkID>
+<Question>Was the DGM post-test calibration within the criteria specified by the test method?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>25</SortID>
+<DataType>attach</DataType>
+<DataLink>6</DataLink>
+<ERTCheck>Review Post-Test Meter Boxes/DGMs Calibrations</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>26</QID>
+<LinkID>23</LinkID>
+<Question>Were thermocouple calibrations within method criteria?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>26</SortID>
+<DataType>attach</DataType>
+<DataLink>9</DataLink>
+<ERTCheck>Review Thermocouples Calibrations</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>27</QID>
+<LinkID>23</LinkID>
+<Question>Was the pitot tube inspection acceptable?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>27</SortID>
+<DataType>attach</DataType>
+<DataLink>8</DataLink>
+<ERTCheck>Review Pitots Calibrations</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>28</QID>
+<LinkID>23</LinkID>
+<Question>Were nozzle inspections acceptable?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>28</SortID>
+<DataType>attach</DataType>
+<DataLink>7</DataLink>
+<ERTCheck>Review Nozzles Calibrations</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>29</QID>
+<LinkID>23</LinkID>
+<Question>Were flow meter calibrations acceptable?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>29</SortID>
+<DataType>attach</DataType>
+<DataLink>5,6</DataLink>
+<ERTCheck>Review sampling location, measurement methods and calibrations.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>30</QID>
+<Question>Was the Method 1 sample point evaluation included in the report?</Question>
+<Yval>12</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>MTM</QuestType>
+<SortID>30</SortID>
+<DataType>testplan</DataType>
+<DataLink>showfacility(5)</DataLink>
+<ERTCheck>(Test Plan Item 9 and attachment) - review method used and stated deviations.</ERTCheck>
+<AnsField>MeetMinReq,MeetMinReqYN,3</AnsField>
+<AnsTable>tblTestPlan,tblTestPlan,tblAttachments</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>31</QID>
+<LinkID>30</LinkID>
+<Question>Were the appropriate number and location of sampling points used?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>31</SortID>
+<DataType>testplan</DataType>
+<DataLink>showfacility(5)</DataLink>
+<ERTCheck>Review stack conditions at sampling location to number and method used. (Test Plan Item 1 &amp; Attachment, Test Plan 8 &amp; 9 and Attachmens, Tester DQ Assessment)</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>32</QID>
+<Question>Were the cyclonic flow checks included in the report?</Question>
+<Yval>12</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>MTM</QuestType>
+<SortID>32</SortID>
+<DataType>testplan</DataType>
+<DataLink>showfacility(5)</DataLink>
+<ERTCheck>(Test Plan Item 10 or Attachment) - Review cyclonic flow assessment.</ERTCheck>
+<AnsField>CyclonicFlowDesc,CyclonicFlowYN,4</AnsField>
+<AnsTable>tblTestPlan,tblTestPlan,tblAttachments</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>33</QID>
+<LinkID>32</LinkID>
+<Question>Did the cyclonic flow evaluation show the presence of an acceptable average gas flow angle?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>33</SortID>
+<DataType>testplan</DataType>
+<DataLink>showfacility(5)</DataLink>
+<ERTCheck>(Test Plan Item 10 or Attachment) - Review cyclonic flow assessment.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>34</QID>
+<Question>Were the raw sampling data and test sheets included in the report?</Question>
+<Yval>126</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>MTM</QuestType>
+<SortID>34</SortID>
+<DataType>attach</DataType>
+<DataLink>11</DataLink>
+<ERTCheck>Attachment</ERTCheck>
+<AnsField>11</AnsField>
+<AnsTable>attach</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>35</QID>
+<LinkID>34</LinkID>
+<Question>Were all data required by the method recorded?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>35</SortID>
+<DataType>frm</DataType>
+<DataLink>frmRunDataDetailsMaster</DataLink>
+<ERTCheck>Review all test data Header and Point Data for completeness.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>36</QID>
+<LinkID>34</LinkID>
+<Question>Were required leak checks performed and did the checks meet method requirements?</Question>
+<Yval>10</Yval>
+<Y2val>30</Y2val>
+<Nval>-180</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>36</SortID>
+<DataType>frm</DataType>
+<DataLink>frmRunDataDetailsMaster</DataLink>
+<ERTCheck>Review Post-Test leak check in Header Data.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>37</QID>
+<LinkID>34</LinkID>
+<Question>Was the required minimum sample volume collected?</Question>
+<Yval>6</Yval>
+<Y2val>18</Y2val>
+<Nval>-18</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>37</SortID>
+<DataType>frm</DataType>
+<DataLink>frmRunDataDetailsMaster</DataLink>
+<ERTCheck>Review Vm &amp; Vmstd in Stack Data Results.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>38</QID>
+<LinkID>34</LinkID>
+<Question>Did probe, filter, and impinger exit temperatures meet method criteria (as applicable)?</Question>
+<Yval>8</Yval>
+<Y2val>24</Y2val>
+<Nval>-24</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>38</SortID>
+<DataType>frm</DataType>
+<DataLink>frmRunDataDetailsMaster</DataLink>
+<ERTCheck>Review Point Data values and Stack Data Results.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>39</QID>
+<LinkID>34</LinkID>
+<Question>Did isokinetic sampling rates meet method criteria?</Question>
+<Yval>8</Yval>
+<Y2val>24</Y2val>
+<Nval>-120</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>39</SortID>
+<DataType>frm</DataType>
+<DataLink>frmRunDataDetailsMaster</DataLink>
+<ERTCheck>Review %I in Stack Data Results.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>40</QID>
+<LinkID>34</LinkID>
+<Question>Was the sampling time at each point greater than 2 minutes and the same for each point?</Question>
+<Yval>6</Yval>
+<Y2val>18</Y2val>
+<Nval>-18</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>40</SortID>
+<DataType>frm</DataType>
+<DataLink>frmRunDataDetailsMaster</DataLink>
+<ERTCheck>Review Point Data Begin and End Times. Review Net Run Time per traverse points in Stack Data Results.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>41</QID>
+<Question>Did the report include a description and flow diagram of the recovery procedures?</Question>
+<Yval>30</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>MTM</QuestType>
+<SortID>41</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review sample recovery and analysis information.</ERTCheck>
+<AnsField>13</AnsField>
+<AnsTable>attach</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>42</QID>
+<LinkID>41</LinkID>
+<Question>Was the recovery process consistent with the method?</Question>
+<Yval>2</Yval>
+<Y2val>6</Y2val>
+<Nval>-6</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>42</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Lab report for recovery process.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>43</QID>
+<LinkID>41</LinkID>
+<Question>Were all required blanks collected in the field?</Question>
+<Yval>2</Yval>
+<Y2val>6</Y2val>
+<Nval>-6</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>43</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Lab report for reagent and field blanks</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>44</QID>
+<LinkID>41</LinkID>
+<Question>Where performed, were blank corrections handled per method requirements?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>44</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Lab report for reagent and field blanks</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>45</QID>
+<LinkID>41</LinkID>
+<Question>Were sample volumes clearly marked on the jar or measured and recorded?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>45</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Lab Report for condition of received samples.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>46</QID>
+<Question>Was the laboratory certied/accredited to perform these analyses?</Question>
+<RevType>ERT</RevType>
+<QuestType>MTM</QuestType>
+<SortID>46</SortID>
+<DataType>attach</DataType>
+<DataLink>43</DataLink>
+<ERTCheck>Review Lab acreditation certificate.</ERTCheck>
+<AnsField>43</AnsField>
+<AnsTable>attach</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>47</QID>
+<LinkID>46</LinkID>
+<Question>Was the laboratory cerified/accredited to perform these analyses?</Question>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>47</SortID>
+<DataType>attach</DataType>
+<DataLink>43</DataLink>
+<ERTCheck>Review Lab acreditation certificate.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>48</QID>
+<Question>Did the report include a complete laboratory report and flow diagram of sample analysis?</Question>
+<Yval>132</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>MTM</QuestType>
+<SortID>48</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Lab analysis report.</ERTCheck>
+<AnsField>13</AnsField>
+<AnsTable>attach</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>49</QID>
+<LinkID>48</LinkID>
+<Question>Did the laboratory note the sample volume upon receipt?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>49</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Lab report for sample volumes.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>50</QID>
+<LinkID>48</LinkID>
+<Question>If sample loss occurred, was the compensation method used, documented, and approved for the method?</Question>
+<Yval>0</Yval>
+<Y2val>9</Y2val>
+<Nval>-120</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>50</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Lab report for any requiered compensation.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>51</QID>
+<LinkID>48</LinkID>
+<Question>Were the physical characteristics of the samples (e.g., color, volume, integrity, pH, temperature) recorded and consistent with the method?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>51</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Lab report for sample reciept information.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>52</QID>
+<LinkID>48</LinkID>
+<Question>Were sample hold times within method requirements?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>52</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Compare Sample analysis to sample collection for hold times.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>53</QID>
+<LinkID>48</LinkID>
+<Question>Does the laboratory report document the analytical procedures and techniques?</Question>
+<Yval>2</Yval>
+<Y2val>6</Y2val>
+<Nval>-6</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>53</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Lab report for description of analytical procedures.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>54</QID>
+<LinkID>48</LinkID>
+<Question>Were all laboratory QA requirements documented?</Question>
+<Yval>5</Yval>
+<Y2val>15</Y2val>
+<Nval>-15</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>54</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Laboratory QA procedures.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>55</QID>
+<LinkID>48</LinkID>
+<Question>Were analytical standards required by the method documented?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>55</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Laboratory report for performance of method required analytical standards.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>56</QID>
+<LinkID>48</LinkID>
+<Question>Were required laboratory duplicates within acceptable limits?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>56</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Lab report for duplicate analyses.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>57</QID>
+<LinkID>48</LinkID>
+<Question>Were required spike recoveries within method requirements?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>57</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Lab report for spike recoveries.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>58</QID>
+<LinkID>48</LinkID>
+<Question>Were method-specific analytical blanks analyzed?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>58</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Lab report for analytical blanks.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>59</QID>
+<LinkID>48</LinkID>
+<Question>If problems occurred during analysis, is there sufficient documentation to conclude that the problems did not adversely affect the sample results?</Question>
+<Yval>0</Yval>
+<Y2val>15</Y2val>
+<Nval>-15</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>59</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Lab narative for analysis issues.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>60</QID>
+<LinkID>48</LinkID>
+<Question>Was the analytical detection limit specified in the test report?</Question>
+<Yval>2</Yval>
+<Y2val>6</Y2val>
+<Nval>-6</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>60</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Review Lab report for determination of detectionl limits as recommended in Method 301.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>61</QID>
+<LinkID>48</LinkID>
+<Question>Is the reported detection limit adequate fort he purposes of the test program?</Question>
+<Yval>2</Yval>
+<Y2val>6</Y2val>
+<Nval>-6</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>61</SortID>
+<DataType>attach</DataType>
+<DataLink>13</DataLink>
+<ERTCheck>Compare detection limits with measured values</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>62</QID>
+<Question>Were the chain-of-custody forms included in the report?</Question>
+<Yval>12</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>MTM</QuestType>
+<SortID>62</SortID>
+<DataType>attach</DataType>
+<DataLink>14</DataLink>
+<ERTCheck>Review Chain of Custody documents.</ERTCheck>
+<AnsField>14</AnsField>
+<AnsTable>attach</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>63</QID>
+<LinkID>62</LinkID>
+<Question>Do the chain-of-custody forms indicate acceptable management of collected samples between collection and analysis?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>MTM</QuestType>
+<SortID>63</SortID>
+<DataType>attach</DataType>
+<DataLink>14</DataLink>
+<ERTCheck>Review Chain of Custody documents.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>64</QID>
+<Question>Did the report include a complete description of the intrumental method sampling system?</Question>
+<Yval>3</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>ITM</QuestType>
+<SortID>64</SortID>
+<DataType>Testplan</DataType>
+<DataLink>showfacility(5)</DataLink>
+<ERTCheck>(Test Plan Item 8 or attachments) - Review description of instrumental method sampling system.</ERTCheck>
+<AnsField>TestInAccordanceDesc,2,10</AnsField>
+<AnsTable>tblTestPlan,tblAttachments,tblattachments</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>65</QID>
+<LinkID>64</LinkID>
+<Question>Was a complete description of the sampling system provided?</Question>
+<Yval>1</Yval>
+<Y2val>3</Y2val>
+<Nval>-3</Nval>
+<RevType>3rd</RevType>
+<QuestType>ITM</QuestType>
+<SortID>65</SortID>
+<DataType>Testplan</DataType>
+<DataLink>showfacility(5)</DataLink>
+<ERTCheck>(Test Plan Item 8 or attachments) - Review description of instrumental method sampling system.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>66</QID>
+<Question>Did the report include calibration gas certifications?</Question>
+<Yval>27</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>ITM</QuestType>
+<SortID>66</SortID>
+<DataType>Testplan</DataType>
+<DataLink>showfacility(6)</DataLink>
+<ERTCheck>(Test Plan Item 16 or attachment) - Review certifications.</ERTCheck>
+<AnsField>47</AnsField>
+<AnsTable>attach</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>67</QID>
+<LinkID>66</LinkID>
+<Question>Were calibration standards used prior to the end of the expiration date?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>ITM</QuestType>
+<SortID>67</SortID>
+<DataType>Testplan</DataType>
+<DataLink>showfacility(6)</DataLink>
+<ERTCheck>(Test Plan Item 16 or attachment) - Review certifications for expiration date.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>68</QID>
+<LinkID>66</LinkID>
+<Question>Did calibration standards meet method criteria?</Question>
+<Yval>5</Yval>
+<Y2val>15</Y2val>
+<Nval>-15</Nval>
+<RevType>3rd</RevType>
+<QuestType>ITM</QuestType>
+<SortID>68</SortID>
+<DataType>Testplan</DataType>
+<DataLink>showfacility(6)</DataLink>
+<ERTCheck>Review the calibration gas certifications for compliance with EPA Protocol gas requirements (concentrations, uncertainties.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>69</QID>
+<Question>Did the report include interference tests?</Question>
+<Yval>9</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>ITM</QuestType>
+<SortID>69</SortID>
+<DataType>attach</DataType>
+<DataLink>45</DataLink>
+<ERTCheck>Review interfereance test documentaion.</ERTCheck>
+<AnsField>45</AnsField>
+<AnsTable>attach</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>70</QID>
+<LinkID>69</LinkID>
+<Question>Did interference checks meet method requirements?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>ITM</QuestType>
+<SortID>70</SortID>
+<DataType>attach</DataType>
+<DataLink>45</DataLink>
+<ERTCheck>Review documentation for interferance checks.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>71</QID>
+<Question>Were the response time tests included in the report?</Question>
+<Yval>12</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>ITM</QuestType>
+<SortID>71</SortID>
+<DataType>attach</DataType>
+<DataLink>45</DataLink>
+<ERTCheck>Review response times documentaion.</ERTCheck>
+<AnsField>45</AnsField>
+<AnsTable>attach</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>72</QID>
+<LinkID>71</LinkID>
+<Question>Was a response time test performed?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>ITM</QuestType>
+<SortID>72</SortID>
+<DataType>attach</DataType>
+<DataLink>45</DataLink>
+<ERTCheck>Review documentaion of response times.</ERTCheck>
+<AnsField>45</AnsField>
+<AnsTable></AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>73</QID>
+<Question>Were the calibration error tests included in the report?</Question>
+<Yval>12</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>ITM</QuestType>
+<SortID>73</SortID>
+<DataType>frm</DataType>
+<DataLink>frmRunDataDetailsMaster</DataLink>
+<ERTCheck>Review calibrations for instrumental run data.</ERTCheck>
+<AnsField>DZError</AnsField>
+<AnsTable>tblCals</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>74</QID>
+<LinkID>73</LinkID>
+<Question>Did calibration error tests meet method requirements?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>ITM</QuestType>
+<SortID>74</SortID>
+<DataType>frm</DataType>
+<DataLink>frmRunDataDetailsMaster</DataLink>
+<ERTCheck>Review the calibration error in the table of &quot;Direct and Systems Calibrations&quot; in the &quot;Calbrations&quot; tab of the &quot;Run Data Details&quot; page.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>75</QID>
+<Question>Did the report include drift tests?</Question>
+<Yval>9</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>ITM</QuestType>
+<SortID>75</SortID>
+<DataType>frm</DataType>
+<DataLink>frmRunDataDetailsMaster</DataLink>
+<ERTCheck>Review drift results for instrumental run data.</ERTCheck>
+<AnsField>DZError</AnsField>
+<AnsTable>tblCals</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>76</QID>
+<LinkID>75</LinkID>
+<Question>Were drift tests performed after each run and did they meet method requirements?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>ITM</QuestType>
+<SortID>76</SortID>
+<DataType>frm</DataType>
+<DataLink>frmRunDataDetailsMaster</DataLink>
+<ERTCheck>Review the calculated drift for individual run data in the ITM Run Results tab of the Run Data Detals.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>77</QID>
+<Question>Did the report include system bias tests?</Question>
+<Yval>24</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>ITM</QuestType>
+<SortID>77</SortID>
+<DataType>frm</DataType>
+<DataLink>frmRunDataDetailsMaster</DataLink>
+<ERTCheck>Review system bias results for instrumental run data.</ERTCheck>
+<AnsField>DZError</AnsField>
+<AnsTable>tblCals</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>78</QID>
+<LinkID>77</LinkID>
+<Question>Did system bias checks meet method requirements?</Question>
+<Yval>8</Yval>
+<Y2val>24</Y2val>
+<Nval>-120</Nval>
+<RevType>3rd</RevType>
+<QuestType>ITM</QuestType>
+<SortID>78</SortID>
+<DataType>frm</DataType>
+<DataLink>frmRunDataDetailsMaster</DataLink>
+<ERTCheck>Review that pre and post test system bias results met requirements in the ITM Run Results tab in the Run Data Details page.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>79</QID>
+<Question>Were the converter efficiency tests included in the report?</Question>
+<Yval>12</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>ITM</QuestType>
+<SortID>79</SortID>
+<DataType>attach</DataType>
+<DataLink>45</DataLink>
+<ERTCheck>Review converter efficiency documentaion for instrumental run data.</ERTCheck>
+<AnsField>45</AnsField>
+<AnsTable>attach</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>80</QID>
+<LinkID>79</LinkID>
+<Question>Was the NOX converter test acceptable?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>ITM</QuestType>
+<SortID>80</SortID>
+<DataType>attach</DataType>
+<DataLink>45</DataLink>
+<ERTCheck>Review NOx Converter Efficiency tests for acceptability.</ERTCheck>
+<AnsTable></AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>81</QID>
+<Question>Did the report include statification checks?</Question>
+<Yval>15</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>ITM</QuestType>
+<SortID>81</SortID>
+<DataType>attach</DataType>
+<DataLink>45</DataLink>
+<ERTCheck>Review calibrations for instrumental run data.</ERTCheck>
+<AnsField>45</AnsField>
+<AnsTable>attach</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>82</QID>
+<LinkID>81</LinkID>
+<Question>Was a statification assessment performed?</Question>
+<Yval>5</Yval>
+<Y2val>15</Y2val>
+<Nval>-15</Nval>
+<RevType>3rd</RevType>
+<QuestType>ITM</QuestType>
+<SortID>82</SortID>
+<DataType>attach</DataType>
+<DataLink>45</DataLink>
+<ERTCheck>Review stratification assessment.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>83</QID>
+<Question>Did the report include the raw data for the instrumental method?</Question>
+<Yval>54</Yval>
+<Nval>0</Nval>
+<RevType>ERT</RevType>
+<QuestType>ITM</QuestType>
+<SortID>83</SortID>
+<DataType>attach</DataType>
+<DataLink>11</DataLink>
+<ERTCheck>Review Instumental method raw data.</ERTCheck>
+<AnsField>11</AnsField>
+<AnsTable>attach</AnsTable>
+</apptblQAQs>
+<apptblQAQs>
+<QID>84</QID>
+<LinkID>83</LinkID>
+<Question>Was the duration of each sample run within method criteria?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>ITM</QuestType>
+<SortID>84</SortID>
+<DataType>frm</DataType>
+<DataLink>frmRunDataDetailsMaster</DataLink>
+<ERTCheck>Review Durations of Test Runs in Method Setup and ITM Run Results of Run Data Detals for test.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>85</QID>
+<LinkID>83</LinkID>
+<Question>Was the appropriate traverse performed during sample collection, or was the probe placed at an appropriate center point (if allowed by the method)?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>ITM</QuestType>
+<SortID>85</SortID>
+<DataType>attach</DataType>
+<DataLink>11</DataLink>
+<ERTCheck>Review details of collection method used for each sample test run.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>86</QID>
+<LinkID>83</LinkID>
+<Question>Were sample times at each point uniform and did they meet method requirements?</Question>
+<Yval>3</Yval>
+<Y2val>9</Y2val>
+<Nval>-9</Nval>
+<RevType>3rd</RevType>
+<QuestType>ITM</QuestType>
+<SortID>86</SortID>
+<DataType>frm</DataType>
+<DataLink>frmRunDataDetailsMaster</DataLink>
+<ERTCheck>Review Durations of Test Runs in Method Setup and ITM Run Results of Run Data Detals for test.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>87</QID>
+<LinkID>83</LinkID>
+<Question>Were sample lines heated sufficiently to prevent potential adverse data quality issues?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>ITM</QuestType>
+<SortID>87</SortID>
+<DataType>attach</DataType>
+<DataLink>11</DataLink>
+<ERTCheck>Review details of collection method used for each sample test run.</ERTCheck>
+</apptblQAQs>
+<apptblQAQs>
+<QID>88</QID>
+<LinkID>83</LinkID>
+<Question>Was all data required by the method recorded?</Question>
+<Yval>4</Yval>
+<Y2val>12</Y2val>
+<Nval>-12</Nval>
+<RevType>3rd</RevType>
+<QuestType>ITM</QuestType>
+<SortID>88</SortID>
+<DataType>attach</DataType>
+<DataLink>11</DataLink>
+<ERTCheck>Review details of collection method used for each sample test run.</ERTCheck>
+</apptblQAQs>
+<tblQAQAns>
+<QID>1</QID>
+<Answer>Yes</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>2</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>3</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>4</QID>
+<Answer>Yes</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>5</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>6</QID>
+<Answer>No</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>7</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>8</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>9</QID>
+<Answer>Yes</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>10</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>11</QID>
+<Answer>No</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>12</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>13</QID>
+<Answer>Yes</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>14</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>15</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>16</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>17</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>18</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>19</QID>
+<Answer>No</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>20</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>21</QID>
+<Answer>Yes</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>22</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>64</QID>
+<Answer>No</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>65</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>66</QID>
+<Answer>Yes</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>67</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>68</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>69</QID>
+<Answer>Yes</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>70</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>71</QID>
+<Answer>Yes</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>72</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>73</QID>
+<Answer>Yes</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>74</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>75</QID>
+<Answer>Yes</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>76</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>77</QID>
+<Answer>Yes</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>78</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>79</QID>
+<Answer>Yes</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>80</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>81</QID>
+<Answer>Yes</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>82</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>83</QID>
+<Answer>Yes</Answer>
+</tblQAQAns>
+<tblQAQAns>
+<QID>84</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>85</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>86</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>87</QID>
+</tblQAQAns>
+<tblQAQAns>
+<QID>88</QID>
+</tblQAQAns>
+<tblEFLink>
+<Location>Exhaust Stack</Location>
+<Method>ASTM D6348</Method>
+<RunNumber>1</RunNumber>
+<SCC>20200253</SCC>
+<Run>1</Run>
+<xtbl>tblOtherMethodRunDat</xtbl>
+</tblEFLink>
+<tblEFLink>
+<Location>Exhaust Stack</Location>
+<Method>ASTM D6348</Method>
+<RunNumber>2</RunNumber>
+<SCC>20200253</SCC>
+<Run>2</Run>
+<xtbl>tblOtherMethodRunDat</xtbl>
+</tblEFLink>
+<tblEFLink>
+<Location>Exhaust Stack</Location>
+<Method>ASTM D6348</Method>
+<RunNumber>3</RunNumber>
+<SCC>20200253</SCC>
+<Run>3</Run>
+<xtbl>tblOtherMethodRunDat</xtbl>
+</tblEFLink>
+<tblEFLink>
+<Location>Exhaust Stack</Location>
+<Method>Method 3A O2</Method>
+<RunNumber>1</RunNumber>
+<SCC>20200253</SCC>
+<Run>1</Run>
+<xtbl>tblRunDataITM</xtbl>
+</tblEFLink>
+<tblEFLink>
+<Location>Exhaust Stack</Location>
+<Method>Method 3A O2</Method>
+<RunNumber>2</RunNumber>
+<SCC>20200253</SCC>
+<Run>2</Run>
+<xtbl>tblRunDataITM</xtbl>
+</tblEFLink>
+<tblEFLink>
+<Location>Exhaust Stack</Location>
+<Method>Method 3A O2</Method>
+<RunNumber>3</RunNumber>
+<SCC>20200253</SCC>
+<Run>3</Run>
+<xtbl>tblRunDataITM</xtbl>
+</tblEFLink>
+<tblSubmitActions>
+<ID>1</ID>
+<Action>Submit Test Report</Action>
+<SubmitDate>2025-04-11T00:00:00</SubmitDate>
+<SubmittedTo>Taryn Weiner</SubmittedTo>
+<SubmittedToEmail>tweiner@utahgascorp.com</SubmittedToEmail>
+<SubmittedFrom>GAS CEDRI Division</SubmittedFrom>
+<SubmittedFromEmail>CEDRI@gasinc.us</SubmittedFromEmail>
+<Comment>Little Canyon LCU-C4</Comment>
+<PkgName>D:\PhotonUser\GAS\ERT - Documents\Utah Gas Corp._\Utah Gas Corp Little Canyon CS LCU-C4 JJ_04-11-2025_14-21_pkg.zip</PkgName>
+</tblSubmitActions>
+<tblSubmitActions>
+<ID>2</ID>
+<Action>Submit Test Report</Action>
+<SubmitDate>2025-04-11T00:00:00</SubmitDate>
+<SubmittedTo>Taryn Weiner</SubmittedTo>
+<SubmittedToEmail>tweiner@utahgascorp.com</SubmittedToEmail>
+<SubmittedFrom>GAS CEDRI Division</SubmittedFrom>
+<SubmittedFromEmail>CEDRI@gasinc.us</SubmittedFromEmail>
+<Comment>Roosevelt Tap 5 T5-B2</Comment>
+<PkgName>D:\PhotonUser\GAS\ERT - Documents\Utah Gas Corp._\Utah Gas Corp Roosevelt Tap 5  T5-B2 JJJ_04-11-2025_14-54_pkg.zip</PkgName>
+</tblSubmitActions>
+<tblSubmitActions>
+<ID>3</ID>
+<Action>Submit Test Report</Action>
+<SubmitDate>2025-04-11T00:00:00</SubmitDate>
+<SubmittedTo>Taryn Weiner</SubmittedTo>
+<SubmittedToEmail>tweiner@utahgascorp.com</SubmittedToEmail>
+<SubmittedFrom>GAS CEDRI Division</SubmittedFrom>
+<SubmittedFromEmail>CEDRI@gasinc.us</SubmittedFromEmail>
+<Comment>Roosevelt Tap 5 T5-C2</Comment>
+<PkgName>D:\PhotonUser\GAS\ERT - Documents\Utah Gas Corp._\Utah Gas Corp Roosevelt Tap 5  T5-C2  JJ_04-11-2025_15-12_pkg.zip</PkgName>
+</tblSubmitActions>
+<tblSubmitActions>
+<ID>4</ID>
+<Action>Submit Test Report</Action>
+<SubmitDate>2025-04-11T00:00:00</SubmitDate>
+<SubmittedTo>Taryn Weiner</SubmittedTo>
+<SubmittedToEmail>tweiner@utahgascorp.com</SubmittedToEmail>
+<SubmittedFrom>GAS CEDRI Division</SubmittedFrom>
+<SubmittedFromEmail>CEDRI@gasinc.us</SubmittedFromEmail>
+<Comment>Roosevelt Tap 5 T5-C1</Comment>
+<PkgName>D:\PhotonUser\GAS\ERT - Documents\Utah Gas Corp._\Utah Gas Corp Roosevelt Tap 5  T5-C1 JJJ_04-11-2025_15-22_pkg.zip</PkgName>
+</tblSubmitActions>
+<tblSubmitActions>
+<ID>5</ID>
+<Action>Submit Test Report</Action>
+<SubmitDate>2025-05-23T00:00:00</SubmitDate>
+<SubmittedTo>Demarco Jones</SubmittedTo>
+<SubmittedToEmail>demarco.jones@jge-midstream.com</SubmittedToEmail>
+<SubmittedFrom>GAS CEDRI Division</SubmittedFrom>
+<SubmittedFromEmail>CEDRI@gasinc.us</SubmittedFromEmail>
+<Comment>Unit C37</Comment>
+<PkgName>D:\PhotonUser\GAS\ERT - Documents\Utah Gas Corp._\JGE Gas Solutions LP Longviw Gas Plant C_05-23-2025_14-52_pkg.zip</PkgName>
+</tblSubmitActions>
+<tblSubmitActions>
+<ID>6</ID>
+<Action>Submit Test Report</Action>
+<SubmitDate>2025-05-29T00:00:00</SubmitDate>
+<SubmittedTo>Bailey Sharp</SubmittedTo>
+<SubmittedToEmail>bailey.sharp@meritenergy.com</SubmittedToEmail>
+<SubmittedFrom>GAS CEDRI Division</SubmittedFrom>
+<SubmittedFromEmail>CEDRI@gasinc.us</SubmittedFromEmail>
+<Comment>APC-164</Comment>
+<PkgName>D:\PhotonUser\GAS\ERT - Documents\Merit Energy Company\Merit Energy Company Hugoton Compressor _05-29-2025_11-41_pkg.zip</PkgName>
+</tblSubmitActions>
+<qryEFFacility>
+<PDSiD>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSiD>
+<PDSiDDate>2025-04-02T00:00:00</PDSiDDate>
+<FacSCC>20200253</FacSCC>
+<Process_Description>Refer to attached test report</Process_Description>
+<Facility>Hugoton Compressor Station</Facility>
+<City>Hugoton</City>
+<State>KS</State>
+<County>Stevens Co</County>
+<Zip>67951</Zip>
+<FRS>110066825555</FRS>
+<TestCompany>GAS</TestCompany>
+<ERTv>ERT v 7  2/12/2025</ERTv>
+<Reference>Facility: Hugoton Compressor Station - Hugoton, KS - Testing Company:  GAS - 5/15/2025</Reference>
+<TEST_REPORT_RATING>70</TEST_REPORT_RATING>
+<PermittedSourceID>APC-164</PermittedSourceID>
+<Part60>0</Part60>
+<Part61>0</Part61>
+<Part63>1</Part63>
+<Part65>0</Part65>
+<RATA>0</RATA>
+<NSRPSD>0</NSRPSD>
+<SIP>0</SIP>
+<Section114>0</Section114>
+<StateRule>0</StateRule>
+<Other>0</Other>
+</qryEFFacility>
+<qryEFLocation>
+<PDSiD>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSiD>
+<Location>Exhaust Stack</Location>
+<DuctDiameter>12.5</DuctDiameter>
+<Controlled>1</Controlled>
+</qryEFLocation>
+<qryEFFactor>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<Location>Exhaust Stack</Location>
+<Method>ASTM D6348</Method>
+<RunNumber>1</RunNumber>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<CAS_Number>50-00-0</CAS_Number>
+<Poll_NEI_Code>50-00-0</Poll_NEI_Code>
+<PollName>Formaldehyde</PollName>
+<SCC>20200253</SCC>
+<ProcessRunNumber>1</ProcessRunNumber>
+<EF>0.00E+00</EF>
+<POLL_UNIT>g</POLL_UNIT>
+<MEASURE>Horsepower-Hour</MEASURE>
+<MATERIAL>Work</MATERIAL>
+<ACTION>Output</ACTION>
+<lb_x002F_mmBtuO2></lb_x002F_mmBtuO2>
+<lb_x002F_mmBtuCO2></lb_x002F_mmBtuCO2>
+</qryEFFactor>
+<qryEFFactor>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<Location>Exhaust Stack</Location>
+<Method>ASTM D6348</Method>
+<RunNumber>1</RunNumber>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<CAS_Number>% H2O</CAS_Number>
+<Poll_NEI_Code>% H2O</Poll_NEI_Code>
+<PollName>% Moisture</PollName>
+<SCC>20200253</SCC>
+<ProcessRunNumber>1</ProcessRunNumber>
+<EF>0.00E+00</EF>
+<POLL_UNIT>g</POLL_UNIT>
+<MEASURE>Horsepower-Hour</MEASURE>
+<MATERIAL>Work</MATERIAL>
+<ACTION>Output</ACTION>
+<lb_x002F_mmBtuO2></lb_x002F_mmBtuO2>
+<lb_x002F_mmBtuCO2></lb_x002F_mmBtuCO2>
+</qryEFFactor>
+<qryEFFactor>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<Location>Exhaust Stack</Location>
+<Method>ASTM D6348</Method>
+<RunNumber>2</RunNumber>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<CAS_Number>50-00-0</CAS_Number>
+<Poll_NEI_Code>50-00-0</Poll_NEI_Code>
+<PollName>Formaldehyde</PollName>
+<SCC>20200253</SCC>
+<ProcessRunNumber>2</ProcessRunNumber>
+<EF>0.00E+00</EF>
+<POLL_UNIT>g</POLL_UNIT>
+<MEASURE>Horsepower-Hour</MEASURE>
+<MATERIAL>Work</MATERIAL>
+<ACTION>Output</ACTION>
+<lb_x002F_mmBtuO2></lb_x002F_mmBtuO2>
+<lb_x002F_mmBtuCO2></lb_x002F_mmBtuCO2>
+</qryEFFactor>
+<qryEFFactor>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<Location>Exhaust Stack</Location>
+<Method>ASTM D6348</Method>
+<RunNumber>2</RunNumber>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<CAS_Number>% H2O</CAS_Number>
+<Poll_NEI_Code>% H2O</Poll_NEI_Code>
+<PollName>% Moisture</PollName>
+<SCC>20200253</SCC>
+<ProcessRunNumber>2</ProcessRunNumber>
+<EF>0.00E+00</EF>
+<POLL_UNIT>g</POLL_UNIT>
+<MEASURE>Horsepower-Hour</MEASURE>
+<MATERIAL>Work</MATERIAL>
+<ACTION>Output</ACTION>
+<lb_x002F_mmBtuO2></lb_x002F_mmBtuO2>
+<lb_x002F_mmBtuCO2></lb_x002F_mmBtuCO2>
+</qryEFFactor>
+<qryEFFactor>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<Location>Exhaust Stack</Location>
+<Method>ASTM D6348</Method>
+<RunNumber>3</RunNumber>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<CAS_Number>50-00-0</CAS_Number>
+<Poll_NEI_Code>50-00-0</Poll_NEI_Code>
+<PollName>Formaldehyde</PollName>
+<SCC>20200253</SCC>
+<ProcessRunNumber>3</ProcessRunNumber>
+<EF>0.00E+00</EF>
+<POLL_UNIT>g</POLL_UNIT>
+<MEASURE>Horsepower-Hour</MEASURE>
+<MATERIAL>Work</MATERIAL>
+<ACTION>Output</ACTION>
+<lb_x002F_mmBtuO2></lb_x002F_mmBtuO2>
+<lb_x002F_mmBtuCO2></lb_x002F_mmBtuCO2>
+</qryEFFactor>
+<qryEFFactor>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<Location>Exhaust Stack</Location>
+<Method>ASTM D6348</Method>
+<RunNumber>3</RunNumber>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<CAS_Number>% H2O</CAS_Number>
+<Poll_NEI_Code>% H2O</Poll_NEI_Code>
+<PollName>% Moisture</PollName>
+<SCC>20200253</SCC>
+<ProcessRunNumber>3</ProcessRunNumber>
+<EF>0.00E+00</EF>
+<POLL_UNIT>g</POLL_UNIT>
+<MEASURE>Horsepower-Hour</MEASURE>
+<MATERIAL>Work</MATERIAL>
+<ACTION>Output</ACTION>
+<lb_x002F_mmBtuO2></lb_x002F_mmBtuO2>
+<lb_x002F_mmBtuCO2></lb_x002F_mmBtuCO2>
+</qryEFFactor>
+<qryEFFactor>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<Location>Exhaust Stack</Location>
+<Method>Method 3A O2</Method>
+<RunNumber>1</RunNumber>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<CAS_Number>7782-44-7</CAS_Number>
+<Poll_NEI_Code>7782-44-7</Poll_NEI_Code>
+<PollName>Oxygen</PollName>
+<SCC>20200253</SCC>
+<ProcessRunNumber>1</ProcessRunNumber>
+<EF>0.00E+00</EF>
+<POLL_UNIT>g</POLL_UNIT>
+<MEASURE>Horsepower-Hour</MEASURE>
+<MATERIAL>Work</MATERIAL>
+<ACTION>Output</ACTION>
+<lb_x002F_mmBtuO2></lb_x002F_mmBtuO2>
+<lb_x002F_mmBtuCO2>0.00E+00</lb_x002F_mmBtuCO2>
+</qryEFFactor>
+<qryEFFactor>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<Location>Exhaust Stack</Location>
+<Method>Method 3A O2</Method>
+<RunNumber>2</RunNumber>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<CAS_Number>7782-44-7</CAS_Number>
+<Poll_NEI_Code>7782-44-7</Poll_NEI_Code>
+<PollName>Oxygen</PollName>
+<SCC>20200253</SCC>
+<ProcessRunNumber>2</ProcessRunNumber>
+<EF>0.00E+00</EF>
+<POLL_UNIT>g</POLL_UNIT>
+<MEASURE>Horsepower-Hour</MEASURE>
+<MATERIAL>Work</MATERIAL>
+<ACTION>Output</ACTION>
+<lb_x002F_mmBtuO2></lb_x002F_mmBtuO2>
+<lb_x002F_mmBtuCO2>0.00E+00</lb_x002F_mmBtuCO2>
+</qryEFFactor>
+<qryEFFactor>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<Location>Exhaust Stack</Location>
+<Method>Method 3A O2</Method>
+<RunNumber>3</RunNumber>
+<RunDate>2025-05-15T00:00:00</RunDate>
+<CAS_Number>7782-44-7</CAS_Number>
+<Poll_NEI_Code>7782-44-7</Poll_NEI_Code>
+<PollName>Oxygen</PollName>
+<SCC>20200253</SCC>
+<ProcessRunNumber>3</ProcessRunNumber>
+<EF>0.00E+00</EF>
+<POLL_UNIT>g</POLL_UNIT>
+<MEASURE>Horsepower-Hour</MEASURE>
+<MATERIAL>Work</MATERIAL>
+<ACTION>Output</ACTION>
+<lb_x002F_mmBtuO2></lb_x002F_mmBtuO2>
+<lb_x002F_mmBtuCO2>0.00E+00</lb_x002F_mmBtuCO2>
+</qryEFFactor>
+<qryEFCalcs>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<location></location>
+<method></method>
+<runnumber></runnumber>
+<ts> </ts>
+<qaw> </qaw>
+<ft1> </ft1>
+<ft2> </ft2>
+</qryEFCalcs>
+<qryEFCalcs>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<location>Exhaust Stack</location>
+<method>Method 3A O2</method>
+<runnumber>1</runnumber>
+<ts> </ts>
+<qaw> </qaw>
+<ft1> </ft1>
+<ft2> </ft2>
+</qryEFCalcs>
+<qryEFCalcs>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<location>Exhaust Stack</location>
+<method>Method 3A O2</method>
+<runnumber>2</runnumber>
+<ts> </ts>
+<qaw> </qaw>
+<ft1> </ft1>
+<ft2> </ft2>
+</qryEFCalcs>
+<qryEFCalcs>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<location>Exhaust Stack</location>
+<method>Method 3A O2</method>
+<runnumber>3</runnumber>
+<ts> </ts>
+<qaw> </qaw>
+<ft1> </ft1>
+<ft2> </ft2>
+</qryEFCalcs>
+<qryEFMass>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<Location>Exhaust Stack</Location>
+<Method>Method 3A O2</Method>
+<RunNumber>1</RunNumber>
+<PollName>Oxygen</PollName>
+<MassA>0</MassA>
+<MassB> </MassB>
+<MassUnits>%</MassUnits>
+<Flag> </Flag>
+<Flag_Detail> </Flag_Detail>
+</qryEFMass>
+<qryEFMass>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<Location>Exhaust Stack</Location>
+<Method>Method 3A O2</Method>
+<RunNumber>2</RunNumber>
+<PollName>Oxygen</PollName>
+<MassA>0</MassA>
+<MassB> </MassB>
+<MassUnits>%</MassUnits>
+<Flag> </Flag>
+<Flag_Detail> </Flag_Detail>
+</qryEFMass>
+<qryEFMass>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<Location>Exhaust Stack</Location>
+<Method>Method 3A O2</Method>
+<RunNumber>3</RunNumber>
+<PollName>Oxygen</PollName>
+<MassA>0</MassA>
+<MassB> </MassB>
+<MassUnits>%</MassUnits>
+<Flag> </Flag>
+<Flag_Detail> </Flag_Detail>
+</qryEFMass>
+<qryEFControls>
+<PDSiD>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSiD>
+<location>Exhaust Stack</location>
+<ControlCode>203</ControlCode>
+<APCDName>CATALYTIC CONVERTER</APCDName>
+</qryEFControls>
+<qryEFProcessParams>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<SCC>20200253</SCC>
+<ProcessRunNumber>1</ProcessRunNumber>
+<Process_Parameter>Work Output</Process_Parameter>
+<Process_Parameter_Rate>Horsepower-Hour/hr</Process_Parameter_Rate>
+<Process_Parameter_Value>1122</Process_Parameter_Value>
+<POLL_UNIT>g</POLL_UNIT>
+<MEASURE>Horsepower-Hour</MEASURE>
+<MATERIAL>Work</MATERIAL>
+<ACTION>Output</ACTION>
+</qryEFProcessParams>
+<qryEFProcessParams>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<SCC>20200253</SCC>
+<ProcessRunNumber>2</ProcessRunNumber>
+<Process_Parameter>Work Output</Process_Parameter>
+<Process_Parameter_Rate>Horsepower-Hour/hr</Process_Parameter_Rate>
+<Process_Parameter_Value>1099</Process_Parameter_Value>
+<POLL_UNIT>g</POLL_UNIT>
+<MEASURE>Horsepower-Hour</MEASURE>
+<MATERIAL>Work</MATERIAL>
+<ACTION>Output</ACTION>
+</qryEFProcessParams>
+<qryEFProcessParams>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<SCC>20200253</SCC>
+<ProcessRunNumber>3</ProcessRunNumber>
+<Process_Parameter>Work Output</Process_Parameter>
+<Process_Parameter_Rate>Horsepower-Hour/hr</Process_Parameter_Rate>
+<Process_Parameter_Value>1099</Process_Parameter_Value>
+<POLL_UNIT>g</POLL_UNIT>
+<MEASURE>Horsepower-Hour</MEASURE>
+<MATERIAL>Work</MATERIAL>
+<ACTION>Output</ACTION>
+</qryEFProcessParams>
+<qryEFRegs>
+<PDSid>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSid>
+<Part_SubPart>Part 63 Subpart ZZZZ</Part_SubPart>
+<NonPart60_63RuleDesc> Stationary Reciprocating Internal Combustion Engines</NonPart60_63RuleDesc>
+<PollName>Formaldehyde</PollName>
+<Limit>350</Limit>
+<EmissionUnit>ppb</EmissionUnit>
+</qryEFRegs>
+<qryEF2ndSCCs>
+<PDSiD>{89F26878-5BA8-4244-9AEA-4C2CB6F7D1C0}</PDSiD>
+<SCC> </SCC>
+<Poll_Unit> </Poll_Unit>
+<Measure> </Measure>
+<Material> </Material>
+<Action> </Action>
+</qryEF2ndSCCs>
+</dataroot>

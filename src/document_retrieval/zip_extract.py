@@ -154,11 +154,10 @@ def print_statistics(zips_extracted, zips_renamed, files_moved, num_original_zip
     return
 
 
-def extract_and_route_files():
+def extract_and_route_files(project_root):
     
     # Logs the original number of ZIPs downloaded from WebFIRE
-    root_path = Path(__file__).parent.parent.parent
-    raw_path = root_path / "data" / "raw"
+    raw_path = project_root / "data" / "raw"
     num_original_zips = len([f for f in raw_path.iterdir() if f.is_file() and not f.name.startswith('.') and f.name.endswith('.zip')])
     
     # Extracts all zips recursively and logs number extracted in loop 1
