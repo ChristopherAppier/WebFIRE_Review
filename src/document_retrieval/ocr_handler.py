@@ -13,11 +13,22 @@ def apply_ocr(project_root):
     folder_path = Path(folder_path)
 
     for pdf_file in sorted(folder_path.glob("*.pdf")):
-        cmd = f'ocrmypdf -s -q --invalidate-digital-signatures "{pdf_file}" "{pdf_file}"'
+        cmd = [
+            "ocrmypdf",
+            "-s",
+            "-q",
+            "--invalidate-digital-signatures",
+            str(pdf_file),
+            str(pdf_file),
+        ]
         try:
-            subprocess.run(cmd, check=True, shell=True)
+            subprocess.run(cmd, check=True)
             print(f"Processed: {pdf_file.name}")
-        except (Exception):
+        except subprocess.CalledProcessError as e:
+            print(f"OCR failed for {pdf_file.name}: {e}")
+            continue
+        except FileNotFoundError as e:
+            print(f"ocrmypdf not found: {e}")
             continue
     
     return

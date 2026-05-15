@@ -28,7 +28,9 @@ def recursive_zip_extract(raw_path):
             
             # First attempt: standard open (handles most zip files)
             try:
-                zf = zipfile.ZipFile(zip_path, 'r')
+                with zipfile.ZipFile(zip_path, 'r') as zf:
+                    zf.extractall(zip_path.parent)
+                    filenames = zf.namelist()
                 
             except zipfile.BadZipFile:
                 # Second attempt: find zip signature manually and open from offset
@@ -39,23 +41,24 @@ def recursive_zip_extract(raw_path):
                     f.seek(offset)
                     data = io.BytesIO(f.read())
                 try:    
-                    zf = zipfile.ZipFile(data, 'r')
+                    with zipfile.ZipFile(data, 'r') as zf:
+                        zf.extractall(zip_path.parent)
+                        filenames = zf.namelist()
                 except zipfile.BadZipFile:
                     continue
             try:
-                zf.extractall(zip_path.parent)
-                
-                filenames = zf.namelist()
                 for name in filenames:
                     extracted_file = zip_path.parent / name
                     if not extracted_file.exists() or extracted_file.stat().st_size == 0:
-                        raise Exception(f'Extraction failed for {name}: File missing or empty')
+                        raise ValueError(f'Extraction failed for {name}: file missing or empty')
                 
                 zip_path.unlink()
                 if loop_num == 1:
                     loop_one_extractions += 1
-            except (zipfile.BadZipFile, Exception):
-                pass
+            except ValueError as e:
+                print(f'Could not validate extracted files for {zip_path.name}: {e}')
+            except OSError as e:
+                print(f'Could not finalize extraction for {zip_path.name}: {e}')
 
         # Creates a list of files in the folder after the extraction loop
         file_list = [f.name for f in Path(raw_path).iterdir() if f.is_file()]
@@ -69,11 +72,11 @@ def recursive_zip_extract(raw_path):
 def find_zip_offset(zip_path: Path) -> int:
     """Find the offset where the actual zip data begins (handles prepended content)."""
     with open(zip_path, 'rb') as f:
-        data = f.read()
-    offset = data.find(b'PK\x03\x04')
+        while chunk := f.read(65536):  # Read 64KB at a time
+            if b'PK\x03\x04' in chunk:
+                return chunk.find(b'PK\x03\x04')
+    return 0
     
-    return offset if offset != -1 else 0
-
 
 def rename_zip_to_pdf(raw_path):
 

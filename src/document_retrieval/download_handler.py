@@ -128,12 +128,12 @@ def download_report(session, doc_id, output_dir):
         output_dir: Path to save downloaded file
     
     Returns:
-        tuple: (success: bool, filepath: Path|None, file_type: str)
+        tuple: (success: bool, filepath: Path|None, file_type: str|None, error: str|None)
     """
     filepath = output_dir / f"{doc_id}.zip"
     
     if filepath.exists():
-        return True, filepath, "already_cached"
+        return True, filepath, "already_cached", None
     
     try:
         r = session.get(
@@ -147,19 +147,19 @@ def download_report(session, doc_id, output_dir):
         # Check if response is valid ZIP
         if not r.content[:2] == b"PK":
             # Check if it's a PDF instead
-            if r.content[:4] == b"%PDF":
+            if r.content[:5] == b"%PDF-":
                 filepath.write_bytes(r.content)
                 file_type = "pdf"
-                return True, filepath, file_type
+                return True, filepath, file_type, None
             
             # Unknown format
-            return False, None, f"Unexpected content type: {r.headers.get('Content-Type', 'unknown')}"
+            return False, None, None, f"Unexpected content type: {r.headers.get('Content-Type', 'unknown')}"
         
         filepath.write_bytes(r.content)
-        return True, filepath, "zip"
+        return True, filepath, "zip", None
         
     except Exception as e:
-        return False, None, str(e)
+        return False, None, None, str(e)
     
     
 def fetch_all_reports(start_date, end_date, state, project_root):
@@ -173,51 +173,55 @@ def fetch_all_reports(start_date, end_date, state, project_root):
     """
     session = build_session()
     
-    download_path = project_root / "data" / "raw"
-    
-    output_dir = Path(download_path)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Step 1: Search for reports in date range
-    reports = search_reports(session, start_date, end_date, state)
-    
-    if not reports:
+    try:
+        download_path = project_root / "data" / "raw"
+        
+        output_dir = Path(download_path)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Step 1: Search for reports in date range
+        reports = search_reports(session, start_date, end_date, state)
+        
+        if not reports:
+            return {
+                'success': True,
+                'downloaded_count': 0,
+                'errors': {},
+                'reports': []
+            }
+        
+        # Step 2: Download each report
+        results = []
+        errors = {}
+        
+        for i, report in enumerate(reports, 1):
+            success, filepath, file_type, error_message = download_report(session, report['id'], output_dir)
+            
+            result = {
+                'id': report['id'],
+                'facility': report['facility'],
+                'city': report['city'],
+                'state': report['state'],
+                'date': report['date'],
+                'success': success,
+                'file_path': str(filepath) if filepath else None,
+                'pad_file_type': file_type,
+                'error': error_message,
+            }
+            results.append(result)
+            
+            if success:
+                print(f"[{i}/{len(reports)}] Downloaded {report['id']}: {filepath}")
+            else:
+                errors[report['id']] = error_message
+                print(f"[{i}/{len(reports)}] Failed to download {report['id']}: {error_message}")
+        
         return {
-            'success': True,
-            'downloaded_count': 0,
-            'errors': {},
-            'reports': []
+            'success': len(errors) == 0,
+            'downloaded_count': sum(1 for r in results if r['success']),
+            'errors': errors,
+            'reports': results,
         }
     
-    # Step 2: Download each report
-    results = []
-    errors = {}
-    
-    for i, report in enumerate(reports, 1):
-        success, filepath, file_type = download_report(session, report['id'], output_dir)
-        
-        result = {
-            'id': report['id'],
-            'facility': report['facility'],
-            'city': report['city'],
-            'state': report['state'],
-            'date': report['date'],
-            'success': success,
-            'file_path': str(filepath),
-            'pad_file_type': file_type,
-            'error': file_type if not success else None,
-        }
-        results.append(result)
-        
-        if success:
-            print(f"[{i}/{len(reports)}] Downloaded {report['id']}: {filepath}")
-        else:
-            errors[report['id']] = file_type
-            print(f"[{i}/{len(reports)}] Failed to download {report['id']}: {file_type}")
-    
-    return {
-        'success': len(errors) == 0,
-        'downloaded_count': sum(1 for r in results if r['success']),
-        'errors': errors,
-        'reports': results,
-    }
+    finally:
+        session.close()

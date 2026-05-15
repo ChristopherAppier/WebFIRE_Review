@@ -31,7 +31,7 @@ subprocess.run([
 
 ---
 
-### 2. **Resource Leak: Unclosed Session in download_handler.py**
+### 2. **Resource Leak: Unclosed Session in download_handler.py**  - FIXED!!!!!!!!!!!!!!!!!!!!
 **File:** `src/document_retrieval/download_handler.py` (lines 174, 182-216)
 
 ```python
@@ -57,7 +57,7 @@ def fetch_all_reports(start_date, end_date, state, project_root):
 
 ---
 
-### 3. **Resource Leak: Files Extracted but Not Closed**
+### 3. **Resource Leak: Files Extracted but Not Closed**   -    FIXED!!!!!!!!!!!!!
 **File:** `src/document_retrieval/zip_extract.py` (lines 38-42, 46)
 
 ```python
@@ -82,7 +82,7 @@ with zipfile.ZipFile(data, 'r') as zf:
 
 ---
 
-### 4. **Logic Error: Incorrect YAML Config Loading**
+### 4. **Logic Error: Incorrect YAML Config Loading**  - FIXED!!!!!!!!!!!!!!!!!!!!
 **File:** `src/document_retrieval/main.py` (lines 10-16)
 
 ```python
@@ -185,7 +185,7 @@ temp_file.rename(filepath)  # Atomic on POSIX
 
 ---
 
-### 8. **Error Handling: Empty Exception Catch**
+### 8. **Error Handling: Empty Exception Catch**    - FIXED!!!!!!!!!!!!!!!!!
 **File:** `src/document_retrieval/ocr_handler.py` (lines 20-21)
 
 ```python
@@ -207,7 +207,7 @@ except FileNotFoundError as e:
 
 ---
 
-### 9. **Error Handling: Bare Exception in zip_extract.py**
+### 9. **Error Handling: Bare Exception in zip_extract.py**   - FIXED!!!!!!!!!!!!!
 **File:** `src/document_retrieval/zip_extract.py` (lines 57-58)
 
 ```python
@@ -244,7 +244,7 @@ print_statistics(zips_extracted, zips_renamed, files_moved, num_original_zips)
 
 ---
 
-### 11. **Inefficiency: Linear Search for ZIP Offset**
+### 11. **Inefficiency: Linear Search for ZIP Offset**       -      FIXED!!!!!!!!!!!!!!!!!!
 **File:** `src/document_retrieval/zip_extract.py` (lines 71-75)
 
 ```python
