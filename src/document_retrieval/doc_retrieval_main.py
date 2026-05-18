@@ -41,19 +41,16 @@ def main():
     start_date = timer_info['start_date']
     end_date = timer_info['end_date']
     
-    # Debug printing
-    print(f"Start Date: {start_date}; End Date: {end_date}")
-    
     # Downloading reports from WebFIRE API for each state
     state_names = [state['name'] for state in config['states']]
     for state_name in state_names:
         fetch_all_reports(start_date, end_date, state_name, project_root)
 
     # Unzipping files and routing them into either spreadsheet or pdf folders for processing
-    extract_and_route_files(project_root)
+    #extract_and_route_files(project_root)
 
     # Placeholders for future functions
-    apply_ocr(project_root)
+    #apply_ocr(project_root)
 
 if __name__ == "__main__":
     main()

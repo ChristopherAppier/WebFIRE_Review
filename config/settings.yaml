@@ -9,7 +9,7 @@ directories:
 # Document Retrieval
 ## Timer Manager
 last_run_timestamp: null # Auto-set to current UTC time after each run (MM/DD/YYYY string)
-default_interval_days: 365 # Date range to use if the last_run_timestamp is null
+default_interval_days: 60 # Date range to use if the last_run_timestamp is null
 
 # Download Handler
 api_endpoints:

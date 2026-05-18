@@ -1,5 +1,151 @@
+import csv
+import os
+import random
+import time
+
 import requests
 from pathlib import Path
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+
+CONNECT_TIMEOUT = 10
+SEARCH_READ_TIMEOUT = 60
+DOWNLOAD_READ_TIMEOUT = 120
+SEARCH_TIMEOUT = (CONNECT_TIMEOUT, SEARCH_READ_TIMEOUT)
+DOWNLOAD_TIMEOUT = (CONNECT_TIMEOUT, DOWNLOAD_READ_TIMEOUT)
+BOOTSTRAP_TIMEOUT = SEARCH_TIMEOUT
+
+MAX_RETRIES = 5
+RETRIABLE_STATUS_CODES = {429, 500, 502, 503, 504}
+RETRY_BACKOFF_BASE = 0.5
+RETRY_BACKOFF_CAP = 8.0
+
+
+class SearchError(Exception):
+    """Raised when the report search fails after retries."""
+
+    def __init__(self, reason_code, message):
+        super().__init__(message)
+        self.reason_code = reason_code
+
+
+def _sanitize_for_filename(value):
+    """Normalize text for safe filenames."""
+    return "".join(char if char.isalnum() else "_" for char in str(value)).strip("_")
+
+
+def _date_for_filename(value):
+    """Convert MM/DD/YYYY to MM-DD-YYYY-like token for filenames."""
+    return str(value).replace("/", "-").replace(" ", "")
+
+
+def _write_csv(path, fieldnames, rows):
+    """Write rows to a CSV file with stable headers."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames, extrasaction="ignore")
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
+
+
+def _build_run_csv_paths(project_root, state, start_date, end_date):
+    """Generate output paths for search/download comparison CSVs."""
+    reports_dir = project_root / "data" / "reports"
+    state_token = _sanitize_for_filename(state)
+    start_token = _date_for_filename(start_date)
+    end_token = _date_for_filename(end_date)
+    base_name = f"{state_token}_{start_token}_to_{end_token}"
+    return {
+        "search": reports_dir / f"search_results_{base_name}.csv",
+        "downloads": reports_dir / f"download_results_{base_name}.csv",
+        "missing": reports_dir / f"missing_downloads_{base_name}.csv",
+    }
+
+
+def _configure_adapter_retries(session):
+    """Set shallow transport-level retries for transient HTTP failures."""
+    retry_cfg = Retry(
+        total=2,
+        connect=2,
+        read=2,
+        status=2,
+        backoff_factor=0.4,
+        status_forcelist=sorted(RETRIABLE_STATUS_CODES),
+        allowed_methods=frozenset({"GET", "POST"}),
+        respect_retry_after_header=True,
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retry_cfg)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+
+
+def _classify_exception(exc):
+    """Map request exceptions to reason codes for retry decisions."""
+    if isinstance(exc, requests.Timeout):
+        return "timeout", str(exc)
+    if isinstance(exc, requests.HTTPError):
+        code = exc.response.status_code if exc.response is not None else None
+        if code == 429:
+            return "http_429", f"HTTP {code}: {exc}"
+        if code is not None and 500 <= code < 600:
+            return "http_5xx", f"HTTP {code}: {exc}"
+        return "http_error", f"HTTP {code}: {exc}"
+    if isinstance(exc, requests.RequestException):
+        return "request_error", str(exc)
+    return "unexpected_error", str(exc)
+
+
+def _is_retriable_reason(reason):
+    return reason in {"timeout", "http_429", "http_5xx", "request_error"}
+
+
+def _backoff_seconds(attempt):
+    raw = RETRY_BACKOFF_BASE * (2 ** (attempt - 1))
+    jitter = random.uniform(0, RETRY_BACKOFF_BASE)
+    return min(RETRY_BACKOFF_CAP, raw + jitter)
+
+
+def _write_atomic_bytes(path, data):
+    """Write bytes atomically to avoid partial cached files."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = path.with_suffix(path.suffix + ".part")
+    try:
+        with open(tmp_path, "wb") as handle:
+            handle.write(data)
+        os.replace(tmp_path, path)
+    except Exception:
+        try:
+            if tmp_path.exists():
+                tmp_path.unlink()
+        except Exception:
+            pass
+        raise
+
+
+def _run_bootstrap_request(session, method, url, timeout, **kwargs):
+    """Run a session bootstrap request with transient retry handling."""
+    last_reason = "bootstrap_failed"
+    last_error = "Unknown bootstrap error"
+    for attempt in range(1, MAX_RETRIES + 2):
+        try:
+            response = session.request(method, url, timeout=timeout, verify=False, **kwargs)
+            response.raise_for_status()
+            return response
+        except Exception as exc:
+            last_reason, last_error = _classify_exception(exc)
+            if attempt <= MAX_RETRIES and _is_retriable_reason(last_reason):
+                wait_for = _backoff_seconds(attempt)
+                print(
+                    f"build_session: retrying {method} {url} in {wait_for:.2f}s "
+                    f"after {last_reason} (attempt {attempt}/{MAX_RETRIES + 1})."
+                )
+                time.sleep(wait_for)
+                continue
+            break
+    raise SearchError(last_reason, f"Session bootstrap failed: {last_error}")
 
 def build_session():
     """
@@ -9,6 +155,7 @@ def build_session():
         requests.Session: Ready-to-use session with headers initialized
     """
     s = requests.Session()
+    _configure_adapter_retries(s)
     s.headers["User-Agent"] = (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
         "AppleWebKit/605.1.15 (KHTML, like Gecko) "
@@ -16,15 +163,21 @@ def build_session():
     )
     
     # Initialize session by visiting homepage
-    s.get("https://cfpub.epa.gov/webfire/reports/esearch.cfm", timeout=30, verify=False)
+    _run_bootstrap_request(
+        s,
+        "GET",
+        "https://cfpub.epa.gov/webfire/reports/esearch.cfm",
+        timeout=BOOTSTRAP_TIMEOUT,
+    )
     s.headers["Referer"] = "https://cfpub.epa.gov/webfire/reports/esearch.cfm"
     
     # Submit dummy search to initialize cookies
-    s.post(
+    _run_bootstrap_request(
+        s,
+        "POST",
         "https://cfpub.epa.gov/webfire/reports/esearch2.cfm",
+        timeout=BOOTSTRAP_TIMEOUT,
         data={"reporttype": "All", "Submit": "Submit Search"},
-        timeout=60,
-        verify=False
     )
     s.headers["Referer"] = "https://cfpub.epa.gov/webfire/reports/esearch2.cfm"
     
@@ -58,16 +211,32 @@ def search_reports(session, start_date, end_date, state):
         "FRS": "",
         "Submit": "Submit Search",
     }
-    
-    r = session.post(
-        "https://cfpub.epa.gov/webfire/reports/eSearchResults.cfm",
-        data=payload,
-        timeout=60,
-        verify=False
-    )
-    r.raise_for_status()
-    
-    return parse_search_results(r.text)
+
+    last_reason = "search_failed"
+    last_error = "Unknown search error"
+    for attempt in range(1, MAX_RETRIES + 2):
+        try:
+            response = session.post(
+                "https://cfpub.epa.gov/webfire/reports/eSearchResults.cfm",
+                data=payload,
+                timeout=SEARCH_TIMEOUT,
+                verify=False,
+            )
+            response.raise_for_status()
+            return parse_search_results(response.text)
+        except Exception as exc:
+            last_reason, last_error = _classify_exception(exc)
+            if attempt <= MAX_RETRIES and _is_retriable_reason(last_reason):
+                wait_for = _backoff_seconds(attempt)
+                print(
+                    f"search_reports: state={state} retrying in {wait_for:.2f}s "
+                    f"after {last_reason} (attempt {attempt}/{MAX_RETRIES + 1})."
+                )
+                time.sleep(wait_for)
+                continue
+            break
+
+    raise SearchError(last_reason, f"Search failed for state {state}: {last_error}")
 
 
 def parse_search_results(html):
@@ -130,36 +299,87 @@ def download_report(session, doc_id, output_dir):
     Returns:
         tuple: (success: bool, filepath: Path|None, file_type: str|None, error: str|None)
     """
+    result = download_report_with_details(session, doc_id, output_dir)
+    return result["success"], result["filepath"], result["file_type"], result["error"]
+
+
+def download_report_with_details(session, doc_id, output_dir):
+    """Download one report with retries and return diagnostic metadata."""
     filepath = output_dir / f"{doc_id}.zip"
-    
+
     if filepath.exists():
-        return True, filepath, "already_cached", None
-    
-    try:
-        r = session.get(
-            "https://cfpub.epa.gov/webfire/FIRE/view/dspERTDocumentDetails.cfm",
-            params={"ID": doc_id},
-            timeout=120,
-            verify=False
-        )
-        r.raise_for_status()
-        
-        # Check if response is valid ZIP
-        if not r.content[:2] == b"PK":
-            # Check if it's a PDF instead
-            if r.content[:5] == b"%PDF-":
-                filepath.write_bytes(r.content)
-                file_type = "pdf"
-                return True, filepath, file_type, None
-            
-            # Unknown format
-            return False, None, None, f"Unexpected content type: {r.headers.get('Content-Type', 'unknown')}"
-        
-        filepath.write_bytes(r.content)
-        return True, filepath, "zip", None
-        
-    except Exception as e:
-        return False, None, None, str(e)
+        return {
+            "success": True,
+            "filepath": filepath,
+            "file_type": "already_cached",
+            "error": None,
+            "reason_code": "cached",
+            "attempts": 1,
+        }
+
+    last_reason = "download_failed"
+    last_error = "Unknown download error"
+    last_attempt = 0
+    for attempt in range(1, MAX_RETRIES + 2):
+        last_attempt = attempt
+        try:
+            response = session.get(
+                "https://cfpub.epa.gov/webfire/FIRE/view/dspERTDocumentDetails.cfm",
+                params={"ID": doc_id},
+                timeout=DOWNLOAD_TIMEOUT,
+                verify=False,
+            )
+            response.raise_for_status()
+
+            content = response.content
+            if content[:2] == b"PK":
+                _write_atomic_bytes(filepath, content)
+                return {
+                    "success": True,
+                    "filepath": filepath,
+                    "file_type": "zip",
+                    "error": None,
+                    "reason_code": "success",
+                    "attempts": attempt,
+                }
+
+            if content[:5] == b"%PDF-":
+                _write_atomic_bytes(filepath, content)
+                return {
+                    "success": True,
+                    "filepath": filepath,
+                    "file_type": "pdf",
+                    "error": None,
+                    "reason_code": "success",
+                    "attempts": attempt,
+                }
+
+            last_reason = "unexpected_content"
+            last_error = (
+                "Unexpected response content. "
+                f"Content-Type={response.headers.get('Content-Type', 'unknown')}"
+            )
+        except Exception as exc:
+            last_reason, last_error = _classify_exception(exc)
+
+        if attempt <= MAX_RETRIES and _is_retriable_reason(last_reason):
+            wait_for = _backoff_seconds(attempt)
+            print(
+                f"download_report: doc_id={doc_id} retrying in {wait_for:.2f}s "
+                f"after {last_reason} (attempt {attempt}/{MAX_RETRIES + 1})."
+            )
+            time.sleep(wait_for)
+            continue
+        break
+
+    return {
+        "success": False,
+        "filepath": None,
+        "file_type": None,
+        "error": last_error,
+        "reason_code": last_reason,
+        "attempts": last_attempt,
+    }
     
     
 def fetch_all_reports(start_date, end_date, state, project_root):
@@ -171,31 +391,86 @@ def fetch_all_reports(start_date, end_date, state, project_root):
         end_date: MM/DD/YYYY end date string
         output_dir: Path to save downloaded reports
     """
-    session = build_session()
-    
+    session = None
+
     try:
+        session = build_session()
         download_path = project_root / "data" / "raw"
         
         output_dir = Path(download_path)
         output_dir.mkdir(parents=True, exist_ok=True)
+        csv_paths = _build_run_csv_paths(project_root, state, start_date, end_date)
         
         # Step 1: Search for reports in date range
-        reports = search_reports(session, start_date, end_date, state)
+        try:
+            reports = search_reports(session, start_date, end_date, state)
+        except SearchError as search_exc:
+            print(
+                f"Search failed for state={state} after retries: {search_exc.reason_code} - {search_exc}"
+            )
+            return {
+                'success': False,
+                'downloaded_count': 0,
+                'errors': {'_search': str(search_exc)},
+                'reports': []
+            }
         
         if not reports:
+            _write_csv(
+                csv_paths["search"],
+                [
+                    "id", "facility", "city", "state", "date", "report_type",
+                    "report_subtype", "pollutants", "filename", "download_url",
+                ],
+                [],
+            )
+            _write_csv(
+                csv_paths["downloads"],
+                [
+                    "id", "facility", "city", "state", "date", "success", "file_path",
+                    "pad_file_type", "reason_code", "attempts", "error",
+                ],
+                [],
+            )
+            _write_csv(
+                csv_paths["missing"],
+                [
+                    "id", "facility", "city", "state", "date", "reason_code", "attempts", "error",
+                ],
+                [],
+            )
+            print(f"Search manifest written: {csv_paths['search']}")
+            print(f"Download manifest written: {csv_paths['downloads']}")
+            print(f"Missing-download manifest written: {csv_paths['missing']}")
             return {
                 'success': True,
                 'downloaded_count': 0,
                 'errors': {},
                 'reports': []
             }
+
+        _write_csv(
+            csv_paths["search"],
+            [
+                "id", "facility", "city", "state", "date", "report_type",
+                "report_subtype", "pollutants", "filename", "download_url",
+            ],
+            reports,
+        )
+        print(f"Search manifest written: {csv_paths['search']}")
         
         # Step 2: Download each report
         results = []
         errors = {}
         
         for i, report in enumerate(reports, 1):
-            success, filepath, file_type, error_message = download_report(session, report['id'], output_dir)
+            download_result = download_report_with_details(session, report['id'], output_dir)
+            success = download_result['success']
+            filepath = download_result['filepath']
+            file_type = download_result['file_type']
+            error_message = download_result['error']
+            reason_code = download_result['reason_code']
+            attempts = download_result['attempts']
             
             result = {
                 'id': report['id'],
@@ -206,15 +481,56 @@ def fetch_all_reports(start_date, end_date, state, project_root):
                 'success': success,
                 'file_path': str(filepath) if filepath else None,
                 'pad_file_type': file_type,
+                'reason_code': reason_code,
+                'attempts': attempts,
                 'error': error_message,
             }
             results.append(result)
             
             if success:
-                print(f"[{i}/{len(reports)}] Downloaded {report['id']}: {filepath}")
+                print(
+                    f"[{i}/{len(reports)}] Downloaded {report['id']} in {attempts} attempt(s): {filepath}"
+                )
             else:
                 errors[report['id']] = error_message
-                print(f"[{i}/{len(reports)}] Failed to download {report['id']}: {error_message}")
+                print(
+                    f"[{i}/{len(reports)}] Failed to download {report['id']} "
+                    f"after {attempts} attempt(s) [{reason_code}]: {error_message}"
+                )
+
+        _write_csv(
+            csv_paths["downloads"],
+            [
+                "id", "facility", "city", "state", "date", "success", "file_path",
+                "pad_file_type", "reason_code", "attempts", "error",
+            ],
+            results,
+        )
+
+        missing_rows = [
+            {
+                "id": row["id"],
+                "facility": row["facility"],
+                "city": row["city"],
+                "state": row["state"],
+                "date": row["date"],
+                "reason_code": row["reason_code"],
+                "attempts": row["attempts"],
+                "error": row["error"],
+            }
+            for row in results
+            if not row["success"]
+        ]
+        _write_csv(
+            csv_paths["missing"],
+            ["id", "facility", "city", "state", "date", "reason_code", "attempts", "error"],
+            missing_rows,
+        )
+        print(f"Download manifest written: {csv_paths['downloads']}")
+        print(
+            f"Missing-download manifest written: {csv_paths['missing']} "
+            f"({len(missing_rows)} missing)"
+        )
         
         return {
             'success': len(errors) == 0,
@@ -224,4 +540,5 @@ def fetch_all_reports(start_date, end_date, state, project_root):
         }
     
     finally:
-        session.close()
+        if session is not None:
+            session.close()
