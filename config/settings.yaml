@@ -17,7 +17,8 @@ api_endpoints:
     base_url: "https://cfpub.epa.gov/webfire/reports/"
     detail_url: "https://cfpub.epa.gov/webfire/FIRE/view/dspERTDocumentDetails.cfm"
 dl_threads: 6 # Number of CPU threads for concurrent downloading
-ocr_threads: 4 # Number of CPU threads for concurrent OCR processing
+ocr_jobs_per_file: 4 # Number of OCRmyPDF jobs to use per PDF file
+ocr_pdf_renderer: "sandwich" # Use sandwich to avoid hOCR temp-file failures on some Windows/Tesseract setups
 states:
   - name: "KS"
   - name: "MO"
