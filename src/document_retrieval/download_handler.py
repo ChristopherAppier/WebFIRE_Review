@@ -1,4 +1,3 @@
-import csv
 import os
 import random
 import time
@@ -28,40 +27,6 @@ class SearchError(Exception):
     def __init__(self, reason_code, message):
         super().__init__(message)
         self.reason_code = reason_code
-
-
-def _sanitize_for_filename(value):
-    """Normalize text for safe filenames."""
-    return "".join(char if char.isalnum() else "_" for char in str(value)).strip("_")
-
-
-def _date_for_filename(value):
-    """Convert MM/DD/YYYY to MM-DD-YYYY-like token for filenames."""
-    return str(value).replace("/", "-").replace(" ", "")
-
-
-def _write_csv(path, fieldnames, rows):
-    """Write rows to a CSV file with stable headers."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fieldnames, extrasaction="ignore")
-        writer.writeheader()
-        for row in rows:
-            writer.writerow(row)
-
-
-def _build_run_csv_paths(project_root, state, start_date, end_date):
-    """Generate output paths for search/download comparison CSVs."""
-    reports_dir = project_root / "data" / "reports"
-    state_token = _sanitize_for_filename(state)
-    start_token = _date_for_filename(start_date)
-    end_token = _date_for_filename(end_date)
-    base_name = f"{state_token}_{start_token}_to_{end_token}"
-    return {
-        "search": reports_dir / f"search_results_{base_name}.csv",
-        "downloads": reports_dir / f"download_results_{base_name}.csv",
-        "missing": reports_dir / f"missing_downloads_{base_name}.csv",
-    }
 
 
 def _configure_adapter_retries(session):
@@ -380,27 +345,23 @@ def download_report_with_details(session, doc_id, output_dir):
         "reason_code": last_reason,
         "attempts": last_attempt,
     }
-    
-    
 def fetch_all_reports(start_date, end_date, state, project_root):
     """
     Main entry point: fetch all reports for date range.
     Args:
-        session: requests.Session from build_session()
-        end_date: MM/DD/YYYY end date string
-        end_date: MM/DD/YYYY end date string
-        output_dir: Path to save downloaded reports
+            start_date: MM/DD/YYYY start date string
+            end_date: MM/DD/YYYY end date string
+            state: State name to search for
+            project_root: Project root path used to locate data/raw
     """
     session = None
 
     try:
         session = build_session()
         download_path = project_root / "data" / "raw"
-        
         output_dir = Path(download_path)
         output_dir.mkdir(parents=True, exist_ok=True)
-        csv_paths = _build_run_csv_paths(project_root, state, start_date, end_date)
-        
+
         # Step 1: Search for reports in date range
         try:
             reports = search_reports(session, start_date, end_date, state)
@@ -414,34 +375,8 @@ def fetch_all_reports(start_date, end_date, state, project_root):
                 'errors': {'_search': str(search_exc)},
                 'reports': []
             }
-        
+
         if not reports:
-            _write_csv(
-                csv_paths["search"],
-                [
-                    "id", "facility", "city", "state", "date", "report_type",
-                    "report_subtype", "pollutants", "filename", "download_url",
-                ],
-                [],
-            )
-            _write_csv(
-                csv_paths["downloads"],
-                [
-                    "id", "facility", "city", "state", "date", "success", "file_path",
-                    "pad_file_type", "reason_code", "attempts", "error",
-                ],
-                [],
-            )
-            _write_csv(
-                csv_paths["missing"],
-                [
-                    "id", "facility", "city", "state", "date", "reason_code", "attempts", "error",
-                ],
-                [],
-            )
-            print(f"Search manifest written: {csv_paths['search']}")
-            print(f"Download manifest written: {csv_paths['downloads']}")
-            print(f"Missing-download manifest written: {csv_paths['missing']}")
             return {
                 'success': True,
                 'downloaded_count': 0,
@@ -449,20 +384,10 @@ def fetch_all_reports(start_date, end_date, state, project_root):
                 'reports': []
             }
 
-        _write_csv(
-            csv_paths["search"],
-            [
-                "id", "facility", "city", "state", "date", "report_type",
-                "report_subtype", "pollutants", "filename", "download_url",
-            ],
-            reports,
-        )
-        print(f"Search manifest written: {csv_paths['search']}")
-        
         # Step 2: Download each report
         results = []
         errors = {}
-        
+
         for i, report in enumerate(reports, 1):
             download_result = download_report_with_details(session, report['id'], output_dir)
             success = download_result['success']
@@ -486,7 +411,7 @@ def fetch_all_reports(start_date, end_date, state, project_root):
                 'error': error_message,
             }
             results.append(result)
-            
+
             if success:
                 print(
                     f"[{i}/{len(reports)}] Downloaded {report['id']} in {attempts} attempt(s): {filepath}"
@@ -498,40 +423,6 @@ def fetch_all_reports(start_date, end_date, state, project_root):
                     f"after {attempts} attempt(s) [{reason_code}]: {error_message}"
                 )
 
-        _write_csv(
-            csv_paths["downloads"],
-            [
-                "id", "facility", "city", "state", "date", "success", "file_path",
-                "pad_file_type", "reason_code", "attempts", "error",
-            ],
-            results,
-        )
-
-        missing_rows = [
-            {
-                "id": row["id"],
-                "facility": row["facility"],
-                "city": row["city"],
-                "state": row["state"],
-                "date": row["date"],
-                "reason_code": row["reason_code"],
-                "attempts": row["attempts"],
-                "error": row["error"],
-            }
-            for row in results
-            if not row["success"]
-        ]
-        _write_csv(
-            csv_paths["missing"],
-            ["id", "facility", "city", "state", "date", "reason_code", "attempts", "error"],
-            missing_rows,
-        )
-        print(f"Download manifest written: {csv_paths['downloads']}")
-        print(
-            f"Missing-download manifest written: {csv_paths['missing']} "
-            f"({len(missing_rows)} missing)"
-        )
-        
         return {
             'success': len(errors) == 0,
             'downloaded_count': sum(1 for r in results if r['success']),
