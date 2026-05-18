@@ -9,6 +9,7 @@ Document Retrieval and Routing (Python)
 * Extract documents from zip/database structure
 * OCR all PDFs (if needed)
 * Split route based on PDF vs spreadsheet
+* Standardized renaming of all non-spreadsheets based on content (AI)
 
 Spreadsheet Review (Python) - Loop
 * Scan for deviation / excess emission flags
@@ -17,7 +18,7 @@ Spreadsheet Review (Python) - Loop
 
 PDF Review (AI + Python) - Loop
 * PDF chunking (python)
-* PDF chunk review and summary output as JSON (AI)
+* PDF chunk review w document content specific instructions and summary output as JSON (AI)
 * Save X% of reviews marked as in compliance to audit folder
 * Send all reviews marked as out of compliance to Live Auditor workflow
 * Output all compliance info to JSON
