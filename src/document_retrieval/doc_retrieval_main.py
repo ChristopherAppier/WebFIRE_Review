@@ -4,6 +4,7 @@ from timer_manager import check_timer
 from download_handler import fetch_all_reports
 from zip_extract import extract_and_route_files
 from ocr_handler import apply_ocr
+from file_renamer import rename_files
 
 def load_config():
     """Load configuration from settings.yaml."""
@@ -49,8 +50,11 @@ def main():
     # Unzipping files and routing them into either spreadsheet or pdf folders for processing
     #extract_and_route_files(project_root)
 
-    # Placeholders for future functions
-    apply_ocr(project_root)
+    # OCR PDFs
+    #apply_ocr(project_root)
+
+    # Rename files based on content using AI
+    rename_files(project_root)
 
 if __name__ == "__main__":
     main()

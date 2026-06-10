@@ -14,18 +14,19 @@ def load_config():
     
     return
 
+
 def single_analysis(model, model_url, chunk, sys_prompt):
     """Gives a system prompt to a chosen AI model to conduct an analysis on the chunk of data"""
     
     payload = {
-       "model": model,
-       "stream": False,
-       "format": "json",
-       "messages": [
-           {"role": "system", "content": sys_prompt},
-           {"role": "user", "content": chunk}
-           ]
-            }
+        "model": model,
+        "stream": False,
+        "format": "json",
+        "messages": [
+            {"role": "system", "content": sys_prompt},
+            {"role": "user", "content": chunk}
+            ]
+    }
     try:
         print(f"--- Sending prompt to {model} ---")
         response = requests.post(model_url, json=payload)
@@ -54,6 +55,8 @@ def json_check(raw_string):
         return json.loads(cleaned)
     except json.JSONDecodeError as e:
         raise ValueError(f"Model returned invalid JSON: {e}\nRaw output:\n{raw_string}")
+
+
 def store_for_audit(json_output, chunk_name):
     """Stores a chunk and the output JSON in an auditing folder for audit at a later time"""
     
@@ -64,6 +67,7 @@ def random_chance(percent_chance):
     """Returns a 0 or 1. 1 is chosen {percent_chance} % of the time, rounded to whole numbers"""
     
     return 1 if random.random() < (percent_chance / 100) else 0
+
 
 def store_json(json_output, save_folder, file_name):
     save_folder = Path(save_folder)
@@ -76,6 +80,7 @@ def store_json(json_output, save_folder, file_name):
     
     
     return
+
 
 def analyze_chunks():
     
@@ -109,6 +114,9 @@ def analyze_chunks():
         except ValueError as e:
             print(f"Skipping {chunk_name} — {e}")
             continue
+
+        # Adding the chunk name to the JSON output for traceability
+        json_output['chunk_name'] = chunk_name.stem
         
         # If an issue is flagged - send the chunk analyzed and JSON to the auditor folder for review
         if json_output.get('issue') == 1:
@@ -122,6 +130,7 @@ def analyze_chunks():
         store_json(json_output, save_folder, chunk_name.stem)    
     
     return
+
 
 if __name__ == "__main__":
     analyze_chunks()
