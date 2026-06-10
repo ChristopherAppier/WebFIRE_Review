@@ -26,11 +26,11 @@ def main():
     print(f"Chunk Size: {chunk_size}")
     print(f"Chunk Overlap: {chunk_overlap}")
     
-    #chunk_pdfs(pdf_path, chunk_size, chunk_overlap, "source_pdf")
+    chunk_pdfs(pdf_path, chunk_size, chunk_overlap, "source_pdf")
     
-    #analyze_chunks()
+    analyze_chunks()
     
-    #compile_jsons()
+    compile_jsons()
     
     return
 
