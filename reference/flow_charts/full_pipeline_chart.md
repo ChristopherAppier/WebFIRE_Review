@@ -27,7 +27,7 @@ flowchart TB
 	AIR --> JCT2
 	AIR --> JCT1
 	PS --> JCT1
-	JCT1 -- Reports w Issues and Random Audits --> AIA
+	JCT1 -- Reports w Issues<br/>and Random Audits --> AIA
 	PS --> JCT2
 	JCT2 -- Reports w/o Issues --> SRB
 	AIA --> SRB

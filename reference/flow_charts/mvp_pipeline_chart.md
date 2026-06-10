@@ -3,7 +3,7 @@ flowchart TB
 
 	%% Defining the nodes and their labels
 	TGR([Manual Trigger])
-	RPR[Report Pull<br/>and OCR]
+	RPR[Report Pull,<br/>OCR, and<br/>Routing]
 	OTC[Text Chunking]
 	AIR["AI Reviewer<br/>(explicit)"]
 	AIA[AI Auditor]
@@ -15,7 +15,7 @@ flowchart TB
 	RPR -- Unstructured Reports --> OTC
 	OTC --> AIR
 	AIR -- Reports w/o Issues --> SRB
-	AIR -- Reports w Issues and Random Audits --> AIA
+	AIR -- Reports w Issues<br/>and Random Audits --> AIA
 	AIA --> SRB
 
 	%% Create classes for the node colors
