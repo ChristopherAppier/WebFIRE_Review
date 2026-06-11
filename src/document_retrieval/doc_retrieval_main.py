@@ -7,9 +7,9 @@ from ocr_handler import apply_ocr
 from file_renamer import rename_files
 
 def load_config():
-    """Load configuration from settings.yaml."""
+    """Load configuration from settings.yml."""
     project_root = Path(__file__).parent.parent.parent # Finds the root folder of the project based on this main.py file location
-    config_path = project_root / "config" / "settings.yaml" # Sets the path for the settings.yaml file
+    config_path = project_root / "config" / "settings.yml" # Sets the path for the settings.yml file
     
     with open(config_path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)

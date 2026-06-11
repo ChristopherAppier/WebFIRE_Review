@@ -5,9 +5,9 @@ import yaml
 from pathlib import Path
 
 def load_config():
-    """Load configuration from settings.yaml."""
+    """Load configuration from settings.yml."""
     project_root = Path(__file__).parent.parent.parent # Finds the root folder of the project based on this main.py file location
-    config_path = project_root / "config" / "settings.yaml" # Sets the path for the settings.yaml file
+    config_path = project_root / "config" / "settings.yml" # Sets the path for the settings.yml file
     
     with open(config_path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
@@ -88,7 +88,7 @@ def analyze_chunks():
     config = load_config()
     save_folder = folder.parent / "JSONs"
     
-    # Loading settings based on settings.yaml file
+    # Loading settings based on settings.yml file
     system_prompt = config['prompts']['system']['analyze']
     ai_model = config['ai_models']['analyze']
     audit_chance = config['audit_chance']
@@ -122,7 +122,7 @@ def analyze_chunks():
         if json_output.get('issue') == 1:
             store_for_audit(json_output, chunk_name)
             
-        # If no issue is flagged, there is a X% chance (defined in settings.yaml) to set aside in auditor folder for review
+        # If no issue is flagged, there is a X% chance (defined in settings.yml) to set aside in auditor folder for review
         elif random.random() < (audit_chance / 100):
             store_for_audit(json_output, chunk_name)
     

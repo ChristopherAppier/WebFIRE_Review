@@ -19,7 +19,7 @@ def chunk_pdfs(
 
     Args:
         pdf_directory: Path to folder containing PDF files
-        chunk_size: Number of words per chunk (read from settings.yaml)
+        chunk_size: Number of words per chunk (read from settings.yml)
         overlap: Number of words to overlap between chunks (default: 100)
         chunk_prefix: Prefix for chunk filenames (default: "source_pdf")
 

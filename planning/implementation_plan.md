@@ -28,7 +28,7 @@ WebFIRE_Review/
 ├── tests/
 │   └── (All unit/integration tests)
 ├── config/
-│   └── settings.yaml
+│   └── settings.yml
 └── data/
 ```
 
@@ -41,23 +41,26 @@ WebFIRE_Review/
 **Goal:** Initialize project structure, create config file, and setup basic runner.
 
 **Technical Steps:**
-1. Create `config/settings.yaml` with:
+
+1. Create `config/settings.yml` with:
    - API endpoints for document retrieval
    - Timestamp tracking setting
    - Output directory paths
    - Audit percentage settings
 2. Create `src/document_retrieval/__init__.py` with package marker
 3. Create basic `src/document_retrieval/main.py` entry point that:
-   - Loads config from `config/settings.yaml`
+   - Loads config from `config/settings.yml`
    - Prints system status info
    - Has placeholder functions for the 4 workflow stages
 
 **Files to Create/Modify:**
-- `config/settings.yaml`
+
+- `config/settings.yml`
 - `src/document_retrieval/__init__.py`
 - `src/document_retrieval/main.py`
 
 **Testing:**
+
 ```python
 tests/unit/test_config.py
 ```
@@ -71,6 +74,7 @@ tests/unit/test_config.py
 **Objective:** Implement a time stamp based system that finds the date range to request documents in the WebFIRE API request.
 
 **Scope:**
+
 - Read last_run_timestamp from config on startup
 - Calculate the date range for WebFIRE API calls based on:
   - last_run_timestamp (start date)
@@ -78,6 +82,7 @@ tests/unit/test_config.py
 - Expose the calculated date range to download_documents() function
 
 **Implementation Strategy:**
+
 - Use Python's datetime module for timestamp comparisons and range calculations
 - Store timestamps as ISO 8601 format strings in config (e.g., "2024-01-15T00:00:00")
 - Initialize with a default timestamp (e.g., 30 days ago or a fixed date)
@@ -86,11 +91,13 @@ tests/unit/test_config.py
   - Calculates and returns the date range (last_run_date, today)
 
 **Output:**
+
 - check_timer() returns {"start_date": ..., "end_date": ...}
-Integration Point (Post 1.3):
+  Integration Point (Post 1.3):
 - download_documents() will use the returned date range (or default range if first run) to filter WebFIRE API calls.
 
 **Deliverable:**
+
 1. src/document_retrieval/timer_manager.py
    - load_timestamps() → reads last_run_timestamp from config
    - get_date_range() → returns date range tuple
@@ -103,6 +110,7 @@ Integration Point (Post 1.3):
 **Goal:** Fetch documents from API/database for the selected timestamp range.
 
 **Technical Steps:**
+
 1. Create `src/document_retrieval/download_handler.py`:
    - API session with authentication
    - Fetch reports since timestamp
@@ -111,10 +119,12 @@ Integration Point (Post 1.3):
 2. Integrate into main workflow in `main.py`
 
 **Files to Create/Modify:**
+
 - `src/document_retrieval/download_handler.py`
 - `src/document_retrieval/main.py` (add download chain)
 
 **Testing:**
+
 ```python
 tests/unit/test_download_handler.py
 ```
@@ -128,6 +138,7 @@ tests/unit/test_download_handler.py
 **Goal:** Unzip reports, identify PDF vs spreadsheet, and route them appropriately.
 
 **Technical Steps:**
+
 1. Create `src/document_retrieval/extract_processor.py`:
    - Extract contents from zip files
    - Route PDFs to pdf_dir
@@ -136,10 +147,12 @@ tests/unit/test_download_handler.py
 2. Integrate extraction into main workflow
 
 **Files to Create/Modify:**
+
 - `src/document_retrieval/extract_processor.py`
 - `src/document_retrieval/main.py`
 
 **Testing:**
+
 ```python
 tests/unit/test_extract_processor.py
 ```
@@ -153,6 +166,7 @@ tests/unit/test_extract_processor.py
 **Goal:** Add OCR for PDFs that need text extraction from images.
 
 **Technical Steps:**
+
 1. Install dependencies: `pytesseract`, `python-tessdata`
 2. Create `src/document_retrieval/ocr_processor.py`:
    - Detect PDFs needing OCR (low text density)
@@ -161,10 +175,12 @@ tests/unit/test_extract_processor.py
 3. Integrate OCR into extraction flow
 
 **Files to Create/Modify:**
+
 - `src/document_retrieval/ocr_processor.py`
 - `scripts/install_tesseract.sh`
 
 **Testing:**
+
 ```python
 tests/unit/test_ocr_processor.py
 ```
@@ -180,6 +196,7 @@ tests/unit/test_ocr_processor.py
 **Goal:** Scan spreadsheets for deviation/excess emission flags and extract compliance data.
 
 **Technical Steps:**
+
 1. Create `src/spreadsheet_review/scanner.py`:
    - Detect deviation-related columns
    - Scan for non_compliance_flags
@@ -189,12 +206,14 @@ tests/unit/test_ocr_processor.py
 3. Integrate scanner into main workflow
 
 **Files to Create/Modify:**
+
 - `src/spreadsheet_review/scanner.py`
 - `src/spreadsheet_review/json_exporter.py`
 - `src/spreadsheet_review/__init__.py`
 - `main.py` (add spreadsheet route)
 
 **Testing:**
+
 ```python
 tests/unit/test_scanner.py
 ```
@@ -208,6 +227,7 @@ tests/unit/test_scanner.py
 **Goal:** Chunk PDFs, send to AI for review, classify compliance, and route to audit workflows.
 
 **Technical Steps:**
+
 1. Create `src/pdf_review/chunker.py`:
    - Split PDFs into manageable chunks
    - Preserve page relationships
@@ -224,12 +244,14 @@ tests/unit/test_scanner.py
 5. Integrate PDF workflow into main system
 
 **Files to Create:**
+
 - `src/pdf_review/chunker.py`
 - `src/pdf_review/ai_processor.py`
 - `src/pdf_review/compliance_classifier.py`
 - `src/pdf_review/main.py`
 
 **Testing:**
+
 ```python
 tests/unit/test_chunker.py
 tests/unit/test_ai_processor.py
@@ -245,6 +267,7 @@ tests/unit/test_compliance_classifier.py
 **Goal:** Route compliant and non-compliant files to appropriate folders and workflows.
 
 **Technical Steps:**
+
 1. Create `src/routing/auditor_router.py`:
    - Route non-compliant to Live Auditor
    - Route compliant to Random Auditor
@@ -253,10 +276,12 @@ tests/unit/test_compliance_classifier.py
 3. Integrate routing into PDF workflow
 
 **Files to Create:**
+
 - `src/routing/auditor_router.py`
 - `src/auditor_queue/` directory
 
 **Testing:**
+
 ```python
 tests/unit/test_auditor_router.py
 ```
@@ -272,20 +297,23 @@ tests/unit/test_auditor_router.py
 **Goal:** Compile all JSON outputs from spreadsheet and PDF reviews into human-readable spreadsheets. Also updates successful run timestamping update.
 
 **Technical Steps:**
+
 1. Create `src/summary_reporting/spreadsheet_compiler.py`:
    - Read all JSON compliance files
    - Parse and merge compliance info
    - Generate pandas DataFrame
    - Export to Excel
 2. Create 'src/summary_reporting/timestamp_updater.py':
-   - Update the settings.yaml last_run_timestamp
+   - Update the settings.yml last_run_timestamp
 3. Integrate into main workflow
 
 **Files to Create:**
+
 - `src/summary_reporting/spreadsheet_compiler.py`
 - `src/summary_reporting/timestamp_updater.py`
 
 **Testing:**
+
 ```python
 tests/unit/test_spreadsheet_compiler.py
 ```
@@ -299,6 +327,7 @@ tests/unit/test_spreadsheet_compiler.py
 **Goal:** Implement auditor AI agent that reviews all non-compliance flags before human review.
 
 **Technical Steps:**
+
 1. Create `src/auditors/live_ai_auditor.py`:
    - Receive non-compliance determination + context
    - Run secondary AI review
@@ -308,10 +337,12 @@ tests/unit/test_spreadsheet_compiler.py
 3. Integrate into main workflow after non-compliance routing
 
 **Files to Create:**
+
 - `src/auditors/live_ai_auditor.py`
 - `src/auditors/__init__.py`
 
 **Testing:**
+
 ```python
 tests/unit/test_live_ai_auditor.py
 ```
@@ -325,6 +356,7 @@ tests/unit/test_live_ai_auditor.py
 **Goal:** Sample X% of compliance determinations to validate AI accuracy.
 
 **Technical Steps:**
+
 1. Create `src/auditors/random_ai_auditor.py`:
    - Load list of compliance determinations
    - Randomly select X% for review
@@ -335,10 +367,12 @@ tests/unit/test_live_ai_auditor.py
 3. Integrate as post-workflow job
 
 **Files to Create:**
+
 - `src/auditors/random_ai_auditor.py`
 - `src/auditor_results/` directory
 
 **Testing:**
+
 ```python
 tests/unit/test_random_ai_auditor.py
 ```
@@ -352,6 +386,7 @@ tests/unit/test_random_ai_auditor.py
 **Goal:** Sample X% of spreadsheet reviews to validate Python logic.
 
 **Technical Steps:**
+
 1. Create `src/auditors/random_python_auditor.py`:
    - Load compliance summary JSON
    - Randomly select X% for re-validation
@@ -361,10 +396,12 @@ tests/unit/test_random_ai_auditor.py
 2. Integrate as parallel audit job
 
 **Files to Create:**
+
 - `src/auditors/random_python_auditor.py`
 - `src/auditor_results/python_audits/` directory
 
 **Testing:**
+
 ```python
 tests/unit/test_random_python_auditor.py
 ```
@@ -378,6 +415,7 @@ tests/unit/test_random_python_auditor.py
 **Goal:** Collect and present all audit results in final summary email.
 
 **Technical Steps:**
+
 1. Create `src/summary_reporting/audit_aggregator.py`:
    - Gather live auditor results
    - Gather random auditor results
@@ -387,9 +425,11 @@ tests/unit/test_random_python_auditor.py
 2. Integrate into summary reporting
 
 **Files to Create:**
+
 - `src/summary_reporting/audit_aggregator.py`
 
 **Testing:**
+
 ```python
 tests/unit/test_audit_aggregator.py
 ```
@@ -405,6 +445,7 @@ tests/unit/test_audit_aggregator.py
 **Goal:** Monitor audit accuracy and flag when confidence drops below threshold.
 
 **Technical Steps:**
+
 1. Create `src/auditors/accuracy_monitor.py`:
    - Read all auditor results
    - Calculate overall accuracy rate
@@ -412,10 +453,12 @@ tests/unit/test_audit_aggregator.py
    - Log to file
 
 **Files to Create:**
+
 - `src/auditors/accuracy_monitor.py`
 - `config/accuracy_thresholds.yaml`
 
 **Testing:**
+
 ```python
 tests/unit/test_accuracy_monitor.py
 ```
@@ -429,6 +472,7 @@ tests/unit/test_accuracy_monitor.py
 **Goal:** Create script to pause workflow, alert team, and trigger manual review.
 
 **Technical Steps:**
+
 1. Create `src/auditors/overhaul_trigger.py`:
    - Pause document retrieval
    - Send alert email
@@ -436,10 +480,12 @@ tests/unit/test_accuracy_monitor.py
    - Log incident
 
 **Files to Create:**
+
 - `src/auditors/overhaul_trigger.py`
 - `scripts/pause_workflow.sh`
 
 **Testing:**
+
 ```python
 tests/unit/test_overhaul_trigger.py
 ```
@@ -455,6 +501,7 @@ tests/unit/test_overhaul_trigger.py
 **Goal:** Wire all components together and create single entry point.
 
 **Technical Steps:**
+
 1. Create `src/document_retrieval/main.py` final version:
    - Import all modules
    - Wire timer -> download -> extract -> OCR
@@ -465,10 +512,12 @@ tests/unit/test_overhaul_trigger.py
 2. Create CLI entry point
 
 **Files to Create/Modify:**
+
 - `src/document_retrieval/main.py` (complete version)
 - `src/main.py` CLI
 
 **Testing:**
+
 ```python
 tests/integration/test_full_workflow.py
 ```
@@ -482,16 +531,19 @@ tests/integration/test_full_workflow.py
 **Goal:** Add comprehensive logging and error handling throughout.
 
 **Technical Steps:**
+
 1. Add `logging.config.fileConfig` to main config
 2. Add try/except blocks with retries
 3. Create error directories
 4. Add health check endpoints
 
 **Files to Create/Modify:**
+
 - `config/logging.yaml`
 - All main.py files (add exception handling)
 
 **Testing:**
+
 ```python
 tests/unit/test_logging.py
 ```
@@ -505,15 +557,18 @@ tests/unit/test_logging.py
 **Goal:** Optimize for speed and memory efficiency.
 
 **Technical Steps:**
+
 1. Batch process PDF chunks
 2. Stream downloads instead of full load
 3. Cache AI responses
 4. Use async where beneficial
 
 **Files to Create/Modify:**
+
 - All processing modules (add optimization)
 
 **Testing:**
+
 ```python
 tests/performance/test_optimization.py
 ```
@@ -525,16 +580,19 @@ tests/performance/test_optimization.py
 ## Testing Strategy
 
 ### Unit Tests
+
 - One test file per module
 - Test happy path and error cases
 - Use pytest with mocking
 
 ### Integration Tests
+
 - Test across workflow boundaries
 - Use sample data files
 - Verify end-to-end flow
 
 ### Acceptance Criteria Per Portion
+
 - [ ] Tests pass locally
 - [ ] No new warnings in output
 - [ ] Handles edge cases gracefully
@@ -565,7 +623,7 @@ pip install \
 Start here if new to the project:
 
 1. Run `pip install -r requirements.txt`
-2. Edit `config/settings.yaml` with your API keys
+2. Edit `config/settings.yml` with your API keys
 3. Run `tests/` to verify setup
 4. Then follow Phase 1 portions in order
 

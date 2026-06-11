@@ -14,7 +14,7 @@ def check_timer(config):
     # Read last_run_timestamp
     last_run = config['last_run_timestamp']
     
-    # Calculate default if first run, otherwise uses settings.yaml last run timestamp
+    # Calculate default if first run, otherwise uses settings.yml last run timestamp
     default_interval = config.get('default_interval_days')
     if not last_run:
         start = (datetime.utcnow() - timedelta(days=default_interval))

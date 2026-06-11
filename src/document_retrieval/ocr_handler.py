@@ -7,8 +7,8 @@ import yaml
 
 
 def _load_settings(project_root):
-    """Load settings.yaml with a safe empty fallback."""
-    config_path = project_root / "config" / "settings.yaml"
+    """Load settings.yml with a safe empty fallback."""
+    config_path = project_root / "config" / "settings.yml"
     try:
         with open(config_path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f) or {}
