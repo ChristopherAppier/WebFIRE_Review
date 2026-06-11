@@ -1,10 +1,9 @@
 # Directory paths
 directories:
-  pdf_dir: "data/pdfs"
-  spreadsheet_dir: "data/spreadsheets"
-  audit_dir: "data/audits"
-  raw_data_dir: "data/raw"
-
+  pdf_dir: 'data/pdfs'
+  spreadsheet_dir: 'data/spreadsheets'
+  audit_dir: 'data/audits'
+  raw_data_dir: 'data/raw'
 
 # Document Retrieval
 ## Timer Manager
@@ -14,17 +13,16 @@ default_interval_days: 60 # Date range to use if the last_run_timestamp is null
 # Download Handler
 api_endpoints:
   webfire:
-    base_url: "https://cfpub.epa.gov/webfire/reports/"
-    detail_url: "https://cfpub.epa.gov/webfire/FIRE/view/dspERTDocumentDetails.cfm"
+    base_url: 'https://cfpub.epa.gov/webfire/reports/'
+    detail_url: 'https://cfpub.epa.gov/webfire/FIRE/view/dspERTDocumentDetails.cfm'
 dl_threads: 6 # Number of CPU threads for concurrent downloading
 ocr_jobs_per_file: 4 # Number of OCRmyPDF jobs to use per PDF file
-ocr_pdf_renderer: "sandwich" # Use sandwich to avoid hOCR temp-file failures on some Windows/Tesseract setups
+ocr_pdf_renderer: 'sandwich' # Use sandwich to avoid hOCR temp-file failures on some Windows/Tesseract setups
 states:
-  - name: "KS"
-  - name: "MO"
-  - name: "NE"
-  - name: "IA"
-
+  - name: 'KS'
+  - name: 'MO'
+  - name: 'NE'
+  - name: 'IA'
 
 #AI Review
 chunk_size: 5000
@@ -34,7 +32,7 @@ prompts:
   system:
     analyze: |
       You are an expert in US EPA Clean Air Act compliance for stationary sources. You will be given text extracted from an environmental compliance report submitted by a facility to the EPA. The text may be a complete report or a partial chunk of a larger document.
-      
+
       Your job is to identify any potential compliance issues, including but not limited to: emission exceedances (any pollutant exceeding a permit limit or regulatory threshold), monitoring deviations (missed monitoring, improper methods, equipment malfunctions), recordkeeping or reporting failures (late reports, missing data, incomplete logs), operational deviations (operating outside permitted conditions, startup/shutdown/malfunction violations), permit condition violations (any condition in a Title V or synthetic minor permit not being met), and CEMS or COMS issues (out-of-control periods, failed QA/QC, missing data substitution problems).
 
       Err on the side of flagging. If something is ambiguous or you lack full context because this is a partial document, flag it anyway. 
@@ -42,14 +40,11 @@ prompts:
       Respond only in valid JSON with no additional text, explanation, or markdown. Use this exact schema: {"issue_flag": "", "facility_name": "", "issue_summary": "", "issue_category": "", "page_numbers": "", "regulation_or_permit_requirement": ""}
 
       Field rules: issue_flag is required, use Y if any potential issue is identified and N if none. issue_summary is required if issue_flag is Y, provide 1-3 sentences describing the issue and leave blank if N. facility_name should be filled if identifiable from the text, otherwise leave blank. issue_category should classify the issue type if determinable using one of the following: Emission Exceedance, Monitoring Deviation, Recordkeeping Failure, Operational Deviation, Permit Condition Violation, CEMS/COMS Issue, and leave blank if unclear. page_numbers should list page numbers where the issue appears if indicated in the text, otherwise leave blank. regulation_or_permit_requirement should list the specific regulation or permit requirement implicated if identifiable, otherwise leave blank.
-      
-    audit: 'INSERT PROMPT'
+
+    audit: 'INSERT PROMPT' #TODO Fill in
 ai_models:
   analyze: 'qwen3.5:9b-128k'
   audit: 'qwen3.5:9b-128k'
 ai_urls:
   analyze: 'http://100.67.89.6:11434/api/chat'
   audit: 'http://100.67.89.6:11434/api/chat'
-
-  
-  
