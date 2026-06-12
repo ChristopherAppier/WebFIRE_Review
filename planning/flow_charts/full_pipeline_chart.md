@@ -8,8 +8,8 @@ flowchart TB
 	CAP[Chunking<br/>and<br/>Prompt Selection]
 	AIR["AI Reviewer<br/>(implicit and explicit)"]
 	SAG[[Sub-Agent<br/>Reg Retrieval]]
-	JCT1((( )))
-	JCT2((( )))
+	JCT1(( ))
+	JCT2(( ))
 	AIA[AI Auditor]
 	PS[Python Scraping]
 	SRB[Summary Report<br/>Building]

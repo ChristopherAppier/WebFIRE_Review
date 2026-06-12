@@ -1,5 +1,5 @@
 ###
-# ecfr text
+# eCFR Text
 GET https://www.ecfr.gov/api/versioner/v1/full/2026-06-09/title-40.xml
     ?part=60
     &subpart=A
@@ -10,7 +10,7 @@ GET https://www.ecfr.gov/api/versioner/v1/full/2026-06-09/title-40.xml
 
 ###
 
-# ecfr structure
+# eCFR Structure
 GET https://www.ecfr.gov/api/versioner/v1/structure/2026-06-09/title-40.json
 
 ## Note: Cannot refine lower than Title - parsed and saved for future reference as eCFR_structure.json
