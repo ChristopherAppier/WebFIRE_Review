@@ -1,2 +1,13 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Force LF endings for scripts
+*.py text eol=lf
+*.md text eol=lf
+
+# Keep these as binary
+*.png binary
+*.jpg binary
+*.pdf binary
+*.xlsx binary
+*.zip binary
