@@ -1,15 +1,14 @@
 # Computer Setup
 
-- [ ] MacBook
-  - [ ] Ollama
-    - [ ] Models + settings
-  - [ ] VS Code
-    - [ ] Extensions
-    - [ ] Settings
-  - [ ] Python
-    - [ ] Create env
-    - [ ] Download libraries
-  - [ ] GitHub
+- [ ] Ollama
+  - [ ] Models + settings
+- [ ] VS Code
+  - [ ] Extensions
+  - [ ] Settings
+- [ ] Python
+  - [ ] Create env
+  - [ ] Download libraries
+- [ ] GitHub
 
 # Documentation
 
@@ -25,16 +24,17 @@
 
 - [ ] Create MVP Version
   - [ ] WebFIRE report pull
-    - [ ] Refactor
+    - [ ] Refactor / review
   - [ ] OCR
-    - [ ] Refactor
+    - [ ] Refactor / review
   - [ ] Routing
-    - [ ] Refactor
+    - [ ] Refactor / review
   - [ ] Text Chunking
-    - [ ] Refactor
+    - [ ] Refactor / review
   - [ ] AI Reviewer
     - [x] Ingest chunk + prompt
-    - [x] Process + output JSON
+    - [ ] Process + output JSON (issue flag, issue description)
+    - [ ] Add to JSON via scripting (facility name, document name)
     - [ ] Seed randomizer and tracking
     - [ ] JSON validation
     - [ ] Reviewer prompt
