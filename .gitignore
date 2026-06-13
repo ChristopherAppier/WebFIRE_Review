@@ -1,5 +1,14 @@
-data/**/*
+# Ignore all files under data/
+data/**
+
+# Keep the directory tree under data/
+!data/
 !data/**/
+
+# Track placeholder files used to preserve empty directories
+!data/**/.gitkeep
+
+# Other common ignores
 .DS_Store
 *.pyc
 .vscode/
