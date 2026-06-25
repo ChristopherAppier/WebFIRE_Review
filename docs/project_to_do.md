@@ -12,7 +12,7 @@
 
 # Documentation
 
-- [ ] Fill in README.md
+- [X] Fill in README.md
 - [ ] Fill in architecture.md
 - [ ] Fill in setup.md
 - [ ] Fill in configuration.md
