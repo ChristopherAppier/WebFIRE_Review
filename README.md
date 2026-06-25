@@ -1,84 +1,40 @@
-# WebFIRE Deviation Scanner
+# WebFIRE Review Automation Pipeline
 
 ## Overview
 
-- Short plain-English summary of what the project does
-- Who it is for
-- What problem it solves
+This automation pipeline pulls Clean Air Act reports from EPA's public WebFIRE database, reviews the reports for potential deviations, and compiles the findings into a summary.
+
+This pipeline is intended to be used to explore the viability of using a combination of scripting, deterministic natural language processing, and large language models to review environmental reports in bulk. Capabilities will be evaluated using human reviewed data sets and a testing harness.
 
 ## Main Workflow
 
-- Brief summary of the pipeline stages
-- High-level process from retrieval to reporting
-
-## Features
-
-- Automated document retrieval
-- OCR and document routing
-- Spreadsheet and PDF review
-- AI-assisted review
-- Validation and auditing
-- Summary reporting
+- Automated trigger
+- Reports pull via WebFIRE API
+- Documents are sorted based on file type and content
+- PDFs are OCR'd
+- Standardized reporting spreadsheets are scraped via python for reported deviations/violations/excess emissions
+- All other unstructured reports are analyzed using deterministic NLP to be named in a structured format based on report contents
+- Unstructured reports are separated into chunks via scripting to manage LLM context buildup
+- A report review prompt is selected based on the file name (report type)
+- The report chunk and prompt are sent to a reviewer LLM for report review
+- The reviewer LLM can call sub-agents to retreive relevant regulatory information from the eCFR
+- Sub-agents use the eCFR API to pull data, summarize the relevant portions, and feed it back into the reviewer LLM
+- The reviewer LLM outputs a structured JSON with review results for each chunk
+- An auditor LLM reviews each chunk with a deviation flag and as well as an adjustable percentage of reports without deviation flags
+- Review JSONs are aggregated in a report so that users can easily find the source document and investigate
 
 ## Requirements
 
-- Python version
-- Required packages
-- Any external tools or services
-- Any access or permission needs
-
-## Setup
-
-- How to create the environment
-- How to install dependencies
-- Any required configuration files
-
-## Configuration
-
-- `settings.yml` or other config files
-- Folder conventions
-- Key toggles or parameters
-- Paths that must exist before running
-
-## How to Run
-
-- Main entry point
-- Basic run order
-- Any commands needed to start the workflow
-- Notes on scheduled vs manual execution
-
-## Inputs and Outputs
-
-- What files go in
-- What intermediate files are created
-- What final outputs are produced
-- Where each type of output is stored
-
-## Project Structure
-
-- Short explanation of the main folders
-- Which folders contain scripts, planning docs, and outputs
-
-## Limitations
-
-- OCR limitations
-- AI review limitations
-- Manual review assumptions
-- Known edge cases
-
-## Troubleshooting
-
-- Common setup problems
-- Import issues
-- File path or folder issues
-- OCR or document parsing issues
-
-## Contributing / Maintenance Notes
-
-- How to add or change steps
-- Where new code should go
-- Testing expectations, if any
-
-## License
-
-- If applicable
+- Python 3.12 (environment is pinned to `python=3.12.13`)
+- Conda (recommended) to create and manage the `webfire_review` environment from `config/environment.yml`
+- Core Python packages are installed through the environment file, including:
+	- Document parsing and OCR pipeline: `ocrmypdf`, `pdfplumber`, `pdfminer-six`, `pikepdf`, `pypdfium2`, `img2pdf`, `pillow`
+	- Web and content parsing: `requests`, `beautifulsoup4`, `lxml`
+	- Data/config and validation: `pyyaml`, `pydantic`
+	- Reporting/output support: `fpdf2`, `rich`
+- External tools/services:
+	- No paid external service is required by the environment definition.
+	- `ocrmypdf` requires Tesseract.
+- Access and permissions:
+	- Read/write access to project data folders (for example, `data/raw`, `data/pdfs`, `data/reviews`, `data/summary_report`, and `data/validations`).
+	- Network access is needed for document retrieval steps that download source files.
