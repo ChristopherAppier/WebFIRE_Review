@@ -1,14 +1,14 @@
 # Computer Setup
 
-- [ ] Ollama
-  - [ ] Models + settings
-- [ ] VS Code
-  - [ ] Extensions
-  - [ ] Settings
-- [ ] Python
-  - [ ] Create env
-  - [ ] Download libraries
-- [ ] GitHub
+- [X] Ollama
+  - [X] Models + settings
+- [X] VS Code
+  - [X] Extensions
+  - [X] Settings
+- [X] Python
+  - [X] Create env
+  - [X] Download libraries
+- [X] GitHub
 
 # Documentation
 
