@@ -11,5 +11,10 @@ data/**
 # Other common ignores
 .DS_Store
 *.pyc
-.vscode/
 .continue/
+
+# VS Code
+.vscode/*
+!.vscode/launch.json
+!.vscode/settings.json
+!.vscode/extensions.json
