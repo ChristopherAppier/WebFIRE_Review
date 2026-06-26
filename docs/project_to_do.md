@@ -23,8 +23,15 @@
 # MVP Version
 
 - [ ] Create MVP Version
+  - [ ] Common
+    - [X] find_project_root
+    - [X] load_settings
+    - [X] build_paths
   - [ ] WebFIRE report pull
     - [ ] Refactor / review
+    - [ ] Fix zip_extract.py so that it properly routes zips that contained a folder of mixed file types
+    - [ ] Fix HTTPS TLS certificate verification
+    - [ ] Add print statements at major steps
   - [ ] OCR
     - [ ] Refactor / review
   - [ ] Routing

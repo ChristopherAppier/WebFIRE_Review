@@ -1,12 +1,10 @@
 import os
 import random
 import time
-
 import requests
-from pathlib import Path
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-
+from document_retrieval.timer_manager import check_timer
 
 CONNECT_TIMEOUT = 10
 SEARCH_READ_TIMEOUT = 60
@@ -345,21 +343,24 @@ def download_report_with_details(session, doc_id, output_dir):
         "reason_code": last_reason,
         "attempts": last_attempt,
     }
-def fetch_all_reports(start_date, end_date, state, project_root):
+def fetch_all_reports(config, state, paths):
     """
     Main entry point: fetch all reports for date range.
     Args:
-            start_date: MM/DD/YYYY start date string
-            end_date: MM/DD/YYYY end date string
             state: State name to search for
-            project_root: Project root path used to locate data/raw
+            paths: Paths object containing project directories
     """
+
+    # Getting the date range for the WebFIRE API request based on last run date
+    timer_info = check_timer(config)
+    start_date = timer_info['start_date']
+    end_date = timer_info['end_date']
+
     session = None
 
     try:
         session = build_session()
-        download_path = project_root / "data" / "raw"
-        output_dir = Path(download_path)
+        output_dir = paths["raw_data_dir"]
         output_dir.mkdir(parents=True, exist_ok=True)
 
         # Step 1: Search for reports in date range
@@ -405,7 +406,7 @@ def fetch_all_reports(start_date, end_date, state, project_root):
                 'date': report['date'],
                 'success': success,
                 'file_path': str(filepath) if filepath else None,
-                'pad_file_type': file_type,
+                'file_type': file_type,
                 'reason_code': reason_code,
                 'attempts': attempts,
                 'error': error_message,
@@ -433,3 +434,18 @@ def fetch_all_reports(start_date, end_date, state, project_root):
     finally:
         if session is not None:
             session.close()
+
+
+if __name__ == "__main__":
+    from common import utilities
+    
+    # Load configuration
+    config = utilities.load_config()
+
+    # Builds the paths for the data directories
+    paths = utilities.build_paths(config)
+    
+    # Downloading reports from WebFIRE API for each state
+    state_names = [state['name'] for state in config['states']]
+    for state_name in state_names:
+        fetch_all_reports(config, state_name, paths)

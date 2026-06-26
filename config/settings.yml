@@ -2,7 +2,9 @@
 directories:
   pdf_dir: 'data/pdfs'
   spreadsheet_dir: 'data/spreadsheets'
+  other_dir: 'data/other'
   audit_dir: 'data/audits'
+  review_dir: 'data/reviews'
   raw_data_dir: 'data/raw'
 
 # Document Retrieval
@@ -18,16 +20,16 @@ api_endpoints:
 dl_threads: 6 # Number of CPU threads for concurrent downloading
 ocr_jobs_per_file: 4 # Number of OCRmyPDF jobs to use per PDF file
 ocr_pdf_renderer: 'sandwich' # Use sandwich to avoid hOCR temp-file failures on some Windows/Tesseract setups
-states:
+states: # List of states to download reports for
   - name: 'KS'
   - name: 'MO'
   - name: 'NE'
   - name: 'IA'
 
-#AI Review
-chunk_size: 5000
-chunk_flex: 500
-chunk_overlap: 100
+#LLM Review
+chunk_size: 5000 # Number of characters per chunk for LLM analysis
+chunk_flex: 500 # Number of characters to flex the chunk size by (to avoid splitting sentences)
+chunk_overlap: 100 # Number of characters to overlap between chunks (to avoid losing context)
 audit_chance: 10 # In percent
 ai_models:
   analyze: 'gemma4:31b-mlx'

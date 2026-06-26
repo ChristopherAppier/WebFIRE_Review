@@ -97,9 +97,9 @@ def rename_zip_to_pdf(raw_path):
     return zips_renamed
 
 
-def file_sort(raw_path):
+def file_sort(paths):
 
-    file_list = [f.name for f in Path(raw_path).iterdir() if f.is_file()]
+    file_list = [f.name for f in paths["raw_data_dir"].iterdir() if f.is_file()]
     spreadsheets_moved = pdfs_moved = other_moved = 0 # Trackers for files moved
 
     # Main loop through files
@@ -108,8 +108,8 @@ def file_sort(raw_path):
         # Moving Spreadsheets
         if file_name.endswith(('.xls', '.xlsx', 'xlsm')):
             spreadsheets_moved += 1
-            src = raw_path / file_name
-            dest_dir = raw_path.parent / "spreadsheets"
+            src = paths["raw_data_dir"] / file_name
+            dest_dir = paths["spreadsheet_dir"]
             dest = dest_dir / file_name
             dest_dir.mkdir(parents=True, exist_ok=True)
             src.rename(dest)
@@ -117,8 +117,8 @@ def file_sort(raw_path):
         # Moving PDFs
         elif file_name.endswith(('.pdf', '.PDF')):
             pdfs_moved += 1
-            src = raw_path / file_name
-            dest_dir = raw_path.parent / "pdfs"
+            src = paths["raw_data_dir"] / file_name
+            dest_dir = paths["pdf_dir"]
             dest = dest_dir / file_name
             dest_dir.mkdir(parents=True, exist_ok=True)
             src.rename(dest)
@@ -126,8 +126,8 @@ def file_sort(raw_path):
         # Moving other files
         else:
             other_moved += 1
-            src = raw_path / file_name
-            dest_dir = raw_path.parent / "other"
+            src = paths["raw_data_dir"] / file_name
+            dest_dir = paths["other_dir"]
             dest = dest_dir / file_name
             dest_dir.mkdir(parents=True, exist_ok=True)
             src.rename(dest)
@@ -157,23 +157,30 @@ def print_statistics(zips_extracted, zips_renamed, files_moved, num_original_zip
     return
 
 
-def extract_and_route_files(project_root):
+def extract_and_route_files(paths):
     
     # Logs the original number of ZIPs downloaded from WebFIRE
-    raw_path = project_root / "data" / "raw"
-    num_original_zips = len([f for f in raw_path.iterdir() if f.is_file() and not f.name.startswith('.') and f.name.endswith('.zip')])
+    num_original_zips = len([f for f in paths["raw_data_dir"].iterdir() if f.is_file() and not f.name.startswith('.') and f.name.endswith('.zip')])
     
     # Extracts all zips recursively and logs number extracted in loop 1
-    zips_extracted = recursive_zip_extract(raw_path) 
+    zips_extracted = recursive_zip_extract(paths["raw_data_dir"]) 
     
     # Renames the remaining "zips" to pdfs to handle WebFIRE's error that names pdf files as .zip
-    zips_renamed = rename_zip_to_pdf(raw_path) 
+    zips_renamed = rename_zip_to_pdf(paths["raw_data_dir"]) 
     
-    files_moved = file_sort(raw_path) #this should return 3 values, spreadsheets, pdfs, other
+    files_moved = file_sort(paths) #this should return 3 values, spreadsheets, pdfs, other
     
     #print_statistics(zips_extracted, zips_renamed, files_moved, num_original_zips)
     
     return
 
 if __name__ == "__main__":
-    extract_and_route_files()
+    from common import utilities
+
+    # Load configuration
+    config = utilities.load_config()
+
+    # Builds the paths for the data directories
+    paths = utilities.build_paths(config)
+
+    extract_and_route_files(paths)

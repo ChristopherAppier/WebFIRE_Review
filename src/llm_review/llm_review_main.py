@@ -1,5 +1,6 @@
 import yaml
 from pathlib import Path
+from common import utilities
 from chunk_handler import chunk_pdfs
 from analysis_handler import analyze_chunks
 from json_compiler import compile_jsons

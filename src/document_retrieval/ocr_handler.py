@@ -3,44 +3,18 @@ import tempfile
 import os
 import sys
 from pathlib import Path
-import yaml
-
-
-def _load_settings(project_root):
-    """Load settings.yml with a safe empty fallback."""
-    config_path = project_root / "config" / "settings.yml"
-    try:
-        with open(config_path, "r", encoding="utf-8") as f:
-            return yaml.safe_load(f) or {}
-    except Exception:
-        return {}
-
-
-def _load_ocr_jobs_per_file(settings):
-    """Read OCRmyPDF jobs-per-file from settings with safe fallback."""
-    try:
-        jobs = int(settings.get("ocr_jobs_per_file", 1))
-        return max(1, jobs)
-    except Exception:
-        return 1
-
-
-def _load_ocr_renderer(settings):
-    """Read OCRmyPDF renderer from settings with safe fallback."""
-    renderer = str(settings.get("ocr_pdf_renderer", "auto")).strip().lower()
-    if renderer in {"auto", "hocr", "sandwich"}:
-        return renderer
-    return "auto"
-
 
 def _build_ocr_env():
     """Create subprocess env with explicit Tesseract and tessdata locations."""
     env = os.environ.copy()
-    env_root = Path(sys.executable).resolve().parent
+    py_dir = Path(sys.executable).resolve().parent
+    # Conda/venv prefix is usually one level above the Python executable directory.
+    env_prefix = py_dir.parent if py_dir.name in {"bin", "Scripts"} else py_dir
 
     tesseract_candidates = [
-        env_root / "Library" / "bin" / "tesseract.exe",  # Windows conda
-        env_root / "bin" / "tesseract",  # macOS/Linux
+        env_prefix / "Library" / "bin" / "tesseract.exe",  # Windows conda
+        env_prefix / "bin" / "tesseract",  # macOS/Linux conda/venv
+        py_dir / "tesseract",  # Adjacent to executable in some envs
     ]
     for candidate in tesseract_candidates:
         if candidate.exists():
@@ -48,8 +22,9 @@ def _build_ocr_env():
             break
 
     tessdata_candidates = [
-        env_root / "Library" / "share" / "tessdata",  # Windows conda
-        env_root / "share" / "tessdata",  # macOS/Linux
+        env_prefix / "Library" / "share" / "tessdata",  # Windows conda
+        env_prefix / "share" / "tessdata",  # macOS/Linux conda/venv
+        env_prefix / "share" / "tesseract" / "tessdata",  # alt layout
     ]
     for candidate in tessdata_candidates:
         if (candidate / "eng.traineddata").exists():
@@ -58,21 +33,24 @@ def _build_ocr_env():
 
     return env
 
-def apply_ocr(project_root):
+def apply_ocr(paths, config):
     """
     Apply OCR to every PDF in the specified folder.
     
     Args:
-        folder_path: Path to folder containing PDF files
+        paths: Dictionary containing paths to various data directories
+        config: Dictionary containing OCR configuration
     """
-    
-    settings = _load_settings(project_root)
-    folder_path = Path(project_root / "data" / "pdfs")
-    jobs_per_file = _load_ocr_jobs_per_file(settings)
-    renderer = _load_ocr_renderer(settings)
+
     ocr_env = _build_ocr_env()
 
-    for pdf_file in sorted(folder_path.glob("*.pdf")):
+    pdf_files = sorted(
+        pdf_file
+        for pdf_file in paths['pdf_dir'].glob("*")
+        if pdf_file.is_file() and pdf_file.suffix.lower() == ".pdf"
+    )
+
+    for pdf_file in pdf_files:
         with tempfile.NamedTemporaryFile(
             suffix=".pdf", dir=pdf_file.parent, delete=False
         ) as tmp_file:
@@ -83,9 +61,9 @@ def apply_ocr(project_root):
             "-m",
             "ocrmypdf",
             "--jobs",
-            str(jobs_per_file),
+            str(config['ocr_jobs_per_file']),
             "--pdf-renderer",
-            renderer,
+            config['ocr_pdf_renderer'],
             "-s",
             "-q",
             "--invalidate-digital-signatures",
@@ -122,7 +100,12 @@ def apply_ocr(project_root):
     return
 
 if __name__ == "__main__":
+    from common import utilities
+
+    # Load configuration
+    config = utilities.load_config()
+
+    # Builds the paths for the data directories
+    paths = utilities.build_paths(config)
     
-    project_root = Path(__file__).parent.parent.parent
-    
-    apply_ocr(project_root)
+    apply_ocr(paths, config)
