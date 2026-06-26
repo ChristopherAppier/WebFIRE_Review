@@ -72,6 +72,7 @@ dependencies:
       - pydantic-core==2.46.4
       - pygments==2.20.0
       - pypdfium2==5.10.1
+      - python-magic==0.4.27
       - pyyaml==6.0.3
       - regex==2026.5.9
       - requests==2.34.2

@@ -1,13 +1,5 @@
 from datetime import datetime, timedelta
 
-
-def convert_date(iso_date):
-    """Convert date string (any common format) to MM/DD/YYYY"""
-    date_part = str(iso_date)[:10]  # Grab YYYY-MM-DD from whatever format arrives
-    dt = datetime.strptime(date_part, "%Y-%m-%d")
-    return dt.strftime("%m/%d/%Y")
-    
-
 def check_timer(config):
     """Returns the start and end date to be used for the WebFIRE API request"""
     
@@ -32,3 +24,10 @@ def check_timer(config):
         'end_date': end,
         'first_run': last_run is None,
         }
+
+def convert_date(iso_date):
+    """Convert date string (any common format) to MM/DD/YYYY"""
+    date_part = str(iso_date)[:10]  # Grab YYYY-MM-DD from whatever format arrives
+    dt = datetime.strptime(date_part, "%Y-%m-%d")
+    return dt.strftime("%m/%d/%Y")
+    

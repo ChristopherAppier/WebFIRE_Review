@@ -2,7 +2,8 @@ import zipfile
 import io
 from pathlib import Path
 
-def recursive_zip_extract(raw_path):
+def recursive_zip_extract(raw_path): 
+#TODO At the end of each loop, collapse all files in folders into the raw folder to ensure that all zips are extracted, even if they are in a subfolder
     
     """Extracts the contents of all zip files in a folder on a loop until the list of files is the same between two runs, which indicates that it has extracted everything it can. The purpose is to extract nested zips."""
     
@@ -154,8 +155,6 @@ def print_statistics(zips_extracted, zips_renamed, files_moved, num_original_zip
     print(f'Other files extracted: {other}')
     print('*'*50)
 
-    return
-
 
 def extract_and_route_files(paths):
     
@@ -163,16 +162,15 @@ def extract_and_route_files(paths):
     num_original_zips = len([f for f in paths["raw_data_dir"].iterdir() if f.is_file() and not f.name.startswith('.') and f.name.endswith('.zip')])
     
     # Extracts all zips recursively and logs number extracted in loop 1
-    zips_extracted = recursive_zip_extract(paths["raw_data_dir"]) 
+    zips_extracted = recursive_zip_extract(paths["raw_data_dir"])
     
     # Renames the remaining "zips" to pdfs to handle WebFIRE's error that names pdf files as .zip
-    zips_renamed = rename_zip_to_pdf(paths["raw_data_dir"]) 
+    zips_renamed = rename_zip_to_pdf(paths["raw_data_dir"])
     
-    files_moved = file_sort(paths) #this should return 3 values, spreadsheets, pdfs, other
+    # Sorts the files into their respective folders (spreadsheets, pdfs, other)
+    files_moved = file_sort(paths)
     
     #print_statistics(zips_extracted, zips_renamed, files_moved, num_original_zips)
-    
-    return
 
 if __name__ == "__main__":
     from common import utilities

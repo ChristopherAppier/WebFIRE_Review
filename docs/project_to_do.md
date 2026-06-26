@@ -5,6 +5,7 @@
 - [X] VS Code
   - [X] Extensions
   - [X] Settings
+  - [ ] Formatter and Linter
 - [X] Python
   - [X] Create env
   - [X] Download libraries
@@ -23,23 +24,29 @@
 # MVP Version
 
 - [ ] Create MVP Version
-  - [ ] Common
+  - [ ] Add print statements at major steps
+
+  - [X] Common
     - [X] find_project_root
     - [X] load_settings
     - [X] build_paths
+
   - [ ] WebFIRE report pull
-    - [ ] Refactor / review
-    - [ ] Fix zip_extract.py so that it properly routes zips that contained a folder of mixed file types
+    - [X] Refactor / review
     - [ ] Fix HTTPS TLS certificate verification
-    - [ ] Add print statements at major steps
-  - [ ] OCR
-    - [ ] Refactor / review
-  - [ ] Routing
-    - [ ] Refactor / review
-    - [ ] Fix zip_extract.py so that it properly routes zips that contained a folder of mixed file types
+
+  - [X] OCR
+    - [X] Refactor / review
+
+  - [X] Routing
+    - [X] Refactor / review
+    - [X] Rewrite using magic library (accurately determines file type)
+    - [X] Fix zip_extract.py so that it properly routes zips that contained a folder of mixed file types
+
   - [ ] Text Chunking
     - [ ] Refactor / review
     - [ ] Generalize chunking function for use in renaming (future proof)?
+
   - [ ] AI Reviewer
     - [x] Ingest chunk + prompt
     - [ ] Process + output JSON (issue flag, issue description)
@@ -48,17 +55,18 @@
     - [ ] JSON validation
     - [ ] Reviewer prompt
     - [ ] Refactor
+
   - [ ] Summary Report Building
     - [ ] Pull JSONs
     - [ ] Create report
     - [ ] Refactor
 
-- [ ] Create MVP Version Test Harness
+- [ ] Create MVP Version Evaluation Harness
   - [ ] Plan implementation strategy
   - [ ] Define inputs (edge cases included)
   - [ ] Load inputs
 
-- [ ] Add MVP Version Performance Metrics
+- [ ] Add MVP Version Evaluation Metrics
   - [ ] Plan implementation strategy
   - [ ] Define metrics
   - [ ] Define success
@@ -79,45 +87,64 @@
 # Full Version
 
 - [ ] Create Full Version
+
+ - [ ] File Routing
+  - [ ] Check spreadsheets for EPA template layout - route to Other folder if not using the template
+
+  - [ ] OCR
+    - [ ] Add LLM w vision + text capabilities or structured table parser for table OCR
+
+  - [ ] Text Chunking
+    - [ ] Add summarization to chunks
+    - [ ] Add context based stitching after summarization to balance context buildup vs coherency of report
+
   - [ ] File Renaming
-    - [ ] Deterministic NLP research
+    - [X] Deterministic NLP research
     - [ ] Chunk file
     - [ ] Ingest (NLP)
-    - [ ] Output name (NLP)
+    - [ ] Output potential facility names (NLP)
+    - [ ] Use LLM to select best name
     - [ ] Check output format
     - [ ] Change name
     - [ ] Refactor
+
   - [ ] AI Reviewer
     - [ ] Reviewer prompt selection
     - [ ] Reviewer prompt bank
-    - [ ] Sub-agent calling and pass-back
+    - [ ] RAG retrieval interface
     - [ ] Tool calling
     - [ ] Refactor
+
   - [ ] AI Auditor
     - [ ] Auditor prompt bank
     - [ ] Auditor prompt selection
     - [ ] Refactor
+
   - [ ] Python Scraping
     - [ ] Read in spreadsheets
     - [ ] Identify flags
     - [ ] Build output JSON
     - [ ] Refactor
+
   - [ ] Summary Report Building
     - [ ] Add python scraping to report building
     - [ ] Refactor
-  - [ ] Sub-agents
-    - [ ] Create a method for calling a sub-agent
-    - [ ] Create a tool for pulling from eCFR
-    - [ ] Summarize relevant information
-    - [ ] Pass information (eCFR summary + prompt + chunk) to reviewer 
+
+  - [ ] eCFR RAG
+    - [ ] Pull eCFR sections
+    - [ ] Initial RAG scan
+    - [ ] Automated update that scans for eCFR updates
+    - [ ] RAG scans after updates
+    - [ ] RAG retreival integrated into reviewer
+    
   - [ ] Cron Trigger
 
-- [ ] Create Full Version Test Harness
+- [ ] Create Full Version Evaluation Harness
   - [ ] Plan implementation strategy
   - [ ] Define inputs (edge cases included)
   - [ ] Load inputs
 
-- [ ] Add Full Version Performance Metrics
+- [ ] Add Full Version Evaluation Metrics
   - [ ] Plan implementation strategy
   - [ ] Define metrics
   - [ ] Define success
@@ -136,5 +163,7 @@
   - [ ] Update output_formats.md
 
 # Future Additions
+- [ ] 
 
-- [ ] LM / Context Based Chunking (avoid context separation)
+# Notes
+- JSON from reviewer contain model chain of reasoning, citations, confidence levels, RAG retrievals

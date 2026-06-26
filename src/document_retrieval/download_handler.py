@@ -18,6 +18,97 @@ RETRIABLE_STATUS_CODES = {429, 500, 502, 503, 504}
 RETRY_BACKOFF_BASE = 0.5
 RETRY_BACKOFF_CAP = 8.0
 
+def fetch_all_reports(config, state, paths):
+    """
+    Main entry point: fetch all reports for date range.
+    Args:
+            state: State name to search for
+            paths: Paths object containing project directories
+    """
+
+    # Getting the date range for the WebFIRE API request based on last run date
+    timer_info = check_timer(config)
+    start_date = timer_info['start_date']
+    end_date = timer_info['end_date']
+
+    session = None
+
+    try:
+        session = build_session()
+        output_dir = paths["raw_data_dir"]
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Step 1: Search for reports in date range
+        try:
+            reports = search_reports(session, start_date, end_date, state)
+        except SearchError as search_exc:
+            print(
+                f"Search failed for state={state} after retries: {search_exc.reason_code} - {search_exc}"
+            )
+            return {
+                'success': False,
+                'downloaded_count': 0,
+                'errors': {'_search': str(search_exc)},
+                'reports': []
+            }
+
+        if not reports:
+            return {
+                'success': True,
+                'downloaded_count': 0,
+                'errors': {},
+                'reports': []
+            }
+
+        # Step 2: Download each report
+        results = []
+        errors = {}
+
+        for i, report in enumerate(reports, 1):
+            download_result = download_report_with_details(session, report['id'], output_dir)
+            success = download_result['success']
+            filepath = download_result['filepath']
+            file_type = download_result['file_type']
+            error_message = download_result['error']
+            reason_code = download_result['reason_code']
+            attempts = download_result['attempts']
+            
+            result = {
+                'id': report['id'],
+                'facility': report['facility'],
+                'city': report['city'],
+                'state': report['state'],
+                'date': report['date'],
+                'success': success,
+                'file_path': str(filepath) if filepath else None,
+                'file_type': file_type,
+                'reason_code': reason_code,
+                'attempts': attempts,
+                'error': error_message,
+            }
+            results.append(result)
+
+            if success:
+                print(
+                    f"[{i}/{len(reports)}] Downloaded {report['id']} in {attempts} attempt(s): {filepath}"
+                )
+            else:
+                errors[report['id']] = error_message
+                print(
+                    f"[{i}/{len(reports)}] Failed to download {report['id']} "
+                    f"after {attempts} attempt(s) [{reason_code}]: {error_message}"
+                )
+
+        return {
+            'success': len(errors) == 0,
+            'downloaded_count': sum(1 for r in results if r['success']),
+            'errors': errors,
+            'reports': results,
+        }
+    
+    finally:
+        if session is not None:
+            session.close()
 
 class SearchError(Exception):
     """Raised when the report search fails after retries."""
@@ -343,98 +434,6 @@ def download_report_with_details(session, doc_id, output_dir):
         "reason_code": last_reason,
         "attempts": last_attempt,
     }
-def fetch_all_reports(config, state, paths):
-    """
-    Main entry point: fetch all reports for date range.
-    Args:
-            state: State name to search for
-            paths: Paths object containing project directories
-    """
-
-    # Getting the date range for the WebFIRE API request based on last run date
-    timer_info = check_timer(config)
-    start_date = timer_info['start_date']
-    end_date = timer_info['end_date']
-
-    session = None
-
-    try:
-        session = build_session()
-        output_dir = paths["raw_data_dir"]
-        output_dir.mkdir(parents=True, exist_ok=True)
-
-        # Step 1: Search for reports in date range
-        try:
-            reports = search_reports(session, start_date, end_date, state)
-        except SearchError as search_exc:
-            print(
-                f"Search failed for state={state} after retries: {search_exc.reason_code} - {search_exc}"
-            )
-            return {
-                'success': False,
-                'downloaded_count': 0,
-                'errors': {'_search': str(search_exc)},
-                'reports': []
-            }
-
-        if not reports:
-            return {
-                'success': True,
-                'downloaded_count': 0,
-                'errors': {},
-                'reports': []
-            }
-
-        # Step 2: Download each report
-        results = []
-        errors = {}
-
-        for i, report in enumerate(reports, 1):
-            download_result = download_report_with_details(session, report['id'], output_dir)
-            success = download_result['success']
-            filepath = download_result['filepath']
-            file_type = download_result['file_type']
-            error_message = download_result['error']
-            reason_code = download_result['reason_code']
-            attempts = download_result['attempts']
-            
-            result = {
-                'id': report['id'],
-                'facility': report['facility'],
-                'city': report['city'],
-                'state': report['state'],
-                'date': report['date'],
-                'success': success,
-                'file_path': str(filepath) if filepath else None,
-                'file_type': file_type,
-                'reason_code': reason_code,
-                'attempts': attempts,
-                'error': error_message,
-            }
-            results.append(result)
-
-            if success:
-                print(
-                    f"[{i}/{len(reports)}] Downloaded {report['id']} in {attempts} attempt(s): {filepath}"
-                )
-            else:
-                errors[report['id']] = error_message
-                print(
-                    f"[{i}/{len(reports)}] Failed to download {report['id']} "
-                    f"after {attempts} attempt(s) [{reason_code}]: {error_message}"
-                )
-
-        return {
-            'success': len(errors) == 0,
-            'downloaded_count': sum(1 for r in results if r['success']),
-            'errors': errors,
-            'reports': results,
-        }
-    
-    finally:
-        if session is not None:
-            session.close()
-
 
 if __name__ == "__main__":
     from common import utilities
