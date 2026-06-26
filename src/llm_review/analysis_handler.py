@@ -3,6 +3,55 @@ import requests
 import json
 import yaml
 from pathlib import Path
+from common import utilities
+
+def analyze_chunks(paths, config):
+
+    folder = paths['chunk_dir']
+    save_folder = paths['rev_json_dir']
+    
+    # Loading settings based on settings.yml file
+    system_prompt = config['prompts']['system']['analyze']
+    ai_model = config['ai_models']['analyze']
+    audit_chance = config['audit_chance']
+    model_url = config['ai_urls']['analyze']
+    
+    #Looping through all pdf files
+    for chunk_name in folder.iterdir():
+        
+        # Skips the file if it isn't a text file
+        if chunk_name.suffix != ".txt":
+            continue
+        
+        # Load text from chunk_name.txt
+        with open(chunk_name,"r") as f:
+            chunk_text = f.read()
+        
+        # Get the AI's response as a string
+        raw_output = single_analysis(ai_model, model_url, chunk_text, system_prompt)
+        
+        # Trying to load the string as a JSON with error handling
+        try:
+            json_output = json_check(raw_output)
+        except ValueError as e:
+            print(f"Skipping {chunk_name} — {e}")
+            continue
+
+        # Adding the chunk name to the JSON output for traceability
+        json_output['chunk_name'] = chunk_name.stem
+        
+        # If an issue is flagged - send the chunk analyzed and JSON to the auditor folder for review
+        if json_output.get('issue') == 1:
+            store_for_audit(json_output, chunk_name)
+            
+        # If no issue is flagged, there is a X% chance (defined in settings.yml) to set aside in auditor folder for review
+        elif random.random() < (audit_chance / 100):
+            store_for_audit(json_output, chunk_name)
+    
+        # Storing the JSON output containing the analysis for that chunk
+        store_json(json_output, save_folder, chunk_name.stem)    
+    
+    return
 
 def load_config():
     """Load configuration from settings.yml."""
@@ -80,57 +129,6 @@ def store_json(json_output, save_folder, file_name):
     
     
     return
-
-
-def analyze_chunks():
-    
-    folder = Path(__file__).parent.parent.parent / 'data' / 'pdfs' / 'chunks'
-    config = load_config()
-    save_folder = folder.parent / "JSONs"
-    
-    # Loading settings based on settings.yml file
-    system_prompt = config['prompts']['system']['analyze']
-    ai_model = config['ai_models']['analyze']
-    audit_chance = config['audit_chance']
-    model_url = config['ai_urls']['analyze']
-    
-    #Looping through all pdf files
-    for chunk_name in folder.iterdir():
-        
-        # Skips the file if it isn't a text file
-        if chunk_name.suffix != ".txt":
-            continue
-        
-        # Load text from chunk_name.txt
-        with open(chunk_name,"r") as f:
-            chunk_text = f.read()
-        
-        # Get the AI's response as a string
-        raw_output = single_analysis(ai_model, model_url, chunk_text, system_prompt)
-        
-        # Trying to load the string as a JSON with error handling
-        try:
-            json_output = json_check(raw_output)
-        except ValueError as e:
-            print(f"Skipping {chunk_name} — {e}")
-            continue
-
-        # Adding the chunk name to the JSON output for traceability
-        json_output['chunk_name'] = chunk_name.stem
-        
-        # If an issue is flagged - send the chunk analyzed and JSON to the auditor folder for review
-        if json_output.get('issue') == 1:
-            store_for_audit(json_output, chunk_name)
-            
-        # If no issue is flagged, there is a X% chance (defined in settings.yml) to set aside in auditor folder for review
-        elif random.random() < (audit_chance / 100):
-            store_for_audit(json_output, chunk_name)
-    
-        # Storing the JSON output containing the analysis for that chunk
-        store_json(json_output, save_folder, chunk_name.stem)    
-    
-    return
-
 
 if __name__ == "__main__":
     analyze_chunks()

@@ -22,6 +22,7 @@ def fetch_all_reports(config, state, paths):
     """
     Main entry point: fetch all reports for date range.
     Args:
+            config: Configuration dictionary loaded from settings.yml
             state: State name to search for
             paths: Paths object containing project directories
     """

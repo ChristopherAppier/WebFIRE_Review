@@ -6,25 +6,29 @@ directories:
   audit_dir: 'data/audits'
   review_dir: 'data/reviews'
   raw_data_dir: 'data/raw'
+  chunk_dir: 'data/pdfs/chunks'
+  rev_json_dir: 'data/reviews/json'
 
 # Document Retrieval
 ## Timer Manager
 last_run_timestamp: null # Auto-set to current UTC time after each run (MM/DD/YYYY string)
 default_interval_days: 60 # Date range to use if the last_run_timestamp is null
 
-# Download Handler
+## Download Handler
 api_endpoints:
   webfire:
     base_url: 'https://cfpub.epa.gov/webfire/reports/'
     detail_url: 'https://cfpub.epa.gov/webfire/FIRE/view/dspERTDocumentDetails.cfm'
 dl_threads: 6 # Number of CPU threads for concurrent downloading
-ocr_jobs_per_file: 4 # Number of OCRmyPDF jobs to use per PDF file
-ocr_pdf_renderer: 'sandwich' # Use sandwich to avoid hOCR temp-file failures on some Windows/Tesseract setups
 states: # List of states to download reports for
   - name: 'KS'
   - name: 'MO'
   - name: 'NE'
   - name: 'IA'
+
+## OCR
+ocr_jobs_per_file: 4 # Number of OCRmyPDF jobs to use per PDF file
+ocr_pdf_renderer: 'sandwich' # Use sandwich to avoid hOCR temp-file failures on some Windows/Tesseract setups
 
 #LLM Review
 chunk_size: 5000 # Number of characters per chunk for LLM analysis
@@ -32,8 +36,8 @@ chunk_flex: 500 # Number of characters to flex the chunk size by (to avoid split
 chunk_overlap: 100 # Number of characters to overlap between chunks (to avoid losing context)
 audit_chance: 10 # In percent
 ai_models:
-  analyze: 'gemma4:31b-mlx'
-  audit: 'gemma4:31b-mlx'
+  analyze: 'gemma4:31b'
+  audit: 'gemma4:31b'
 ai_urls:
   analyze: 'http://localhost/api/chat'
   audit: 'http://localhost:11434/api/chat'

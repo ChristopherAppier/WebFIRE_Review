@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 def chunk_pdfs(
-    pdf_directory: str = None,
+    paths: Dict[str, Path],
     chunk_size: int = None,
     overlap: int = 100,
     chunk_prefix: str = "source_pdf"
@@ -18,7 +18,7 @@ def chunk_pdfs(
     Reads OCR'd PDFs and creates overlapping chunks of the text.
 
     Args:
-        pdf_directory: Path to folder containing PDF files
+        paths: Dictionary containing paths to various directories
         chunk_size: Number of words per chunk (read from settings.yml)
         overlap: Number of words to overlap between chunks (default: 100)
         chunk_prefix: Prefix for chunk filenames (default: "source_pdf")
@@ -27,13 +27,12 @@ def chunk_pdfs(
         List of tuples containing (chunk_path, chunk_info)
     """
 
-    output_directory = pdf_directory / 'chunks'
     chunks_created = []
 
-    pdf_files = sorted([f for f in pdf_directory.glob("*.pdf")])
+    pdf_files = sorted([f for f in paths['pdf_dir'].glob("*.pdf")])
 
     if not pdf_files:
-        logger.warning(f"No PDF files found in: {pdf_directory}")
+        logger.warning(f"No PDF files found in: {paths['pdf_dir']}")
         return chunks_created
 
     logger.info(f"Found {len(pdf_files)} PDF files to process")
@@ -42,7 +41,7 @@ def chunk_pdfs(
         try:
             chunks = _process_single_pdf(
                 pdf_file=pdf_file,
-                output_dir=Path(output_directory),
+                output_dir=Path(paths['chunk_dir']),
                 chunk_size=chunk_size,
                 overlap=overlap,
                 prefix=chunk_prefix

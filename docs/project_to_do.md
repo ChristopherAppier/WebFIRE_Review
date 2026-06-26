@@ -32,8 +32,9 @@
     - [X] build_paths
 
   - [ ] WebFIRE report pull
-    - [X] Refactor / review
+    - [ ] Refactor / review
     - [ ] Fix HTTPS TLS certificate verification
+    - [ ] Use settings.yml info for URLs, etc.
 
   - [X] OCR
     - [X] Refactor / review

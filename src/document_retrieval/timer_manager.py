@@ -22,7 +22,6 @@ def check_timer(config):
     return {
         'start_date': start,
         'end_date': end,
-        'first_run': last_run is None,
         }
 
 def convert_date(iso_date):
