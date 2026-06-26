@@ -2,27 +2,28 @@
 flowchart TB
 
 	%% Defining the nodes and their labels
-	TGR([Manual Trigger])
-	RPR[Report Pull,<br/>OCR, and<br/>Routing]
-	OTC[Text Chunking]
-	AIR["AI Reviewer<br/>(explicit)"]
-	AIA[AI Auditor]
-	SRB[Summary Report<br/>Building]
-	TEXT[Green = AI<br/>Blue = Script]
+	Trigger([Manual Trigger])
+	RepPull[Report Pull]
+	Route[Routing]
+	OCR[OCR]
+	TextChunk[Text Chunking]
+	AIRev["AI Review<br/>(PDFs + explicit only)"]
+	Summary[Summary Report<br/>Building]
+	INFO[Green = AI<br/>Blue = Script]
 
 	%% Linking the nodes
-	TGR --> RPR
-	RPR -- Unstructured Reports --> OTC
-	OTC --> AIR
-	AIR -- Reports w/o Issues --> SRB
-	AIR -- Reports w Issues<br/>and Random Audits --> AIA
-	AIA --> SRB
+	Trigger --> RepPull
+	RepPull -- All Reports --> Route
+	Route -- PDFs --> OCR
+	OCR -- PDFs --> TextChunk
+	TextChunk -- PDFs--> AIRev
+	AIRev -- JSONs--> Summary
 
 	%% Create classes for the node colors
 	classDef blue fill:#8EA8D8,stroke:#3B4A73,color:#111,stroke-width:1px;
 	classDef green fill:#A9C98D,stroke:#5D7A46,color:#111,stroke-width:1px;
 
 	%% Assigning the nodes to their classes
-	class RPR,PS,OTC,SRB blue;
-	class AIR,AIA green;
+	class RepPull,Route,OCR,TextChunk,Summary blue;
+	class AIRev green;
 ```

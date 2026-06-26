@@ -36,8 +36,10 @@
     - [ ] Refactor / review
   - [ ] Routing
     - [ ] Refactor / review
+    - [ ] Fix zip_extract.py so that it properly routes zips that contained a folder of mixed file types
   - [ ] Text Chunking
     - [ ] Refactor / review
+    - [ ] Generalize chunking function for use in renaming (future proof)?
   - [ ] AI Reviewer
     - [x] Ingest chunk + prompt
     - [ ] Process + output JSON (issue flag, issue description)
@@ -45,12 +47,6 @@
     - [ ] Seed randomizer and tracking
     - [ ] JSON validation
     - [ ] Reviewer prompt
-    - [ ] Auditor routing
-    - [ ] Refactor
-  - [ ] AI Auditor
-    - [ ] Prompt
-    - [ ] Feed input
-    - [ ] Define output
     - [ ] Refactor
   - [ ] Summary Report Building
     - [ ] Pull JSONs
@@ -109,6 +105,11 @@
   - [ ] Summary Report Building
     - [ ] Add python scraping to report building
     - [ ] Refactor
+  - [ ] Sub-agents
+    - [ ] Create a method for calling a sub-agent
+    - [ ] Create a tool for pulling from eCFR
+    - [ ] Summarize relevant information
+    - [ ] Pass information (eCFR summary + prompt + chunk) to reviewer 
   - [ ] Cron Trigger
 
 - [ ] Create Full Version Test Harness
