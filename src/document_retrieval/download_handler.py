@@ -7,6 +7,12 @@ import re
 import time
 
 def fetch_reports(config, paths):
+	"""Fetches reports from the WebFIRE API for each state specified in the configuration.
+	
+	Args:
+		config (dict): A dictionary containing configuration settings.
+		paths (dict): A dictionary containing paths to various data directories.
+	"""
 
 	# Get the base url and start/end dates for the WebFIRE API request from settings
 	webfire_base = config['api_endpoints']['webfire']
@@ -34,6 +40,17 @@ def fetch_reports(config, paths):
 		get_results(session,paths['raw_data_dir'],paths['api_dir'],state_name,dl_retries,dl_retry_delay)
 
 def post_search(webfire_base, session, start_date, end_date, state_name, paths):
+	"""Posts a search request to the WebFIRE API for a specific state and date range.
+
+	Args:
+		webfire_base (str): The base URL for the WebFIRE API.
+		session (requests.Session): The session object for making HTTP requests.
+		start_date (str): The start date for the search range.
+		end_date (str): The end date for the search range.
+		state_name (str): The name of the state for which reports are being searched.
+		paths (dict): A dictionary containing paths to various data directories.
+	"""
+
 	print(f"{'*' * 50}\nSearching for reports for state: {state_name} from {start_date} to {end_date}\n")
 
 	# Request 1: GET the initial search page to establish session cookies
@@ -80,6 +97,13 @@ def post_search(webfire_base, session, start_date, end_date, state_name, paths):
 		output_file.write(response3.text)
 
 def parse_search_results(file_path, state_name):
+	"""Parses the search results page for a specific state and extracts the report URLs.
+	
+	Args:
+		file_path (Path): The path to the directory where the search results HTML file is stored.
+		state_name (str): The name of the state for which reports are being parsed.
+	"""
+
 	print(f"Parsing search results for state: {state_name}")
 
 	all_rows = []
@@ -115,6 +139,18 @@ def parse_search_results(file_path, state_name):
 	print(f"Found {num_reports} reports for state: {state_name}")
 
 def get_results(session, raw_data_dir, api_dir, state_name, max_attempts=3, retry_delay_seconds=2):
+	"""
+	GETs the report pages for each URL in the parsed CSV and saves them to files in the raw data directory.
+
+	Args:
+		session (requests.Session): The session object for making HTTP requests.
+		raw_data_dir (Path): The directory where raw data files will be saved.
+		api_dir (Path): The directory where API-related files are stored.
+		state_name (str): The name of the state for which reports are being downloaded.
+		max_attempts (int): The maximum number of retry attempts for failed requests.
+		retry_delay_seconds (int): The delay in seconds between retry attempts.
+	"""
+	
 	print(f"Downloading reports for state: {state_name}")
 	
 	# Read the CSV file containing report URLs for the state

@@ -9,8 +9,8 @@ def apply_ocr(paths, config):
     Apply OCR to every PDF in the specified folder.
     
     Args:
-        paths: Dictionary containing paths to various data directories
-        config: Dictionary containing OCR configuration
+        paths (dict): Dictionary containing paths to various data directories.
+        config (dict): Dictionary containing OCR configuration.
     """
     print(f"{'*' * 50}\nStarting OCR processing for PDFs\n")
 
