@@ -4,6 +4,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 import csv
 import re
+import time
 
 def fetch_reports(config, paths):
 
@@ -17,6 +18,8 @@ def fetch_reports(config, paths):
 
 	# Read the state names from the configuration file
 	state_names = [state['name'] for state in config['states']]
+	dl_retries = int(config.get('download_retry_attempts'))
+	dl_retry_delay = float(config.get('download_retry_delay_seconds'))
 
 	# Loop through each state and perform the search and download process
 	for state_name in state_names:
@@ -27,7 +30,7 @@ def fetch_reports(config, paths):
 		parse_search_results(paths['api_dir'], state_name)
 
 		# Request 4: GET the report pages for each URL in the parsed CSV and save to file
-		get_results(session, paths['raw_data_dir'], paths['api_dir'], state_name)
+		get_results(session,paths['raw_data_dir'],paths['api_dir'],state_name,dl_retries,dl_retry_delay)
 
 def post_search(webfire_base, session, start_date, end_date, state_name, paths):
 	# Request 1: GET the initial search page to establish session cookies
@@ -102,7 +105,7 @@ def parse_search_results(file_path, state_name):
 		writer.writeheader()
 		writer.writerows(all_rows)
 
-def get_results(session, raw_data_dir, api_dir, state_name):
+def get_results(session, raw_data_dir, api_dir, state_name, max_attempts=3, retry_delay_seconds=2):
 	# Read the CSV file containing report URLs for the state
 	csv_path = api_dir / f"{state_name}_report_urls.csv"
 	raw_data_dir.mkdir(parents=True, exist_ok=True)
@@ -121,18 +124,21 @@ def get_results(session, raw_data_dir, api_dir, state_name):
 			if not report_url:
 				continue
 
-			# GET the report page
-			try:
-				response = session.get(report_url, timeout=10)
-				response.raise_for_status()
-			except requests.exceptions.Timeout:
-				print(f"Timeout for {report_url}")
-				continue
-			except requests.exceptions.HTTPError as e:
-				print(f"HTTP error for {report_url}: {e}")
-				continue
-			except requests.exceptions.RequestException as e:
-				print(f"Request error for {report_url}: {e}")
+			# GET the report with a simple retry loop
+			response = None
+			for attempt in range(1, max_attempts + 1):
+				try:
+					response = session.get(report_url, timeout=10)
+					response.raise_for_status()
+					break
+				except requests.exceptions.RequestException as e:
+					if attempt == max_attempts:
+						print(f"Failed after {max_attempts} attempts for {report_url}: {e}")
+					else:
+						print(f"Attempt {attempt}/{max_attempts} failed for {report_url}: {e}. Retrying...")
+						time.sleep(retry_delay_seconds)
+
+			if response is None:
 				continue
 
 			# Extract the filename from the Content-Disposition header or fallback to the last part of the URL
