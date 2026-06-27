@@ -31,13 +31,13 @@
     - [X] load_settings
     - [X] build_paths
 
-  - [ ] WebFIRE report pull
-    - [ ] Refactor / review
-    - [ ] Fix HTTPS TLS certificate verification
-    - [ ] Use settings.yml info for URLs, etc.
-
-  - [X] OCR
+  - [X] WebFIRE report pull
     - [X] Refactor / review
+    - [X] Fix HTTPS TLS certificate verification
+    - [X] Use settings.yml info for URLs, etc.
+
+  - [ ] OCR
+    - [ ] Refactor / review
 
   - [X] Routing
     - [X] Refactor / review
@@ -91,7 +91,7 @@
 
 - [ ] Report Downloading
   - [ ] Scrape html file for facility info
-  - [ ] Add download retries
+  - [X] Add download retries
 
  - [ ] File Routing
   - [ ] Check spreadsheets for EPA template layout - route to Other folder if not using the template

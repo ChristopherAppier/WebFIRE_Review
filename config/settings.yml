@@ -19,7 +19,7 @@ default_interval_days: 45 # Date range to use if the last_run_timestamp is null
 api_endpoints:
   webfire: 'https://cfpub.epa.gov/webfire'
 dl_threads: 6 # Number of CPU threads for concurrent downloading
-download_retry_attempts: 3 # Number of download attempts per URL
+download_retry_attempts: 5 # Number of download attempts per URL
 download_retry_delay_seconds: 2 # Seconds to wait between retry attempts
 states: # List of states to download reports for
   - name: 'KS'

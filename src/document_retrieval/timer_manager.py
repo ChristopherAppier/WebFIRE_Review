@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 
 def check_timer(config):
     """Returns the start and end date to be used for the WebFIRE API request"""
+
+    print(f"{'*' * 50}\nLoading timestamps from settings.yml\n")
     
     # Read last_run_timestamp
     last_run = config['last_run_timestamp']

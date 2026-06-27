@@ -13,6 +13,8 @@ def find_project_root(start: Path | None = None) -> Path:
 
 def load_config():
     """Load configuration from settings.yml."""
+    print(f"{'*' * 50}\nLoading configuration data from settings.yml\n{'*' * 50}")
+
     project_root = find_project_root() # Finds the root folder of the project
 
     config_path = project_root / "config" / "settings.yml" # Sets the path for the settings.yml file
@@ -43,6 +45,8 @@ class Paths:
 def build_paths(config: dict) -> Paths:
 
     """Returns folder paths as defined in settings.yml. Additions to settings.yml will automatically be added to the Paths object."""
+
+    print(f"{'*' * 50}\nBuilding paths from settings.yml\n{'*' * 50}")
 
     # Load directory paths from the configuration.
     dirs = config.get("directories", {})

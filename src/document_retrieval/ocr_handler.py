@@ -12,8 +12,7 @@ def apply_ocr(paths, config):
         paths: Dictionary containing paths to various data directories
         config: Dictionary containing OCR configuration
     """
-
-    ocr_env = _build_ocr_env()
+    print(f"{'*' * 50}\nStarting OCR processing for PDFs\n")
 
     pdf_files = sorted(
         pdf_file
@@ -44,7 +43,7 @@ def apply_ocr(paths, config):
 
         try:
             result = subprocess.run(
-                cmd, check=True, capture_output=True, text=True, env=ocr_env
+                cmd, check=True, capture_output=True, text=True
             )
             os.replace(temp_output, pdf_file)
             print(f"Processed: {pdf_file.name}")
@@ -69,35 +68,6 @@ def apply_ocr(paths, config):
             continue
     
     return
-
-def _build_ocr_env():
-    """Create subprocess env with explicit Tesseract and tessdata locations."""
-    env = os.environ.copy()
-    py_dir = Path(sys.executable).resolve().parent
-    # Conda/venv prefix is usually one level above the Python executable directory.
-    env_prefix = py_dir.parent if py_dir.name in {"bin", "Scripts"} else py_dir
-
-    tesseract_candidates = [
-        env_prefix / "Library" / "bin" / "tesseract.exe",  # Windows conda
-        env_prefix / "bin" / "tesseract",  # macOS/Linux conda/venv
-        py_dir / "tesseract",  # Adjacent to executable in some envs
-    ]
-    for candidate in tesseract_candidates:
-        if candidate.exists():
-            env["PATH"] = f"{candidate.parent}{os.pathsep}{env.get('PATH', '')}"
-            break
-
-    tessdata_candidates = [
-        env_prefix / "Library" / "share" / "tessdata",  # Windows conda
-        env_prefix / "share" / "tessdata",  # macOS/Linux conda/venv
-        env_prefix / "share" / "tesseract" / "tessdata",  # alt layout
-    ]
-    for candidate in tessdata_candidates:
-        if (candidate / "eng.traineddata").exists():
-            env["TESSDATA_PREFIX"] = str(candidate)
-            break
-
-    return env
 
 if __name__ == "__main__":
     from common import utilities

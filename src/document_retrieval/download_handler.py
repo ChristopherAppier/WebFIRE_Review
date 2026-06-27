@@ -13,6 +13,7 @@ def fetch_reports(config, paths):
 	start_date, end_date = check_timer(config).values()
 
 	# Start a session to maintain cookies and headers across requests
+	print(f"{'*' * 50}\nStarting session for WebFIRE API requests\n")
 	session = requests.Session()
 	session.headers["User-Agent"] = "Mozilla/5.0"
 
@@ -33,6 +34,8 @@ def fetch_reports(config, paths):
 		get_results(session,paths['raw_data_dir'],paths['api_dir'],state_name,dl_retries,dl_retry_delay)
 
 def post_search(webfire_base, session, start_date, end_date, state_name, paths):
+	print(f"{'*' * 50}\nSearching for reports for state: {state_name} from {start_date} to {end_date}\n")
+
 	# Request 1: GET the initial search page to establish session cookies
 	response1 = session.get(f"{webfire_base}/reports/esearch.cfm")
 
@@ -77,6 +80,8 @@ def post_search(webfire_base, session, start_date, end_date, state_name, paths):
 		output_file.write(response3.text)
 
 def parse_search_results(file_path, state_name):
+	print(f"Parsing search results for state: {state_name}")
+
 	all_rows = []
 
 	state_file = file_path / f"results_{state_name}.html"
@@ -105,7 +110,13 @@ def parse_search_results(file_path, state_name):
 		writer.writeheader()
 		writer.writerows(all_rows)
 
+	# Calculating the number of reports found and printing the result
+	num_reports = len(all_rows)
+	print(f"Found {num_reports} reports for state: {state_name}")
+
 def get_results(session, raw_data_dir, api_dir, state_name, max_attempts=3, retry_delay_seconds=2):
+	print(f"Downloading reports for state: {state_name}")
+	
 	# Read the CSV file containing report URLs for the state
 	csv_path = api_dir / f"{state_name}_report_urls.csv"
 	raw_data_dir.mkdir(parents=True, exist_ok=True)
@@ -116,6 +127,14 @@ def get_results(session, raw_data_dir, api_dir, state_name, max_attempts=3, retr
 	
 	# Loop through each report URL in the CSV and GET the report page, saving it to a file
 	with open(csv_path, "r", encoding="utf-8") as csv_file:
+		reader = csv.DictReader(csv_file)
+
+		# Finding the number of reports to download for progress tracking
+		num_reports = sum(1 for _ in reader)
+		num_dl = 0
+
+		# Rewind and rebuild DictReader so header is handled correctly again
+		csv_file.seek(0)
 		reader = csv.DictReader(csv_file)
 
 		for idx, row in enumerate(reader, start=1):
@@ -165,6 +184,11 @@ def get_results(session, raw_data_dir, api_dir, state_name, max_attempts=3, retr
 			# Save the report content to a file in the raw data directory
 			with open(output_file_path, "wb") as output_file:
 				output_file.write(response.content)
+
+			# Tracking the number of reports downloaded and printing progress
+			num_dl += 1
+			print(f"Downloaded report {num_dl} of {num_reports} for state: {state_name}")
+	print("*" * 50 + "\n")
 
 if __name__ == "__main__":
 	from common import utilities

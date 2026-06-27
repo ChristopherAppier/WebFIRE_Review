@@ -9,6 +9,8 @@ def extract_and_route_files(paths):
         paths : A dictionary of path objects for the various directories used in the process.
     """
 
+    print(f"Extracting zip files from raw data directory\n")
+
     # Ensure the target directories exist
     paths['spreadsheet_dir'].mkdir(parents=True, exist_ok=True)
     paths['pdf_dir'].mkdir(parents=True, exist_ok=True)
@@ -29,6 +31,7 @@ def extract_and_route_files(paths):
         zips_present = check_for_zips(paths)
 
     # Route files into the appropriate directories based on their MIME type after unzips
+    print(f"{'*' * 50}\nRouting files into appropriate directories based on file type\n")
     route_files(paths)
 
 def check_for_zips(paths):
@@ -59,7 +62,7 @@ def extract_zips(paths):
             # Extract the zip file
             with zipfile.ZipFile(file_name, 'r') as zip_ref:
                 zip_ref.extractall(paths['raw_data_dir'])
-            # Optionally, delete the zip file after extraction
+            # Delete the zip file after extraction
             file_name.unlink()
 
 def flatten_directory(paths):
