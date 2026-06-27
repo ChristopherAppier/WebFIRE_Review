@@ -19,7 +19,7 @@ def fetch_reports(config, paths):
 	start_date, end_date = check_timer(config).values()
 
 	# Start a session to maintain cookies and headers across requests
-	print(f"{'*' * 50}\nStarting session for WebFIRE API requests\n")
+	print(f"\n\n{'*' * 50}\n\nStarting session for WebFIRE API requests")
 	session = requests.Session()
 	session.headers["User-Agent"] = "Mozilla/5.0"
 
@@ -51,7 +51,7 @@ def post_search(webfire_base, session, start_date, end_date, state_name, paths):
 		paths (dict): A dictionary containing paths to various data directories.
 	"""
 
-	print(f"{'*' * 50}\nSearching for reports for state: {state_name} from {start_date} to {end_date}\n")
+	print(f"\n\n{'*' * 50}\n\nSearching for reports for state: {state_name} from {start_date} to {end_date}")
 
 	# Request 1: GET the initial search page to establish session cookies
 	response1 = session.get(f"{webfire_base}/reports/esearch.cfm")
@@ -104,7 +104,7 @@ def parse_search_results(file_path, state_name):
 		state_name (str): The name of the state for which reports are being parsed.
 	"""
 
-	print(f"Parsing search results for state: {state_name}")
+	print(f"\n\nParsing search results for state: {state_name}")
 
 	all_rows = []
 
@@ -136,7 +136,7 @@ def parse_search_results(file_path, state_name):
 
 	# Calculating the number of reports found and printing the result
 	num_reports = len(all_rows)
-	print(f"Found {num_reports} reports for state: {state_name}")
+	print(f"\n\nFound {num_reports} reports for state: {state_name}")
 
 def get_results(session, raw_data_dir, api_dir, state_name, max_attempts=3, retry_delay_seconds=2):
 	"""
@@ -151,7 +151,7 @@ def get_results(session, raw_data_dir, api_dir, state_name, max_attempts=3, retr
 		retry_delay_seconds (int): The delay in seconds between retry attempts.
 	"""
 	
-	print(f"Downloading reports for state: {state_name}")
+	print(f"\n\nDownloading reports for state: {state_name}")
 	
 	# Read the CSV file containing report URLs for the state
 	csv_path = api_dir / f"{state_name}_report_urls.csv"
@@ -183,7 +183,7 @@ def get_results(session, raw_data_dir, api_dir, state_name, max_attempts=3, retr
 			response = None
 			for attempt in range(1, max_attempts + 1):
 				try:
-					response = session.get(report_url, timeout=10)
+					response = session.get(report_url, timeout=30)
 					response.raise_for_status()
 					break
 				except requests.exceptions.RequestException as e:
@@ -224,7 +224,7 @@ def get_results(session, raw_data_dir, api_dir, state_name, max_attempts=3, retr
 			# Tracking the number of reports downloaded and printing progress
 			num_dl += 1
 			print(f"Downloaded report {num_dl} of {num_reports} for state: {state_name}")
-	print("*" * 50 + "\n")
+	print("*" * 50)
 
 if __name__ == "__main__":
 	from common import utilities
