@@ -25,9 +25,6 @@ def extract_and_route_files(paths):
         # Flattens the directory structure in the raw directory (moves all files from subdirectories to the root of the raw directory)
         flatten_directory(paths)
 
-        # Ensures that pdfs have the correct file extension (some pdfs are mislabeled as .zip from WebFIRE)
-        rename_pdfs(paths)
-
         # Check again if there are any zip files left in the raw directory
         zips_present = check_for_zips(paths)
 
@@ -64,20 +61,6 @@ def extract_zips(paths):
                 zip_ref.extractall(paths['raw_data_dir'])
             # Optionally, delete the zip file after extraction
             file_name.unlink()
-
-def rename_pdfs(paths):
-    """
-    Renames files in the raw directory that are actually PDFs but have a .zip extension.
-
-    Args:
-        paths (dict): A dictionary of path objects for the various directories used in the process.
-    """
-    for file_name in paths['raw_data_dir'].iterdir():
-        mime_type = magic.from_file(file_name, mime=True)
-        if mime_type == 'application/pdf':
-            # Rename the file to have a .pdf extension
-            new_file_name = file_name.with_suffix('.pdf')
-            file_name.rename(new_file_name)
 
 def flatten_directory(paths):
     """
