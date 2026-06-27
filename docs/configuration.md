@@ -16,6 +16,9 @@
 - Required variables or secrets
 - External service credentials, if any
 
+- Tesseract download
+- spaCy setup w en_core_web_trf 
+
 ## Folder and Path Settings
 
 - Input folder locations

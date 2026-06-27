@@ -42,7 +42,7 @@ class Paths:
 
 def build_paths(config: dict) -> Paths:
 
-    """Returns folder paths as defined in settings.yml."""
+    """Returns folder paths as defined in settings.yml. Additions to settings.yml will automatically be added to the Paths object."""
 
     # Load directory paths from the configuration.
     dirs = config.get("directories", {})

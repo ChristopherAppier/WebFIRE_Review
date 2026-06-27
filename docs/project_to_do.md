@@ -89,6 +89,10 @@
 
 - [ ] Create Full Version
 
+- [ ] Report Downloading
+  - [ ] Scrape html file for facility info
+  - [ ] Add download retries
+
  - [ ] File Routing
   - [ ] Check spreadsheets for EPA template layout - route to Other folder if not using the template
 
@@ -104,7 +108,7 @@
     - [ ] Chunk file
     - [ ] Ingest (NLP)
     - [ ] Output potential facility names (NLP)
-    - [ ] Use LLM to select best name
+    - [ ] Use LLM to select report type and best name (may not be necessary if html scraping gets name)
     - [ ] Check output format
     - [ ] Change name
     - [ ] Refactor

@@ -8,7 +8,7 @@ flowchart TB
 	FRC[File Renaming]
 	CAP[Chunking<br/>and<br/>Prompt Selection]
 	AIR["AI Reviewer<br/>(implicit and explicit)"]
-	SAG[[Sub-Agent<br/>Reg Retrieval]]
+	RAG[[RAG Based<br/>Reg Retrieval]]
 	JCT1(( ))
 	JCT2(( ))
 	AIA[AI Auditor]
@@ -24,8 +24,8 @@ flowchart TB
 	RPR -- Structured Reports --> PS
 	FRC --> CAP
 	CAP --> AIR
-	AIR --> SAG
-	SAG --> AIR
+	AIR --> RAG
+	RAG --> AIR
 	AIR --> JCT2
 	AIR --> JCT1
 	PS --> JCT1
@@ -42,6 +42,6 @@ flowchart TB
 
 	%% Assigning the nodes to their classes
 	class TGR,RPR,PS,CAP,SRB,RO,OCR blue;
-	class AIR,AIA green;
-	class FRC,SAG red;
+	class AIR,AIA,RAG green;
+	class FRC red;
 ```

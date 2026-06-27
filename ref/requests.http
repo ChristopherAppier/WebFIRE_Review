@@ -1,18 +1,65 @@
+#############################################
+# WebFIRE Request Playground (Beginner Mode)
+#############################################
+
+# How to use this file:
+# 1) Run Request 1
+# 2) Run Request 2
+# 3) Run Request 3
+# 4) In response from Request 3, find "ID=#####"
+# 5) Replace @docId with that real number
+# 6) Run Request 4
+
+@webfireBase = https://cfpub.epa.gov/webfire
+@state = KS
+@startDate = 06/01/2025
+@endDate = 06/26/2026
+@docId = 86916959
+
 ###
-# eCFR Text
-GET https://www.ecfr.gov/api/versioner/v1/full/2026-06-09/title-40.xml
-    ?part=60
-    &subpart=A
-    &section=60.1
-    &appendix=
-
-## Note: Use variable for date and title in url 
+# Request 1: Open search page (starts session)
+GET {{webfireBase}}/reports/esearch.cfm
+User-Agent: Mozilla/5.0
 
 ###
+# Request 2: Submit starter form (keeps session alive)
+POST {{webfireBase}}/reports/esearch2.cfm
+Content-Type: application/x-www-form-urlencoded
+Referer: {{webfireBase}}/reports/esearch.cfm
 
-# eCFR Structure
-GET https://www.ecfr.gov/api/versioner/v1/structure/2026-06-09/title-40.json
-
-## Note: Cannot refine lower than Title - parsed and saved for future reference as eCFR_structure.json
+reporttype=All&Submit=Submit+Search
 
 ###
+# Request 3: Search reports (this gives you report IDs)
+POST {{webfireBase}}/reports/eSearchResults.cfm
+Content-Type: application/x-www-form-urlencoded
+Referer: {{webfireBase}}/reports/esearch2.cfm
+
+organization=&facility=&startdate={{startDate}}&enddate={{endDate}}&state={{state}}&county=&city=&zip=&CFRpart=All&CFRSubpart=&FRS=&Submit=Submit+Search
+
+###
+# Request 4: Report details/download by ID
+# IMPORTANT: ID must be uppercase and should be a real ID from Request 3 response
+GET {{webfireBase}}/FIRE/view/dspERTDocumentDetails.cfm?ID={{docId}}
+Referer: {{webfireBase}}/reports/eSearchResults.cfm
+Accept: application/pdf, application/zip, */*
+
+
+########################################################
+# Reference Only (Saved for later): eCFR request examples
+########################################################
+
+# @ecfrDate = 2026-06-09
+# @ecfrTitle = 40
+# @ecfrPart = 60
+# @ecfrSubpart = A
+# @ecfrSection = 60.1
+
+###
+# eCFR Text (Reference)
+# GET https://www.ecfr.gov/api/versioner/v1/full/{{ecfrDate}}/title-{{ecfrTitle}}.xml?part={{ecfrPart}}&subpart={{ecfrSubpart}}&section={{ecfrSection}}&appendix=
+
+###
+# eCFR Structure (Reference)
+# GET https://www.ecfr.gov/api/versioner/v1/structure/{{ecfrDate}}/title-{{ecfrTitle}}.json
+# Note: structure endpoint does not refine lower than Title

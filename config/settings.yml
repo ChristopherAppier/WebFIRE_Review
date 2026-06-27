@@ -8,17 +8,16 @@ directories:
   raw_data_dir: 'data/raw'
   chunk_dir: 'data/pdfs/chunks'
   rev_json_dir: 'data/reviews/json'
+  api_dir: 'data/api'
 
 # Document Retrieval
 ## Timer Manager
 last_run_timestamp: null # Auto-set to current UTC time after each run (MM/DD/YYYY string)
-default_interval_days: 60 # Date range to use if the last_run_timestamp is null
+default_interval_days: 45 # Date range to use if the last_run_timestamp is null
 
 ## Download Handler
 api_endpoints:
-  webfire:
-    base_url: 'https://cfpub.epa.gov/webfire/reports/'
-    detail_url: 'https://cfpub.epa.gov/webfire/FIRE/view/dspERTDocumentDetails.cfm'
+  webfire: 'https://cfpub.epa.gov/webfire'
 dl_threads: 6 # Number of CPU threads for concurrent downloading
 states: # List of states to download reports for
   - name: 'KS'
