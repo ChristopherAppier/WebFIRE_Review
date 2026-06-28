@@ -180,7 +180,7 @@ def get_results(session, raw_data_dir, http_dir, state_name, max_attempts=3, ret
 		retry_delay_seconds (int): The delay in seconds between retry attempts.
 	"""
 	
-	print(f"\nDownloading reports for state: {state_name}\n")
+	print(f"\n\nDownloading reports for state: {state_name}\n")
 	
 	# Read the CSV file containing report URLs for the state
 	csv_path = http_dir / f"{state_name}_report_table.csv"
