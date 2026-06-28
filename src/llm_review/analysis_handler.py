@@ -5,7 +5,7 @@ import yaml
 
 def analyze_chunks(config, paths):
 
-    #TODO Add the creation of a csv that tracks [original file name, number of chunks, prompt selected, chosen for audit flag, JSON adhereance flag, thinking]
+    #TODO Add the creation of a csv that tracks [chunk name, prompt selected, chosen for audit flag, JSON adhereance flag, thinking, review time]
 
     print(f"\n{'*' * 50}\n\nAnalyzing text chunks using: {config['llm']['review']}")
 
@@ -40,6 +40,8 @@ def analyze_chunks(config, paths):
 
     # Moves JSON files to an audit folder
     store_for_audit(config, paths)
+
+    print(f"\nLLM review complete") #TODO Add more stat tracking
     
     return
 
@@ -101,6 +103,8 @@ def store_for_audit(config, paths):
     """Stores associated chunks and the output JSON in an auditing folder for audit at a later time based on issue flags and audit chance defined in settings.yml
     """
     
+    print(f"\n Selecting all reviews with issued flagged and {config['audit_chance']}% of all other reviews for auditing")
+
     return
 
 if __name__ == "__main__":
