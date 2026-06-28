@@ -54,7 +54,7 @@ def process_single_pdf(config, output_dir, pdf_file):
     """
     # Extract configuration parameters and defining chunking variables
     chunk_size = config.get('chunk_size')
-    overlap = config.get('overlap')
+    overlap = config.get('chunk_overlap')
     prefix = config.get('chunk_prefix')
     chunk_num = 0
     step = chunk_size - overlap
