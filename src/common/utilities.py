@@ -61,6 +61,8 @@ def build_paths(config: dict) -> Paths:
         for name, relative_path in dirs.items()
     }
 
+    data_dir_clean(config, Paths(root=root, directories=resolved_directories))
+
     return Paths(
         root=root,
         directories=resolved_directories,

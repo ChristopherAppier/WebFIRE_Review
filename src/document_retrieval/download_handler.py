@@ -287,8 +287,5 @@ if __name__ == "__main__":
 	# Builds the paths for the data directories
 	paths = utilities.build_paths(config)
 
-    # Removes previous run data (if enabled in settings.yml) and checks folder structure
-	utilities.data_dir_clean(config, paths)
-
 	# Downloading reports from WebFIRE HTTP for each state
 	fetch_reports(config, paths)

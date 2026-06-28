@@ -19,7 +19,7 @@ def chunk_pdfs(config, paths):
         print(f"\nNo PDF files found")
         return
 
-    print(f"\nFound {len(pdf_files)} PDF files to process")
+    print(f"\nFound {len(pdf_files)} PDF files to process\n")
 
     # Process each PDF file and create chunks
     for pdf_file in pdf_files:
@@ -55,7 +55,6 @@ def process_single_pdf(config, output_dir, pdf_file):
     # Extract configuration parameters and defining chunking variables
     chunk_size = config.get('chunk_size')
     overlap = config.get('chunk_overlap')
-    prefix = config.get('chunk_prefix')
     chunk_num = 0
     step = chunk_size - overlap
 
@@ -92,13 +91,13 @@ def process_single_pdf(config, output_dir, pdf_file):
         # Saving the chunk to a text file if it contains any text
         if chunk_text.strip():
             chunk_id = f"{chunk_num:03d}"
-            filename = f"{prefix}_{pdf_file.stem}_chunk_{chunk_id}.txt"
+            filename = f"{pdf_file.stem}_chunk_{chunk_id}.txt"
             filepath = output_dir / filename
             with open(filepath, 'w', encoding='utf-8') as f:
                 f.write(chunk_text)
             chunk_num += 1
 
-    print(f"Processed {pdf_file.name}: created {chunk_num} chunks")
+    print(f"Processed {pdf_file.name}:\nCreated {chunk_num} chunks")
 
     return chunk_num
 

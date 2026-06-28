@@ -63,7 +63,6 @@ def load_config():
     
     return
 
-
 def single_analysis(model, model_url, chunk, sys_prompt):
     """Gives a system prompt to a chosen AI model to conduct an analysis on the chunk of data"""
     
@@ -88,7 +87,6 @@ def single_analysis(model, model_url, chunk, sys_prompt):
     except Exception as e:
         return f"An unexpected error occurred: {e}"
 
-
 def json_check(raw_string):
     """Strips markdown fences if present, then parses and returns a JSON dict.
     Raises ValueError if the string cannot be parsed as valid JSON."""
@@ -105,18 +103,15 @@ def json_check(raw_string):
     except json.JSONDecodeError as e:
         raise ValueError(f"Model returned invalid JSON: {e}\nRaw output:\n{raw_string}")
 
-
 def store_for_audit(json_output, chunk_name):
     """Stores a chunk and the output JSON in an auditing folder for audit at a later time"""
     
     return
 
-
 def random_chance(percent_chance):
     """Returns a 0 or 1. 1 is chosen {percent_chance} % of the time, rounded to whole numbers"""
     
     return 1 if random.random() < (percent_chance / 100) else 0
-
 
 def store_json(json_output, save_folder, file_name):
     save_folder = Path(save_folder)
@@ -131,4 +126,12 @@ def store_json(json_output, save_folder, file_name):
     return
 
 if __name__ == "__main__":
+    from common import utilities
+
+    # Load configuration
+    config = utilities.load_config()
+
+    # Builds the paths for the data directories
+    paths = utilities.build_paths(config)
+
     analyze_chunks(config, paths)
