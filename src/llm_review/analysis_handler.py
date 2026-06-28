@@ -2,82 +2,62 @@ import random
 import requests
 import json
 import yaml
-from pathlib import Path
-from common import utilities
 
 def analyze_chunks(config, paths):
 
-    folder = paths['chunk_dir']
-    save_folder = paths['rev_json_dir']
-    
-    # Loading settings based on settings.yml file
-    system_prompt = config['prompts']['system']['analyze']
-    ai_model = config['ai_models']['analyze']
-    audit_chance = config['audit_chance']
-    model_url = config['ai_urls']['analyze']
-    
-    #Looping through all pdf files
-    for chunk_name in folder.iterdir():
+    #TODO Add the creation of a csv that tracks [original file name, number of chunks, prompt selected, chosen for audit flag, JSON adhereance flag, thinking]
+
+    print(f"\n{'*' * 50}\n\nAnalyzing text chunks using: {config['llm']['review']}")
+
+    #Looping through all chunks
+    for chunk_name in paths['chunk_dir'].iterdir():
         
         # Skips the file if it isn't a text file
         if chunk_name.suffix != ".txt":
             continue
+
+        # Loads the system prompt based on the file type/name being reviewed
+        system_prompt = load_system_prompt(paths, chunk_name)
         
         # Load text from chunk_name.txt
         with open(chunk_name,"r") as f:
             chunk_text = f.read()
         
         # Get the AI's response as a string
-        raw_output = single_analysis(ai_model, model_url, chunk_text, system_prompt)
+        raw_output = single_analysis(config, chunk_name, chunk_text, system_prompt)
         
-        # Trying to load the string as a JSON with error handling
+        # Trying to load the response string as a JSON with error handling
         try:
             json_output = json_check(raw_output)
         except ValueError as e:
-            print(f"Skipping {chunk_name} — {e}")
+            print(f"Skipping {chunk_name}: {e}")
             continue
-
-        # Adding the chunk name to the JSON output for traceability
-        json_output['chunk_name'] = chunk_name.stem
-        
-        # If an issue is flagged - send the chunk analyzed and JSON to the auditor folder for review
-        if json_output.get('issue') == 1:
-            store_for_audit(json_output, chunk_name)
-            
-        # If no issue is flagged, there is a X% chance (defined in settings.yml) to set aside in auditor folder for review
-        elif random.random() < (audit_chance / 100):
-            store_for_audit(json_output, chunk_name)
     
         # Storing the JSON output containing the analysis for that chunk
-        store_json(json_output, save_folder, chunk_name.stem)    
+        save_path = paths['rev_json_dir'] / f"{chunk_name.stem}.json"
+        with open(save_path, "w", encoding="utf-8") as f:
+            json.dump(json_output, f, indent=2)
+
+    # Moves JSON files to an audit folder
+    store_for_audit(config, paths)
     
     return
 
-def load_config():
-    """Load configuration from settings.yml."""
-    project_root = Path(__file__).parent.parent.parent # Finds the root folder of the project based on this main.py file location
-    config_path = project_root / "config" / "settings.yml" # Sets the path for the settings.yml file
-    
-    with open(config_path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
-    
-    return
-
-def single_analysis(model, model_url, chunk, sys_prompt):
+def single_analysis(config, chunk_name, chunk_text, sys_prompt):
     """Gives a system prompt to a chosen AI model to conduct an analysis on the chunk of data"""
     
     payload = {
-        "model": model,
+        "model": config['llm']['review'],
         "stream": False,
         "format": "json",
         "messages": [
             {"role": "system", "content": sys_prompt},
-            {"role": "user", "content": chunk}
+            {"role": "user", "content": chunk_text}
             ]
     }
     try:
-        print(f"--- Sending prompt to {model} ---")
-        response = requests.post(model_url, json=payload)
+        print(f"Reviewing prompt and {chunk_name.stem}")
+        response = requests.post(config['llm_url'], json=payload, timeout=tuple(config['llm_timeout']))
         response.raise_for_status()
         response_data = response.json()
         return response_data.get("message", {}).get("content", "No content field found.")
@@ -86,6 +66,20 @@ def single_analysis(model, model_url, chunk, sys_prompt):
         return f"Error connecting to Ollama: {e}\n(Make sure Ollama is running!)"
     except Exception as e:
         return f"An unexpected error occurred: {e}"
+
+def load_system_prompt(paths, chunk_name):
+    """Loads the appropriate system prompt based on the file type/name being reviewed (currently just uses a single default prompt for MVP implementation)"""
+
+    # Load the list of prompts available from the prompt_bank.yml
+    prompt_bank_dir = paths['config_dir'] / "prompt_bank.yml"
+    
+    with open(prompt_bank_dir, "r", encoding="utf-8") as f:
+        prompt_bank = yaml.safe_load(f)
+
+    # Selecting the appropriate prompt based on the file type/name (currently all use one default)
+    prompt = prompt_bank['review']['generic']
+
+    return prompt
 
 def json_check(raw_string):
     """Strips markdown fences if present, then parses and returns a JSON dict.
@@ -103,25 +97,9 @@ def json_check(raw_string):
     except json.JSONDecodeError as e:
         raise ValueError(f"Model returned invalid JSON: {e}\nRaw output:\n{raw_string}")
 
-def store_for_audit(json_output, chunk_name):
-    """Stores a chunk and the output JSON in an auditing folder for audit at a later time"""
-    
-    return
-
-def random_chance(percent_chance):
-    """Returns a 0 or 1. 1 is chosen {percent_chance} % of the time, rounded to whole numbers"""
-    
-    return 1 if random.random() < (percent_chance / 100) else 0
-
-def store_json(json_output, save_folder, file_name):
-    save_folder = Path(save_folder)
-    save_folder.mkdir(parents=True, exist_ok=True)
-    
-    save_path = save_folder / f"{file_name}.json"
-    
-    with open(save_path, "w", encoding="utf-8") as f:
-        json.dump(json_output, f, indent=2)
-    
+def store_for_audit(config, paths):
+    """Stores associated chunks and the output JSON in an auditing folder for audit at a later time based on issue flags and audit chance defined in settings.yml
+    """
     
     return
 

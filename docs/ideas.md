@@ -6,5 +6,5 @@
 - Use table specific parser for chunking in full version
 - Create a config validation utility
     - Include chunk step calculation validation (chunk_size - chunk_overlap must be > 0, set to 5k if not)
-    - Call this inside the load_config as a helper so that every file gets it without extra func calls
+    - Check that audit chance is integer
 - Incorporate the data_dir_clean into the load_config function so every file gets it without extra func calls
