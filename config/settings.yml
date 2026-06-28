@@ -8,7 +8,7 @@ directories:
   raw_data_dir: 'data/raw'
   chunk_dir: 'data/pdfs/chunks'
   rev_json_dir: 'data/reviews/json'
-  api_dir: 'data/api'
+  http_dir: 'data/http'
 
 # Document Retrieval
 ## Timer Manager
@@ -16,7 +16,7 @@ last_run_timestamp: null # Auto-set to current UTC time after each run (MM/DD/YY
 default_interval_days: 45 # Date range to use if the last_run_timestamp is null
 
 ## Download Handler
-api_endpoints:
+http_endpoints:
   webfire: 'https://cfpub.epa.gov/webfire'
 dl_threads: 6 # Number of CPU threads for concurrent downloading
 download_retry_attempts: 5 # Number of download attempts per URL
@@ -35,6 +35,7 @@ ocr_pdf_renderer: 'sandwich' # Use sandwich to avoid hOCR temp-file failures on 
 chunk_size: 5000 # Number of characters per chunk for LLM analysis
 chunk_flex: 500 # Number of characters to flex the chunk size by (to avoid splitting sentences)
 chunk_overlap: 100 # Number of characters to overlap between chunks (to avoid losing context)
+chunk_prefix: 'source_pdf' # Prefix for chunk filenames
 audit_chance: 10 # In percent
 ai_models:
   analyze: 'gemma4:31b'

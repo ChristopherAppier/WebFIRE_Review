@@ -46,7 +46,7 @@ def build_paths(config: dict) -> Paths:
 
     """Returns folder paths as defined in settings.yml. Additions to settings.yml will automatically be added to the Paths object."""
 
-    print(f"\n\n{'*' * 50}\n\nBuilding paths from settings.yml")
+    print(f"\n{'*' * 50}\n\nBuilding paths from settings.yml")
 
     # Load directory paths from the configuration.
     dirs = config.get("directories", {})

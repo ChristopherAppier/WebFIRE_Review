@@ -24,7 +24,7 @@
 # MVP Version
 
 - [ ] Create MVP Version
-  - [ ] Add print statements at major steps
+  - [X] Add print statements at major steps
 
   - [X] Common
     - [X] find_project_root
@@ -36,8 +36,8 @@
     - [X] Fix HTTPS TLS certificate verification
     - [X] Use settings.yml info for URLs, etc.
 
-  - [ ] OCR
-    - [ ] Refactor / review
+  - [X] OCR
+    - [X] Refactor / review
 
   - [X] Routing
     - [X] Refactor / review
@@ -98,6 +98,7 @@
 
   - [ ] OCR
     - [ ] Add LLM w vision + text capabilities or structured table parser for table OCR
+    - [ ] Add setting to OCR all reports (do not rely on other sources for OCR quality)
 
   - [ ] Text Chunking
     - [ ] Add summarization to chunks
