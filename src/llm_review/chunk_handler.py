@@ -1,12 +1,4 @@
 import pdfplumber
-from pathlib import Path
-from datetime import datetime
-from typing import List, Dict, Tuple
-import logging
-
-logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-logger = logging.getLogger(__name__)
-
 
 def chunk_pdfs(config, paths):
     """
@@ -15,174 +7,100 @@ def chunk_pdfs(config, paths):
     Args:
         paths: Dictionary containing paths to various directories
         config: Dictionary containing chunking configuration
-
-    Returns:
-        List of tuples containing (chunk_path, chunk_info)
     """
+    print(f"\n\n{'*' * 50}\nStarting PDF chunking process")
 
-    chunks_created = []
-
+    # Creating a list of all PDF files
+    pdfs_processed = 0
+    zero_chunk_count = 0
     pdf_files = sorted([f for f in paths['pdf_dir'].glob("*.pdf")])
 
     if not pdf_files:
-        logger.warning(f"No PDF files found in: {paths['pdf_dir']}")
-        return chunks_created
+        print(f"\nNo PDF files found")
+        return
 
-    logger.info(f"Found {len(pdf_files)} PDF files to process")
+    print(f"\nFound {len(pdf_files)} PDF files to process")
 
+    # Process each PDF file and create chunks
     for pdf_file in pdf_files:
         try:
-            chunks = _process_single_pdf(
-                pdf_file=pdf_file,
-                output_dir=Path(paths['chunk_dir']),
-                chunk_size=config['chunk_size'],
-                overlap=config['chunk_overlap'],
-                prefix=config['chunk_prefix']
-            )
-            chunks_created.extend(chunks)
-            logger.info(f"Processed {pdf_file.name}: created {len(chunks)} chunks")
+            num_chunks = process_single_pdf(config, paths['chunk_dir'], pdf_file)
+            # Tracking the number of successfully proccessed PDFs
+            if num_chunks > 0:
+                pdfs_processed += 1
+            if num_chunks == 0:
+                zero_chunk_count += 1
 
         except Exception as e:
-            logger.error(f"Error processing {pdf_file.name}: {str(e)}")
+            print(f"Error processing {pdf_file.name}: {str(e)}")
             continue
 
-    logger.info(f"Total chunks created: {len(chunks_created)}")
-    return chunks_created
+    # Final summary of the chunking process
+    if pdfs_processed == len(pdf_files):
+        print(f"\nAll PDFs successfully processed.")
+    else:
+        print(f"\nTotal PDFs with chunks: {pdfs_processed} of {len(pdf_files)}\nTotal PDFs with 0 chunks: {zero_chunk_count} of {len(pdf_files)}\nSome PDFs may have failed to process or returned 0 chunks")
 
-def _process_single_pdf(
-    pdf_file: Path,
-    output_dir: Path,
-    chunk_size: int,
-    overlap: int,
-    prefix: str
-) -> List[Tuple[Path, Dict]]:
+def process_single_pdf(config, output_dir, pdf_file):
     """
     Process a single PDF and create fixed-size overlapping chunks.
 
     Args:
-        pdf_file: Path to the PDF file
+        config: Dictionary containing chunking configuration
         output_dir: Output directory for chunks
-        chunk_size: Number of words per chunk
-        overlap: Number of words to overlap between chunks
-        prefix: Filename prefix for chunks
-
+        pdf_file: Path object of the PDF file to process
     Returns:
-        List of (chunk_path, chunk_info) tuples
+        int: Number of chunks created for the PDF
     """
+    # Extract configuration parameters and defining chunking variables
+    chunk_size = config.get('chunk_size')
+    overlap = config.get('overlap')
+    prefix = config.get('chunk_prefix')
+    chunk_num = 0
+    step = chunk_size - overlap
 
-    chunks = []
+    # Error handling for invalid configuration values
+    if step <= 0:
+        print("Overlap must be smaller than chunk_size. Using default step size of 5000 words.")
+        step = 5000
 
+    # Extract text from the PDF using pdfplumber
     try:
         with pdfplumber.open(pdf_file) as pdf:
-            all_text = _extract_pdf_text(pdf)
-            word_tokens = all_text.split()
-            logger.info(f"  Extracted {len(word_tokens)} words from {pdf_file.name}")
+            word_tokens = []
+            # Extract text from each page and split into words
+            for page in pdf.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    word_tokens.extend(page_text.split())
+
+    # If any error occurs during text extraction, print the error and skip to the next PDF
     except Exception as e:
-        logger.error(f"  Failed to extract text from {pdf_file.name}: {str(e)}")
-        return chunks
-
+        print(f"Failed to extract text from {pdf_file.name}: {str(e)}")
+        return -1
+    # If no text was extracted, print a message and skip to the next PDF
     if not word_tokens:
-        logger.warning(f"  No text extracted from {pdf_file.name}, skipping")
-        return chunks
+        print(f"No text extracted from {pdf_file.name}, skipping")
+        return 0
 
-    chunk_num = 0
-    current_start = 0
-    step = chunk_size - overlap  # how far to advance each iteration
-
-    if step <= 0:
-        logger.error(f"  overlap ({overlap}) must be less than chunk_size ({chunk_size}). Aborting.")
-        return chunks
-
-    while current_start < len(word_tokens):
+    # Create overlapping chunks of the extracted text and save them
+    for current_start in range(0, len(word_tokens), step):
+        # Sets the end index for the current chunk at the smaller of chunk size or end of the word list
         chunk_end = min(current_start + chunk_size, len(word_tokens))
         chunk_text = ' '.join(word_tokens[current_start:chunk_end])
 
+        # Saving the chunk to a text file if it contains any text
         if chunk_text.strip():
+            chunk_id = f"{chunk_num:03d}"
+            filename = f"{prefix}_{pdf_file.stem}_chunk_{chunk_id}.txt"
+            filepath = output_dir / filename
+            with open(filepath, 'w', encoding='utf-8') as f:
+                f.write(chunk_text)
             chunk_num += 1
-            chunk_path, chunk_info = _save_chunk(
-                chunk_text=chunk_text,
-                output_dir=output_dir,
-                prefix=prefix,
-                source_pdf=str(pdf_file.name),
-                chunk_num=chunk_num,
-                start_idx=current_start,
-                end_idx=chunk_end,
-                word_count=len(chunk_text.split())
-            )
-            chunks.append((chunk_path, chunk_info))
 
-        current_start += step
+    print(f"Processed {pdf_file.name}: created {chunk_num} chunks")
 
-    return chunks
-
-def _extract_pdf_text(pdf) -> str:
-    """
-    Extract text from all pages of a PDF.
-
-    Args:
-        pdf: Open pdfplumber PDF object
-
-    Returns:
-        Full text content as a single string
-    """
-
-    text_parts = []
-
-    for page in pdf.pages:
-        page_text = page.extract_text()
-        if page_text:
-            text_parts.append(page_text)
-        else:
-            logger.debug(f"Page has no extractable text: {page.number}")
-
-    return '\n\n'.join(text_parts)
-
-def _save_chunk(
-    chunk_text: str,
-    output_dir: Path,
-    prefix: str,
-    source_pdf: str,
-    chunk_num: int,
-    start_idx: int,
-    end_idx: int,
-    word_count: int
-) -> Tuple[Path, Dict]:
-    """
-    Save a chunk to a text file.
-
-    Args:
-        chunk_text: Text content of the chunk
-        output_dir: Output directory
-        prefix: Filename prefix
-        source_pdf: Source PDF filename
-        chunk_num: Chunk number
-        start_idx: Start word index
-        end_idx: End word index
-        word_count: Number of words in chunk
-
-    Returns:
-        Tuple of (file_path, metadata_dict)
-    """
-
-    chunk_id = f"{chunk_num:03d}"
-    filename = f"{prefix}_{source_pdf.replace('.pdf', '')}_chunk_{chunk_id}.txt"
-
-    output_dir.mkdir(parents=True, exist_ok=True)
-    filepath = output_dir / filename
-
-    with open(filepath, 'w', encoding='utf-8') as f:
-        f.write(chunk_text)
-
-    metadata = {
-        'source_pdf': source_pdf,
-        'chunk_num': chunk_num,
-        'start_idx': start_idx,
-        'end_idx': end_idx,
-        'word_count': word_count,
-        'created_at': datetime.now().isoformat()
-    }
-
-    return (filepath, metadata)
+    return chunk_num
 
 if __name__ == "__main__":
     from common import utilities
