@@ -4,13 +4,13 @@ import os
 import sys
 from pathlib import Path
 
-def apply_ocr(paths, config):
+def apply_ocr(config, paths):
     """
     Apply OCR to every PDF in the specified folder.
     
     Args:
-        paths (dict): Dictionary containing paths to various data directories.
         config (dict): Dictionary containing OCR configuration.
+        paths (dict): Dictionary containing paths to various data directories.
     """
     print(f"\n\n{'*' * 50}\nStarting OCR processing for PDFs\n")
 
@@ -81,4 +81,4 @@ if __name__ == "__main__":
     # Removes previous run data (if enabled in settings.yml) and checks folder structure
     utilities.data_dir_clean(config, paths)
 
-    apply_ocr(paths, config)
+    apply_ocr(config, paths)

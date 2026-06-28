@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
-def chunk_pdfs(paths, config):
+def chunk_pdfs(config, paths):
     """
     Reads OCR'd PDFs and creates overlapping chunks of the text.
 
@@ -193,4 +193,4 @@ if __name__ == "__main__":
     # Builds the paths for the data directories
     paths = utilities.build_paths(config)
 
-    chunk_pdfs(paths, config)
+    chunk_pdfs(config, paths)

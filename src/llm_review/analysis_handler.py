@@ -5,7 +5,7 @@ import yaml
 from pathlib import Path
 from common import utilities
 
-def analyze_chunks(paths, config):
+def analyze_chunks(config, paths):
 
     folder = paths['chunk_dir']
     save_folder = paths['rev_json_dir']
@@ -131,4 +131,4 @@ def store_json(json_output, save_folder, file_name):
     return
 
 if __name__ == "__main__":
-    analyze_chunks()
+    analyze_chunks(config, paths)
