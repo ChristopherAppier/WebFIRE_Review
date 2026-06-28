@@ -1,14 +1,21 @@
+# Run configuration
+remove_data: 'False' # Set to True to remove all data in the data directories before running the script
+
 # Directory paths
 directories:
-  pdf_dir: 'data/pdfs'
-  spreadsheet_dir: 'data/spreadsheets'
-  other_dir: 'data/other'
   audit_dir: 'data/audits'
-  review_dir: 'data/reviews'
-  raw_data_dir: 'data/raw'
-  chunk_dir: 'data/pdfs/chunks'
-  rev_json_dir: 'data/reviews/json'
+  eval_dir: 'data/evals'
   http_dir: 'data/http'
+  other_dir: 'data/other'
+  pdf_dir: 'data/pdfs'
+  raw_data_dir: 'data/raw'
+  review_dir: 'data/reviews'
+  spreadsheet_dir: 'data/spreadsheets'
+  summary_dir: 'data/summary_report'
+
+  # Subdirectories for PDF processing
+  chunk_dir: 'data/pdfs/chunks'
+  rev_json_dir: 'data/reviews/jsons'
 
 # Document Retrieval
 ## Timer Manager

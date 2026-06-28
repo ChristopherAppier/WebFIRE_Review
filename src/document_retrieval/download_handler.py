@@ -32,10 +32,10 @@ def fetch_reports(config, paths):
 	# Loop through each state and perform the search and download process
 	for state_name in state_names:
 		# POST to the search results page with the specified parameters
-		#post_search(webfire_base, session, start_date, end_date, state_name, paths)
+		post_search(webfire_base, session, start_date, end_date, state_name, paths)
 
 		# Parse the search results page to extract the URLs of the reports and save as CSV
-		#parse_search_results(paths['http_dir'], state_name)
+		parse_search_results(paths['http_dir'], state_name)
 
 		# Request 4: GET the report pages for each URL in the parsed CSV and save to file
 		get_results(session,paths['raw_data_dir'],paths['http_dir'],state_name,dl_retries,dl_retry_delay)
@@ -286,6 +286,9 @@ if __name__ == "__main__":
 
 	# Builds the paths for the data directories
 	paths = utilities.build_paths(config)
+
+    # Removes previous run data (if enabled in settings.yml) and checks folder structure
+	utilities.data_dir_clean(config, paths)
 
 	# Downloading reports from WebFIRE HTTP for each state
 	fetch_reports(config, paths)

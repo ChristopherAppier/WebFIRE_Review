@@ -66,3 +66,25 @@ def build_paths(config: dict) -> Paths:
         directories=resolved_directories,
     )
 
+def data_dir_clean(config: dict, paths: Paths) -> None:
+    """
+    Creates the directories as defined in settings.yml if they do not already exist. If remove_data in settings.yml is set to True, it will also clean the data directory by removing all files and subdirectories before rebuilding the directories.
+    """
+    if config.get("remove_data", "False").lower() == "true":
+        # Remove all files and subdirectories in the data directory
+        print(f"\n{'*' * 50}\n\nRemoving all files and subdirectories in the data directory")
+
+        data_dir = paths.root / "data"
+        for item in data_dir.iterdir():
+            if item.is_file():
+                item.unlink()
+            elif item.is_dir():
+                import shutil
+                shutil.rmtree(item)
+
+    # Rebuild the directories as defined in settings.yml
+    print("\nRebuilding the data directories as defined in settings.yml")
+
+    for dir_path in paths.directories.values():
+        dir_path.mkdir(parents=True, exist_ok=True)
+        (dir_path / ".gitkeep").touch(exist_ok=True)
