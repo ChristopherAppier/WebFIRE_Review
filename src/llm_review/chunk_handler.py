@@ -8,20 +8,13 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
-def chunk_pdfs(
-    paths: Dict[str, Path],
-    chunk_size: int = None,
-    overlap: int = 100,
-    chunk_prefix: str = "source_pdf"
-):
+def chunk_pdfs(paths, config):
     """
     Reads OCR'd PDFs and creates overlapping chunks of the text.
 
     Args:
         paths: Dictionary containing paths to various directories
-        chunk_size: Number of words per chunk (read from settings.yml)
-        overlap: Number of words to overlap between chunks (default: 100)
-        chunk_prefix: Prefix for chunk filenames (default: "source_pdf")
+        config: Dictionary containing chunking configuration
 
     Returns:
         List of tuples containing (chunk_path, chunk_info)
@@ -42,9 +35,9 @@ def chunk_pdfs(
             chunks = _process_single_pdf(
                 pdf_file=pdf_file,
                 output_dir=Path(paths['chunk_dir']),
-                chunk_size=chunk_size,
-                overlap=overlap,
-                prefix=chunk_prefix
+                chunk_size=config['chunk_size'],
+                overlap=config['chunk_overlap'],
+                prefix=config['chunk_prefix']
             )
             chunks_created.extend(chunks)
             logger.info(f"Processed {pdf_file.name}: created {len(chunks)} chunks")
@@ -55,7 +48,6 @@ def chunk_pdfs(
 
     logger.info(f"Total chunks created: {len(chunks_created)}")
     return chunks_created
-
 
 def _process_single_pdf(
     pdf_file: Path,
@@ -123,7 +115,6 @@ def _process_single_pdf(
 
     return chunks
 
-
 def _extract_pdf_text(pdf) -> str:
     """
     Extract text from all pages of a PDF.
@@ -145,7 +136,6 @@ def _extract_pdf_text(pdf) -> str:
             logger.debug(f"Page has no extractable text: {page.number}")
 
     return '\n\n'.join(text_parts)
-
 
 def _save_chunk(
     chunk_text: str,
@@ -193,3 +183,14 @@ def _save_chunk(
     }
 
     return (filepath, metadata)
+
+if __name__ == "__main__":
+    from common import utilities
+
+    # Load configuration
+    config = utilities.load_config()
+
+    # Builds the paths for the data directories
+    paths = utilities.build_paths(config)
+
+    chunk_pdfs(paths, config)

@@ -2,7 +2,7 @@ from document_retrieval.download_handler import fetch_reports
 from document_retrieval.extract_and_route import extract_and_route_files
 from document_retrieval.ocr_handler import apply_ocr
 
-def main():
+def main(paths, config):
     
     # Downloading reports from WebFIRE API for each state
     fetch_reports(config, paths)
@@ -25,4 +25,4 @@ if __name__ == "__main__":
     # Removes previous run data (if enabled in settings.yml) and checks folder structure
     utilities.data_dir_clean(config, paths)
 
-    main()
+    main(paths, config)
