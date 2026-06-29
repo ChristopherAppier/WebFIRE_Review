@@ -1,5 +1,5 @@
 # Run configuration
-remove_data: 'False' # Set to True to remove all data in the data directories before running the script
+remove_data: 'True' # Set to True to remove all data in the data directories before running the script
 
 # Directory paths
 directories:
@@ -40,8 +40,8 @@ ocr_jobs_per_file: 4 # Number of OCRmyPDF jobs to use per PDF file
 ocr_pdf_renderer: 'sandwich' # Use sandwich to avoid hOCR temp-file failures on some Windows/Tesseract setups
 
 #LLM Review
-chunk_size: 3000 # Number of words per chunk for LLM analysis
-chunk_overlap: 500 # Number of words to overlap between chunks (to avoid losing context)
+chunk_size: 1500 # Number of words per chunk for LLM analysis
+chunk_overlap: 300 # Number of words to overlap between chunks (to avoid losing context)
 audit_chance: 10 # In percent as an integer
 llm:
   review: 'gemma4:31b'

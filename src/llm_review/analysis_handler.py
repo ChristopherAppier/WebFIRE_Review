@@ -37,23 +37,27 @@ def analyze_chunks(config, paths):
         else:
             audit_flag = False
 
-        # Get facility name from report request to add to JSON output
-        facility_name = 0 #TODO add logic to pull from state report request
-
         # Adding additional information into JSON
         payload = {
                     "audit_flag": audit_flag,
                     "chunk_name": chunk_name.stem,
                     "think_output": think_output,
-                    "facility_name": facility_name
+                    "facility_name": None, #TODO add logic to pull from state report request
+                    "review_start_time": None, #TODO add logic to pull from state report request
+                    "review_end_time": None, #TODO add logic to pull from state report request
+                    "llm_seed": None, #TODO add logic to pull from state report request
+                    "prompt_name": None, #TODO add logic to pull from state report request
+                    "RAG_requests": None, #TODO add logic to pull from state report request
+                    "RAG_responses": None #TODO add logic to pull from state report request
                 }
 
-        final_json = json_add(json_output, payload)
+        for key, value in payload.items():
+            json_output[key] = value
 
         # Storing the JSON output containing the analysis for that chunk
         save_path = paths['rev_json_dir'] / f"{chunk_name.stem}.json"
         with open(save_path, "w", encoding="utf-8") as f:
-            json.dump(final_json, f, indent=2)
+            json.dump(json_output, f, indent=2)
 
     print(f"\nLLM review complete") #TODO Add more stat tracking
     
@@ -121,6 +125,13 @@ def json_add(json_dict, payload):
     json_dict['system_prompt'] = payload.get('system_prompt', None)
     json_dict['think_output'] = payload.get('think_output', None)
     json_dict['facility_name'] = payload.get('facility_name', None)
+    json_dict['audit_flag'] = payload.get('audit_flag', None)
+    json_dict['review_start_time'] = payload.get('review_start_time', None)
+    json_dict['review_end_time'] = payload.get('review_end_time', None)
+    json_dict['llm_seed'] = payload.get('llm_seed', None)
+    json_dict['prompt_name'] = payload.get('prompt_name', None)
+    json_dict['RAG requests'] = payload.get('RAG requests', None)
+    json_dict['RAG responses'] = payload.get('RAG responses', None)
 
     return json_dict
 

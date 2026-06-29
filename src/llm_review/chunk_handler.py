@@ -8,7 +8,7 @@ def chunk_pdfs(config, paths):
         paths: Dictionary containing paths to various directories
         config: Dictionary containing chunking configuration
     """
-    print(f"\n\n{'*' * 50}\nStarting PDF chunking process")
+    print(f"\n{'*' * 50}\n\nStarting PDF chunking process")
 
     # Creating a list of all PDF files
     pdfs_processed = 0
