@@ -12,7 +12,7 @@ def apply_ocr(config, paths):
         config (dict): Dictionary containing OCR configuration.
         paths (dict): Dictionary containing paths to various data directories.
     """
-    print(f"\n{'*' * 50}\nStarting OCR processing for PDFs\n")
+    print(f"\n{'*' * 50}\n\nStarting OCR processing for PDFs\n")
 
     pdf_files = sorted(
         pdf_file

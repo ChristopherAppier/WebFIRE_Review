@@ -31,9 +31,9 @@ download_retry_attempts: 5 # Number of download attempts per URL
 download_retry_delay_seconds: 2 # Seconds to wait between retry attempts
 states: # List of states to download reports for
   - name: 'KS'
-  - name: 'MO'
-  - name: 'NE'
-  - name: 'IA'
+#  - name: 'MO'
+#  - name: 'NE'
+#  - name: 'IA'
 
 ## OCR Handler
 ocr_jobs_per_file: 4 # Number of OCRmyPDF jobs to use per PDF file

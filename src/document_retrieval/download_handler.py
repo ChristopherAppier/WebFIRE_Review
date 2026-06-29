@@ -2,7 +2,7 @@ import requests
 import csv
 import re
 import time
-from timer_manager import check_timer
+from document_retrieval.timer_manager import check_timer
 from pathlib import Path
 from bs4 import BeautifulSoup
 from tqdm import tqdm
