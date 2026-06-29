@@ -5,9 +5,7 @@ import yaml
 
 def analyze_chunks(config, paths):
 
-    #TODO Add the creation of a csv that tracks [chunk name, prompt selected, chosen for audit flag, JSON adhereance flag, thinking, review time]
-
-    print(f"\n{'*' * 50}\n\nAnalyzing text chunks using: {config['llm']['review']}")
+    print(f"\n{'*' * 50}\n\nAnalyzing text chunks using: {config['llm']['review']}\n")
 
     #Looping through all chunks
     for chunk_name in paths['chunk_dir'].iterdir():
@@ -24,7 +22,7 @@ def analyze_chunks(config, paths):
             chunk_text = f.read()
         
         # Get the AI's response as a string
-        raw_output = single_analysis(config, chunk_name, chunk_text, system_prompt)
+        raw_output, think_output = single_analysis(config, chunk_name, chunk_text, system_prompt)
         
         # Trying to load the response string as a JSON with error handling
         try:
@@ -32,14 +30,30 @@ def analyze_chunks(config, paths):
         except ValueError as e:
             print(f"Skipping {chunk_name}: {e}")
             continue
-    
+
+        # Determining if audit flag triggers
+        if json_output['issue_flag'] == True or random.random() < (config['audit_chance'] / 100):
+            audit_flag = True
+        else:
+            audit_flag = False
+
+        # Get facility name from report request to add to JSON output
+        facility_name = 0 #TODO add logic to pull from state report request
+
+        # Adding additional information into JSON
+        payload = {
+                    "audit_flag": audit_flag,
+                    "chunk_name": chunk_name.stem,
+                    "think_output": think_output,
+                    "facility_name": facility_name
+                }
+
+        final_json = json_add(json_output, payload)
+
         # Storing the JSON output containing the analysis for that chunk
         save_path = paths['rev_json_dir'] / f"{chunk_name.stem}.json"
         with open(save_path, "w", encoding="utf-8") as f:
-            json.dump(json_output, f, indent=2)
-
-    # Moves JSON files to an audit folder
-    store_for_audit(config, paths)
+            json.dump(final_json, f, indent=2)
 
     print(f"\nLLM review complete") #TODO Add more stat tracking
     
@@ -51,6 +65,7 @@ def single_analysis(config, chunk_name, chunk_text, sys_prompt):
     payload = {
         "model": config['llm']['review'],
         "stream": False,
+        "think": True,
         "format": "json",
         "messages": [
             {"role": "system", "content": sys_prompt},
@@ -58,16 +73,16 @@ def single_analysis(config, chunk_name, chunk_text, sys_prompt):
             ]
     }
     try:
-        print(f"Reviewing prompt and {chunk_name.stem}")
+        print(f"Reviewing {chunk_name.stem}")
         response = requests.post(config['llm_url'], json=payload, timeout=tuple(config['llm_timeout']))
         response.raise_for_status()
         response_data = response.json()
-        return response_data.get("message", {}).get("content", "No content field found.")
+        return response_data.get("message", {}).get("content", "No content field found."), response_data.get("message", {}).get("thinking", "No think field found.")
 
     except requests.exceptions.RequestException as e:
-        return f"Error connecting to Ollama: {e}\n(Make sure Ollama is running!)"
+        return f"Error connecting to Ollama: {e}\n(Make sure Ollama is running!)", None
     except Exception as e:
-        return f"An unexpected error occurred: {e}"
+        return f"An unexpected error occurred: {e}", None
 
 def load_system_prompt(paths, chunk_name):
     """Loads the appropriate system prompt based on the file type/name being reviewed (currently just uses a single default prompt for MVP implementation)"""
@@ -98,6 +113,16 @@ def json_check(raw_string):
         return json.loads(cleaned)
     except json.JSONDecodeError as e:
         raise ValueError(f"Model returned invalid JSON: {e}\nRaw output:\n{raw_string}")
+
+def json_add(json_dict, payload):
+    """Adds additional information to the JSON dict"""
+    
+    json_dict['chunk_name'] = payload.get('chunk_name', None)
+    json_dict['system_prompt'] = payload.get('system_prompt', None)
+    json_dict['think_output'] = payload.get('think_output', None)
+    json_dict['facility_name'] = payload.get('facility_name', None)
+
+    return json_dict
 
 def store_for_audit(config, paths):
     """Stores associated chunks and the output JSON in an auditing folder for audit at a later time based on issue flags and audit chance defined in settings.yml

@@ -269,7 +269,6 @@ def get_results(session, raw_data_dir, http_dir, state_name, max_attempts=3, ret
 			num_dl += 1
 			print(f"Downloaded report {idx} of {num_reports}")
 
-	#TODO : Add a summary of the download process, including any failed downloads and their reasons.
 	if num_dl == num_reports:
 		print(f"\nAll reports successfully downloaded.")
 	else:

@@ -35,6 +35,7 @@
     - [X] Refactor / review
     - [X] Fix HTTPS TLS certificate verification
     - [X] Use settings.yml info for URLs, etc.
+    - [ ] Write document name to http report tables (needed for embedding facility name in review JSON)
 
   - [X] OCR
     - [X] Refactor / review
@@ -43,24 +44,25 @@
     - [X] Refactor / review
     - [X] Rewrite using magic library (accurately determines file type)
     - [X] Fix zip_extract.py so that it properly routes zips that contained a folder of mixed file types
+    - [ ] Make zip_extract.py write document names in the zip to the http report table (needed for embedding facility name in review JSON)
 
-  - [ ] Text Chunking
-    - [ ] Refactor / review
-    - [ ] Generalize chunking function for use in renaming (future proof)?
+  - [X] Text Chunking
+    - [X] Refactor / review
+    - [X] Generalize chunking function for use in renaming (future proof)?
 
   - [ ] AI Reviewer
     - [x] Ingest chunk + prompt
-    - [ ] Process + output JSON (issue flag, issue description)
-    - [ ] Add to JSON via scripting (facility name, document name)
+    - [X] Process + output JSON (issue flag, issue description)
+    - [ ] Add additional info to JSON via scripting (see list below)
     - [ ] Seed randomizer and tracking
     - [ ] JSON validation
     - [ ] Reviewer prompt
-    - [ ] Refactor
+    - [X] Refactor
 
   - [ ] Summary Report Building
     - [ ] Pull JSONs
     - [ ] Create report
-    - [ ] Refactor
+    - [ ] Visual dashboard via html or something similar
 
 - [ ] Create MVP Version Evaluation Harness
   - [ ] Plan implementation strategy
@@ -172,4 +174,5 @@
 - [ ] 
 
 # Notes
-- JSON from reviewer contain model chain of reasoning, citations, confidence levels, RAG retrievals
+- Add to JSON:
+  - RAG requests/citations, review start/stop time, seed tracking, facility name, prompt name

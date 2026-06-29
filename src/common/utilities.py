@@ -84,9 +84,6 @@ def data_dir_clean(config: dict, paths: Paths) -> None:
                 import shutil
                 shutil.rmtree(item)
 
-    # Rebuild the directories as defined in settings.yml
-    print("\nRebuilding the data directories as defined in settings.yml")
-
     for dir_path in paths.directories.values():
         dir_path.mkdir(parents=True, exist_ok=True)
         (dir_path / ".gitkeep").touch(exist_ok=True)
