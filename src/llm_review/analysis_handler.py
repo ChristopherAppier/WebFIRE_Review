@@ -81,6 +81,7 @@ def single_analysis(config, chunk_name, chunk_text, sys_prompt):
         response = requests.post(config['llm_url'], json=payload, timeout=tuple(config['llm_timeout']))
         response.raise_for_status()
         response_data = response.json()
+        print(f"Review complete\n")
         return response_data.get("message", {}).get("content", "No content field found."), response_data.get("message", {}).get("thinking", "No think field found.")
 
     except requests.exceptions.RequestException as e:
