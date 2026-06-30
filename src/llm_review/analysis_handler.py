@@ -1,7 +1,8 @@
 import random
-import requests
 import json
 import yaml
+import openai
+from openai import OpenAI
 
 def analyze_chunks(config, paths):
 
@@ -59,35 +60,44 @@ def analyze_chunks(config, paths):
         with open(save_path, "w", encoding="utf-8") as f:
             json.dump(json_output, f, indent=2)
 
-    print(f"\nLLM review complete") #TODO Add more stat tracking
+    print(f"LLM review complete") #TODO Add more stat tracking
     
     return
 
 def single_analysis(config, chunk_name, chunk_text, sys_prompt):
     """Gives a system prompt to a chosen AI model to conduct an analysis on the chunk of data"""
-    
-    payload = {
-        "model": config['llm']['review'],
-        "stream": False,
-        "think": True,
-        "format": "json",
-        "messages": [
-            {"role": "system", "content": sys_prompt},
-            {"role": "user", "content": chunk_text}
-            ]
-    }
-    try:
-        print(f"Reviewing {chunk_name.stem}")
-        response = requests.post(config['llm_url'], json=payload, timeout=tuple(config['llm_timeout']))
-        response.raise_for_status()
-        response_data = response.json()
-        print(f"Review complete\n")
-        return response_data.get("message", {}).get("content", "No content field found."), response_data.get("message", {}).get("thinking", "No think field found.")
 
-    except requests.exceptions.RequestException as e:
-        return f"Error connecting to Ollama: {e}\n(Make sure Ollama is running!)", None
-    except Exception as e:
-        return f"An unexpected error occurred: {e}", None
+    try:    
+        print(f"Reviewing {chunk_name.stem}")
+
+        # Setting up the OpenAI client with the provided configuration
+        client = OpenAI(
+        api_key=config['llm_api_key'],
+        base_url=config['llm_url'],
+        timeout=config['llm_timeout'],
+        max_retries=config['llm_retries']
+    )
+        # Making the request to the OpenAI API with the specified model, system prompt, and chunk text
+        response = client.responses.create(model=config['llm']['review'],instructions=sys_prompt, input=chunk_text)
+        print(f"Review complete\n")
+
+        # Capturing the "think" output from the response if it exists, otherwise setting it to None
+        think_output = "\n".join(
+            part.text
+            for item in (response.output or [])
+            if getattr(item, "type", None) == "reasoning"
+            for part in (getattr(item, "summary", None) or [])
+            if getattr(part, "text", None)
+        ) or None
+
+        return response.output_text, think_output
+
+    except openai.APIConnectionError as e:
+        return f"The server could not be reached: {e.__cause__}", None
+    except openai.RateLimitError as e:
+        return f"A 429 status code was received; we should back off a bit.", None
+    except openai.APIStatusError as e:
+        return f"Another non-200-range status code was received: {e.status_code}, {e.response}", None
 
 def load_system_prompt(paths, chunk_name):
     """Loads the appropriate system prompt based on the file type/name being reviewed (currently just uses a single default prompt for MVP implementation)"""

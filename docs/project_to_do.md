@@ -57,6 +57,7 @@
     - [X] Reviewer prompt
     - [ ] Add retry looping
     - [X] Refactor
+    - [ ] Shift to omlx and openai
 
   - [ ] Summary Report Building
     - [ ] Pull JSONs

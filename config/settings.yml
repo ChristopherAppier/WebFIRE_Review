@@ -1,5 +1,5 @@
 # Run configuration
-remove_data: 'True' # Set to True to remove all data in the data directories before running the script
+remove_data: 'False' # Set to True to remove all data in the data directories before running the script
 
 # Directory paths
 directories:
@@ -44,7 +44,9 @@ chunk_size: 1500 # Number of words per chunk for LLM analysis
 chunk_overlap: 300 # Number of words to overlap between chunks (to avoid losing context)
 audit_chance: 10 # In percent as an integer
 llm:
-  review: 'gemma4:31b'
-  audit: 'gemma4:31b'
-llm_url: 'http://localhost:11434/api/chat'
-llm_timeout: [5, 600] # Timeout in seconds for LLM requests (connect, read)
+  review: 'gemma4:26b'
+  audit: 'gemma4:26b'
+llm_url: 'http://localhost:11436/v1'
+llm_api_key: 'secret_api_key'
+llm_timeout: 600 # Timeout in seconds for LLM requests
+llm_retries: 3 # Number of retries for LLM requests
