@@ -18,3 +18,4 @@ data/**
 !.vscode/launch.json
 !.vscode/settings.json
 !.vscode/extensions.json
+!.vscode/tasks.json
