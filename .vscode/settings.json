@@ -1,10 +1,11 @@
 {
-    "python-envs.defaultEnvManager": "ms-python.python:conda",
-    "python-envs.defaultPackageManager": "ms-python.python:conda",
-    "python.analysis.extraPaths": [
-        "./src"
-    ],
-    "terminal.integrated.env.osx": {
-        "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}"
-    }
+  "python-envs.defaultEnvManager": "ms-python.python:conda",
+  "python-envs.defaultPackageManager": "ms-python.python:conda",
+  "python.analysis.extraPaths": ["./src"],
+  "terminal.integrated.env.windows": {
+    "PYTHONPATH": "${workspaceFolder}\\src;${env:PYTHONPATH}"
+  },
+  "terminal.integrated.env.osx": {
+    "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}"
+  }
 }
