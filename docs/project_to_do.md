@@ -1,19 +1,19 @@
 # Computer Setup
 
-- [X] Ollama
-  - [X] Models + settings
-- [X] VS Code
-  - [X] Extensions
-  - [X] Settings
+- [x] Ollama
+  - [x] Models + settings
+- [x] VS Code
+  - [x] Extensions
+  - [x] Settings
   - [ ] Formatter and Linter
-- [X] Python
-  - [X] Create env
-  - [X] Download libraries
-- [X] GitHub
+- [x] Python
+  - [x] Create env
+  - [x] Download libraries
+- [x] GitHub
 
 # Documentation
 
-- [X] Fill in README.md
+- [x] Fill in README.md
 - [ ] Fill in architecture.md
 - [ ] Fill in setup.md
 - [ ] Fill in configuration.md
@@ -24,45 +24,47 @@
 # MVP Version
 
 - [ ] Create MVP Version
-  - [X] Add print statements at major steps
+  - [x] Add print statements at major steps
 
-  - [X] Common
-    - [X] find_project_root
-    - [X] load_settings
-    - [X] build_paths
+  - [x] Common
+    - [x] find_project_root
+    - [x] load_settings
+    - [x] build_paths
 
-  - [X] WebFIRE report pull
-    - [X] Refactor / review
-    - [X] Fix HTTPS TLS certificate verification
-    - [X] Use settings.yml info for URLs, etc.
+  - [x] WebFIRE report pull
+    - [x] Refactor / review
+    - [x] Fix HTTPS TLS certificate verification
+    - [x] Use settings.yml info for URLs, etc.
 
-  - [X] OCR
-    - [X] Refactor / review
+  - [x] OCR
+    - [x] Refactor / review
 
-  - [X] Routing
-    - [X] Refactor / review
-    - [X] Rewrite using magic library (accurately determines file type)
-    - [X] Fix zip_extract.py so that it properly routes zips that contained a folder of mixed file types
+  - [x] Routing
+    - [x] Refactor / review
+    - [x] Rewrite using magic library (accurately determines file type)
+    - [x] Fix zip_extract.py so that it properly routes zips that contained a folder of mixed file types
     - [ ] Make zip_extract.py write document names in the zip to the http report table (needed for embedding facility name in review JSON) - non zips are already correct
 
-  - [X] Text Chunking
-    - [X] Refactor / review
-    - [X] Generalize chunking function for use in renaming (future proof)?
+  - [x] Text Chunking
+    - [x] Refactor / review
+    - [x] Generalize chunking function for use in renaming (future proof)?
 
-  - [X] AI Reviewer
+  - [x] AI Reviewer
     - [x] Ingest chunk + prompt
-    - [X] Process + output JSON (issue flag, issue description)
-    - [X] Add additional info to JSON via scripting
-    - [X] JSON validation
-    - [X] Reviewer prompt
-    - [ ] Add retry looping
-    - [X] Refactor
-    - [ ] Shift to omlx and openai
+    - [x] Process + output JSON (issue flag, issue description)
+    - [x] Add additional info to JSON via scripting
+    - [x] JSON validation
+    - [x] Reviewer prompt
+    - [x] Add retry looping
+    - [x] Refactor
+    - [x] Shift to omlx and openai
+    - [ ] Add document review name to JSON
 
   - [ ] Summary Report Building
-    - [ ] Pull JSONs
-    - [ ] Create report
-    - [ ] Visual dashboard via html or something similar
+    - [x] Pull JSONs
+    - [x] Create report
+    - [ ] Compress chunk reviews for same document
+    - [ ] Visual dashboard via Streamlit
 
 - [ ] Create MVP Version Evaluation Harness
   - [ ] Plan implementation strategy
@@ -93,63 +95,62 @@
 
 - [ ] Report Downloading
   - [ ] Scrape html file for facility info
-  - [X] Add download retries
+  - [x] Add download retries
 
- - [ ] File Routing
-  - [ ] Check spreadsheets for EPA template layout - route to Other folder if not using the template
+- [ ] File Routing
+- [ ] Check spreadsheets for EPA template layout - route to Other folder if not using the template
 
-  - [ ] OCR
-    - [ ] Add LLM w vision + text capabilities or structured table parser for table OCR
-    - [ ] Add setting to OCR all reports (do not rely on other sources for OCR quality)
+- [ ] OCR
+  - [ ] Add LLM w vision + text capabilities or structured table parser for table OCR
+  - [ ] Add setting to OCR all reports (do not rely on other sources for OCR quality)
 
-  - [ ] Text Chunking
-    - [ ] Add summarization to chunks
-    - [ ] Add context based stitching after summarization to balance context buildup vs coherency of report
+- [ ] Text Chunking
+  - [ ] Add summarization to chunks
+  - [ ] Add context based stitching after summarization to balance context buildup vs coherency of report
 
-  - [ ] File Renaming
-    - [X] Deterministic NLP research
-    - [ ] Chunk file
-    - [ ] Ingest (NLP)
-    - [ ] Output potential facility names (NLP)
-    - [ ] Use LLM to select report type and best name (may not be necessary if html scraping gets name)
-    - [ ] Check output format
-    - [ ] Change name
-    - [ ] Refactor
+- [ ] File Renaming
+  - [x] Deterministic NLP research
+  - [ ] Chunk file
+  - [ ] Ingest (NLP)
+  - [ ] Output potential facility names (NLP)
+  - [ ] Use LLM to select report type and best name (may not be necessary if html scraping gets name)
+  - [ ] Check output format
+  - [ ] Change name
+  - [ ] Refactor
 
-  - [ ] AI Reviewer
-    - [ ] Reviewer prompt selection
-    - [ ] Reviewer prompt bank
-    - [ ] Seed randomizer and tracking
-    - [ ] RAG retrieval interface
-    - [ ] Tool calling
-    - [ ] Flush out JSON information placeholders
-    - [ ] Test review task separation based on doc type / size
-    - [ ] Refactor
+- [ ] AI Reviewer
+  - [ ] Reviewer prompt selection
+  - [ ] Reviewer prompt bank
+  - [ ] Seed randomizer and tracking
+  - [ ] RAG retrieval interface
+  - [ ] Tool calling
+  - [ ] Flush out JSON information placeholders
+  - [ ] Test review task separation based on doc type / size
+  - [ ] Refactor
 
-  - [ ] AI Auditor
-    - [ ] Auditor prompt bank
-    - [ ] Auditor prompt selection
-    - [ ] Seed randomizer and tracking
-    - [ ] Refactor
+- [ ] AI Auditor
+  - [ ] Auditor prompt bank
+  - [ ] Auditor prompt selection
+  - [ ] Seed randomizer and tracking
+  - [ ] Refactor
 
-  - [ ] Python Scraping
-    - [ ] Read in spreadsheets
-    - [ ] Identify flags
-    - [ ] Build output JSON
-    - [ ] Refactor
+- [ ] Python Scraping
+  - [ ] Read in spreadsheets
+  - [ ] Identify flags
+  - [ ] Build output JSON
+  - [ ] Refactor
 
-  - [ ] Summary Report Building
-    - [ ] Add python scraping to report building
-    - [ ] Refactor
+- [ ] Summary Report Building
+  - [ ] Add python scraping to report building
+  - [ ] Refactor
 
-  - [ ] eCFR RAG
-    - [ ] Pull eCFR sections
-    - [ ] Initial RAG scan
-    - [ ] Automated update that scans for eCFR updates
-    - [ ] RAG scans after updates
-    - [ ] RAG retreival integrated into reviewer
-    
-  - [ ] Cron Trigger
+- [ ] eCFR RAG
+  - [ ] Pull eCFR sections
+  - [ ] Initial RAG scan
+  - [ ] Automated update that scans for eCFR updates
+  - [ ] RAG scans after updates
+  - [ ] RAG retreival integrated into reviewer
+- [ ] Cron Trigger
 
 - [ ] Create Full Version Evaluation Harness
   - [ ] Plan implementation strategy
@@ -175,6 +176,7 @@
   - [ ] Update output_formats.md
 
 # Future Additions
-- [ ] 
+
+- [ ]
 
 # Notes
