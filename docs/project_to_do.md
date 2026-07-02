@@ -48,6 +48,7 @@
   - [x] Text Chunking
     - [x] Refactor / review
     - [x] Generalize chunking function for use in renaming (future proof)?
+    - [ ] Add # chunks created text
 
   - [x] AI Reviewer
     - [x] Ingest chunk + prompt
