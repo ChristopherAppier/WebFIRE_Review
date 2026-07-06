@@ -2,20 +2,20 @@
 flowchart TB
 
 	%% Defining the nodes and their labels
-	TGR([Cron Trigger])
-	RPR{Report Pull<br/>and Routing}
+	TGR([Automated Trigger])
+	RPR{Download WebFIRE<br/>Reports}
 	OCR[OCR]
 	FRC[File Renaming]
 	CAP[Chunking<br/>and<br/>Prompt Selection]
-	AIR["AI Reviewer<br/>(implicit and explicit)"]
-	RAG[[RAG Based<br/>Reg Retrieval]]
+	AIR["AI Reviewer"]
+	RAG[[Regulation Retrieval]]
 	JCT1(( ))
 	JCT2(( ))
 	AIA[AI Auditor]
 	PS[Python Scraping]
-	SRB[Summary Report<br/>Building]
-	RO([Report Out])
-	TEXT[Green = AI<br/>Blue = Script<br/>Red = Det NLP]
+	SRB[Report Building]
+	RO([Summary Report])
+	TEXT[Blue = Python Scripting<br/>Green = AI<br/>Red = AI Sub-agent]
 
 	%% Linking the nodes
 	TGR --> RPR
@@ -42,6 +42,6 @@ flowchart TB
 
 	%% Assigning the nodes to their classes
 	class TGR,RPR,PS,CAP,SRB,RO,OCR blue;
-	class AIR,AIA,RAG green;
-	class FRC red;
+	class FRC,AIR,AIA green;
+	class RAG red;
 ```

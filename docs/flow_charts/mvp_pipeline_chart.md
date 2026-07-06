@@ -3,8 +3,7 @@ flowchart TB
 
 	%% Defining the nodes and their labels
 	Trigger([Manual Trigger])
-	RepPull[Report Pull]
-	Route[Routing]
+	RepPull[Download WebFIRE<br/>Reports]
 	OCR[OCR]
 	TextChunk[Text Chunking]
 	AIRev["AI Review<br/>(PDFs + explicit only)"]
@@ -13,10 +12,9 @@ flowchart TB
 
 	%% Linking the nodes
 	Trigger --> RepPull
-	RepPull -- All Reports --> Route
-	Route -- PDFs --> OCR
+	RepPull -- PDFs --> OCR
 	OCR -- PDFs --> TextChunk
-	TextChunk -- PDFs--> AIRev
+	TextChunk -- Chunks--> AIRev
 	AIRev -- JSONs--> Summary
 
 	%% Create classes for the node colors

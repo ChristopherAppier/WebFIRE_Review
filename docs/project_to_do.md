@@ -60,6 +60,7 @@
     - [x] Refactor
     - [x] Shift to omlx and openai
     - [ ] Add document review name to JSON
+    - [ ] Add basic prompt selection based on state report table document type and sub type
 
   - [ ] Summary Report Building
     - [x] Pull JSONs
