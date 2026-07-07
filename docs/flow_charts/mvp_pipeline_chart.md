@@ -2,18 +2,16 @@
 flowchart TB
 
 	%% Defining the nodes and their labels
-	Trigger([Manual Trigger])
 	RepPull[Download WebFIRE<br/>Reports]
 	OCR[OCR]
 	TextChunk[Text Chunking]
 	AIRev["AI Review<br/>(PDFs + explicit only)"]
-	Summary[Summary Report<br/>Building]
+	Summary[Summary Report]
 	INFO[Green = AI<br/>Blue = Script]
 
 	%% Linking the nodes
-	Trigger --> RepPull
 	RepPull -- PDFs --> OCR
-	OCR -- PDFs --> TextChunk
+	OCR -- PDF Text --> TextChunk
 	TextChunk -- Chunks--> AIRev
 	AIRev -- JSONs--> Summary
 

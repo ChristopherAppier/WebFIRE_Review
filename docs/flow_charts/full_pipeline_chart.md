@@ -2,38 +2,35 @@
 flowchart TB
 
 	%% Defining the nodes and their labels
-	TGR([Automated Trigger])
-	RPR{Download WebFIRE<br/>Reports}
+	RDL(Download WebFIRE<br/>Reports)
 	OCR[OCR]
-	FRC[File Renaming]
-	CAP[Chunking<br/>and<br/>Prompt Selection]
+	RTI[Report Type<br/>Identification]
+	CHK[Text Chunking]
 	AIR["AI Reviewer"]
-	RAG[[Regulation Retrieval]]
-	JCT1(( ))
-	JCT2(( ))
+	REG[[Regulation Retrieval]]
+	PrS[Review Prompt<br/>Selection]
 	AIA[AI Auditor]
 	PS[Python Scraping]
-	SRB[Report Building]
-	RO([Summary Report])
+	RR{Report Review<br/>Database}
+	SR([Summary Report])
 	TEXT[Blue = Python Scripting<br/>Green = AI<br/>Red = AI Sub-agent]
 
 	%% Linking the nodes
-	TGR --> RPR
-	RPR -- Unstructured Reports --> OCR
-	OCR --> FRC
-	RPR -- Structured Reports --> PS
-	FRC --> CAP
-	CAP --> AIR
-	AIR --> RAG
-	RAG --> AIR
-	AIR --> JCT2
-	AIR --> JCT1
-	PS --> JCT1
-	JCT1 -- Reports w Issues<br/>and Random Audits --> AIA
-	PS --> JCT2
-	JCT2 -- Reports w/o Issues --> SRB
-	AIA --> SRB
-	SRB --> RO
+	RDL -- Unstructured Reports --> OCR
+	OCR -- PDF Text --> CHK
+	RDL -- Structured Reports --> PS
+	CHK -- Text Chunks --> RTI
+	CHK -- Text Chunks --> AIR
+	RTI -- Report Type --> PrS
+	PrS -- Review Prompts --> AIR
+	AIR --> REG
+	REG -- Regulatory Text--> AIR
+	AIR -- Review JSONs --> RR
+	PS -- Review JSONs --> RR
+	RR --> AIA
+	AIA -- Review Edits --> RR
+	RR --> SR
+
 
 	%% Create classes for the node colors
 	classDef blue fill:#8EA8D8,stroke:#3B4A73,color:#111,stroke-width:1px;
@@ -41,7 +38,7 @@ flowchart TB
 	classDef red fill:#D8A0A0,stroke:#7A3B3B,color:#111,stroke-width:1px;
 
 	%% Assigning the nodes to their classes
-	class TGR,RPR,PS,CAP,SRB,RO,OCR blue;
-	class FRC,AIR,AIA green;
-	class RAG red;
+	class RDL,OCR,CHK,PS,RR,SR,PrS blue;
+	class RTI,AIR,AIA green;
+	class REG red;
 ```
