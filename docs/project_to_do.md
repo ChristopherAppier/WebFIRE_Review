@@ -1,6 +1,6 @@
 # Computer Setup
 
-- [x] Ollama
+- [x] oMLX
   - [x] Models + settings
 - [x] VS Code
   - [x] Extensions
@@ -11,15 +11,11 @@
   - [x] Download libraries
 - [x] GitHub
 
-# Documentation
+# Outside Documentation
 
-- [x] Fill in README.md
-- [ ] Fill in architecture.md
-- [ ] Fill in setup.md
-- [ ] Fill in configuration.md
-- [ ] Fill in output_formats.md
-- [ ] Create Business Plan
-- [ ] Create master slide deck
+- [x] One-pager
+- [x] Slide deck
+- [ ] Business Plan
 
 # MVP Version
 
@@ -64,7 +60,7 @@
   - [ ] Summary Report Building
     - [x] Pull JSONs
     - [x] Create report
-    - [ ] Compress chunk reviews for same document
+    - [ ] Compress chunk reviews for same document (req doc review name first)
     - [ ] Visual dashboard via Streamlit
 
 - [ ] Create MVP Version Evaluation Harness
@@ -81,7 +77,7 @@
   - [ ] Output performance metrics
 
 - [ ] Harden MVP Version
-  - [ ] Test, modify, repeat until pass
+  - [ ] Test, modify, repeat until success
 
 - [ ] Documentation
   - [ ] Update README.md
