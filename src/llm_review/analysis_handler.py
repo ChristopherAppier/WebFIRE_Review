@@ -38,6 +38,9 @@ def analyze_chunks(config, paths):
         else:
             audit_flag = False
 
+        # Pulling information from the report table csv to the JSON
+        chunk_info = pull_chunk_info(paths, chunk_name)
+
         # Adding additional information into JSON
         payload = {
                     "audit_flag": audit_flag,
@@ -129,28 +132,21 @@ def json_check(raw_string):
     except json.JSONDecodeError as e:
         raise ValueError(f"Model returned invalid JSON: {e}\nRaw output:\n{raw_string}")
 
-def json_add(json_dict, payload):
-    """Adds additional information to the JSON dict"""
-    
-    json_dict['chunk_name'] = payload.get('chunk_name', None)
-    json_dict['system_prompt'] = payload.get('system_prompt', None)
-    json_dict['think_output'] = payload.get('think_output', None)
-    json_dict['facility_name'] = payload.get('facility_name', None)
-    json_dict['audit_flag'] = payload.get('audit_flag', None)
-    json_dict['review_start_time'] = payload.get('review_start_time', None)
-    json_dict['review_end_time'] = payload.get('review_end_time', None)
-    json_dict['llm_seed'] = payload.get('llm_seed', None)
-    json_dict['prompt_name'] = payload.get('prompt_name', None)
-    json_dict['RAG requests'] = payload.get('RAG requests', None)
-    json_dict['RAG responses'] = payload.get('RAG responses', None)
-
-    return json_dict
-
 def store_for_audit(config, paths):
     """Stores associated chunks and the output JSON in an auditing folder for audit at a later time based on issue flags and audit chance defined in settings.yml
     """
     
     print(f"\n Selecting all reviews with issued flagged and {config['audit_chance']}% of all other reviews for auditing")
+
+    # PLACEHOLDER FUNCTION - ADD FUNCTIONALITY
+
+    return
+
+def pull_chunk_info(paths, chunk_name):
+
+    # PLACEHOLDER FUNCTION - ADD FUNCTIONALITY TO PULL INFORMATION FROM REPORT TABLE CSV AND RETURN AS DICT
+
+    # Needs to look at all state report tables
 
     return
 
