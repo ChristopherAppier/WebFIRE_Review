@@ -37,7 +37,7 @@ def chunk_pdfs(config, paths):
 
     # Final summary of the chunking process
     if pdfs_processed == len(pdf_files):
-        print(f"\nAll PDFs successfully processed.")
+        print(f"\nAll PDFs successfully processed")
     else:
         print(f"\nTotal PDFs with chunks: {pdfs_processed} of {len(pdf_files)}\nTotal PDFs with 0 chunks: {zero_chunk_count} of {len(pdf_files)}\nSome PDFs may have failed to process or returned 0 chunks")
 

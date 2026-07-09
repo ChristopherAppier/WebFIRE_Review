@@ -51,9 +51,8 @@ def analyze_chunks(config, paths):
         # Adding additional information into JSON
         payload = {
                     "audit_flag": audit_flag,
-                    "chunk_name": chunk_name.stem,
                     "file_name": file_name,
-                    "think_output": think_output,
+                    "chunk_name": chunk_name.stem,
                     "organization": file_info.get("Organization"),
                     "facility": file_info.get("Facility"),               
                     "city": file_info.get("City"),
@@ -64,6 +63,7 @@ def analyze_chunks(config, paths):
                     "review_start_time": t_start,
                     "review_end_time": t_end,
                     "total_review_time": t_total,
+                    "think_output": think_output,
                     "llm_seed": None,
                     "prompt_name": None,
         }
@@ -72,7 +72,7 @@ def analyze_chunks(config, paths):
             json_output[key] = value
 
         # Storing the JSON output containing the analysis for that chunk
-        save_path = paths['rev_json_dir'] / f"{chunk_name.stem}.json"
+        save_path = paths['review_dir'] / f"{chunk_name.stem}.json"
         with open(save_path, "w", encoding="utf-8") as f:
             json.dump(json_output, f, indent=2)
 

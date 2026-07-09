@@ -61,7 +61,8 @@
     - [x] Add retry looping
     - [x] Refactor
     - [x] Shift to omlx and openai
-    - [ ] Add facility/document info to JSON
+    - [x] Add facility/document info to JSON
+    - [ ] Add handling for very large documents (skip for now?)
     - [ ] Replace print() with logging()
 
   - [ ] Summary Report Building

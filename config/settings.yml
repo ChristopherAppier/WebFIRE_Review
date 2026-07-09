@@ -13,10 +13,7 @@ directories:
   review_dir: 'data/reviews'
   spreadsheet_dir: 'data/spreadsheets'
   summary_dir: 'data/summary_report'
-
-  # Subdirectories for PDF processing
   chunk_dir: 'data/pdfs/chunks'
-  rev_json_dir: 'data/reviews/jsons'
 
 # Document Retrieval
 ## Timer Manager

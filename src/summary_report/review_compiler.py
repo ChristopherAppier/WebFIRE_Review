@@ -16,7 +16,7 @@ def compile_reviews(config, paths):
     review_data = []
 
     # Path to the directory containing review JSON files and selecting only JSON files
-    review_files = paths['rev_json_dir'].glob('*.json')
+    review_files = paths['review_dir'].glob('*.json')
 
     # Iterate through the review JSON files in the configured directory
     for review_file in review_files:
