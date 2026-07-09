@@ -40,6 +40,9 @@ def fetch_reports(config, paths):
 		# Request 4: GET the report pages for each URL in the parsed CSV and save to file
 		get_results(session,paths['raw_data_dir'],paths['http_dir'],state_name,dl_retries,dl_retry_delay)
 
+	# After all states have been processed, build a master report table combining all state CSVs
+	build_master_report_table(paths['http_dir'])
+
 def post_search(webfire_base, session, start_date, end_date, state_name, paths):
 	"""Posts a search request to the WebFIRE HTTP for a specific state and date range.
 
@@ -301,6 +304,45 @@ def get_results(session, raw_data_dir, http_dir, state_name, max_attempts=3, ret
 
 	# Printing a separator line to indicate the end of the download process for the state
 	print(f"\n{'*' * 50}")
+
+def build_master_report_table(http_dir):
+    """
+    Combines all per-state *_report_table.csv files into one master report_table.csv.
+
+    Args:
+        http_dir (Path): The directory where HTTP-related CSV files are stored.
+    """
+    state_tables = sorted(
+        p for p in http_dir.glob("*_report_table.csv")
+        if p.name != "report_table.csv"
+    )
+
+    if not state_tables:
+        print("\nNo state report tables found to combine.")
+        return
+
+    master_rows = []
+    master_fieldnames = []
+
+    for table_path in state_tables:
+        with open(table_path, "r", encoding="utf-8") as csv_file:
+            reader = csv.DictReader(csv_file)
+            rows = list(reader)
+            fieldnames = list(reader.fieldnames or [])
+
+        for field in fieldnames:
+            if field not in master_fieldnames:
+                master_fieldnames.append(field)
+
+        master_rows.extend(rows)
+
+    master_path = http_dir / "report_table.csv"
+    with open(master_path, "w", newline="", encoding="utf-8") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=master_fieldnames)
+        writer.writeheader()
+        writer.writerows(master_rows)
+
+    print(f"\nBuilt master report table: {master_path.name} ({len(master_rows)} rows)")
 
 if __name__ == "__main__":
 	from common import utilities
