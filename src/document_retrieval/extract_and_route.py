@@ -41,7 +41,7 @@ def extract_and_route_files(paths):
     # Route files into the appropriate directories based on their MIME type after unzips
     print(f"\n{'*' * 50}\n\nRouting files into appropriate directories based on file type")
     
-    #route_files(paths)
+    route_files(paths)
 
 def check_for_zips(paths):
     """
