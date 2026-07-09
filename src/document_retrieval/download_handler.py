@@ -298,7 +298,7 @@ def get_results(session, raw_data_dir, http_dir, state_name, max_attempts=3, ret
 		writer.writerows(rows)
 
 	if num_dl == num_reports:
-		print(f"\nAll reports successfully downloaded.")
+		print(f"\nAll reports successfully downloaded")
 	else:
 		print(f"\nTotal reports downloaded: {num_dl} of {num_reports}. Some reports may have failed to download.")
 
@@ -342,7 +342,7 @@ def build_master_report_table(http_dir):
         writer.writeheader()
         writer.writerows(master_rows)
 
-    print(f"\nBuilt master report table: {master_path.name} ({len(master_rows)} rows)")
+    print(f"\nBuilding combined report table")
 
 if __name__ == "__main__":
 	from common import utilities
