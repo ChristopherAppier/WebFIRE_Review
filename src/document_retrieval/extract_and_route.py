@@ -32,6 +32,9 @@ def extract_and_route_files(paths):
         # Check again if there are any zip files left in the raw directory
         zips_present = check_for_zips(paths)
 
+    # Rolls nested zip contents up to parent zips before writing Document List.
+    zip_to_documents = resolve_nested_zip_documents(zip_to_documents)
+
     # Updates CSV rows for zip records using the files extracted from each zip.
     update_document_lists(paths, zip_to_documents)
 
@@ -71,6 +74,8 @@ def extract_zips(paths):
             with zipfile.ZipFile(file_name, 'r') as zip_ref:
                 extracted_files = []
                 for member_name in zip_ref.namelist():
+                    if member_name.endswith("/"):
+                        continue
                     normalized_name = member_name.replace("\\", "/").rstrip("/")
                     base_name = Path(normalized_name).name
                     if not base_name:
@@ -141,6 +146,37 @@ def merge_zip_documents(all_zip_documents, round_zip_documents):
             all_zip_documents[zip_name] = []
         all_zip_documents[zip_name].extend(document_names)
         all_zip_documents[zip_name] = dedupe_preserve_order(all_zip_documents[zip_name])
+
+def resolve_nested_zip_documents(zip_to_documents):
+    """
+    Resolves nested zip references so parent zip mappings include child zip contents.
+
+    Args:
+        zip_to_documents (dict): Mapping of zip filename to extracted base filenames.
+    """
+    resolved_cache = {}
+
+    def expand(zip_name, visiting):
+        if zip_name in resolved_cache:
+            return resolved_cache[zip_name]
+
+        resolved_names = []
+        for name in zip_to_documents.get(zip_name, []):
+            if name.lower().endswith(".zip") and name in zip_to_documents:
+                if name in visiting:
+                    continue
+                resolved_names.extend(expand(name, visiting | {name}))
+            else:
+                resolved_names.append(name)
+
+        resolved_names = dedupe_preserve_order(resolved_names)
+        resolved_cache[zip_name] = resolved_names
+        return resolved_names
+
+    return {
+        zip_name: expand(zip_name, {zip_name})
+        for zip_name in zip_to_documents
+    }
 
 def update_document_lists(paths, zip_to_documents):
     """
