@@ -26,25 +26,31 @@
     - [x] find_project_root
     - [x] load_settings
     - [x] build_paths
+    - [ ] Replace print() with logging()
 
   - [x] WebFIRE report pull
     - [x] Refactor / review
     - [x] Fix HTTPS TLS certificate verification
     - [x] Use settings.yml info for URLs, etc.
+    - [ ] Replace print() with logging()
 
   - [x] OCR
     - [x] Refactor / review
+    - [ ] Replace print() with logging()
 
   - [x] Routing
     - [x] Refactor / review
     - [x] Rewrite using magic library (accurately determines file type)
     - [x] Fix zip_extract.py so that it properly routes zips that contained a folder of mixed file types
     - [x] Make zip_extract.py write document names in the zip to the http report table (needed for embedding facility name in review JSON) - non zips are already correct
+    - [ ] Compress all state_report_table.csv files into one and use that for the zip_extract.py and everything else.
+    - [ ] Replace print() with logging()
 
   - [x] Text Chunking
     - [x] Refactor / review
     - [x] Generalize chunking function for use in renaming (future proof)?
-    - [ ] Add # chunks created text
+    - [x] Add # chunks created text
+    - [ ] Replace print() with logging()
 
   - [x] AI Reviewer
     - [x] Ingest chunk + prompt
@@ -55,13 +61,15 @@
     - [x] Add retry looping
     - [x] Refactor
     - [x] Shift to omlx and openai
-    - [ ] Add document review name to JSON
+    - [ ] Add facility/document info to JSON
+    - [ ] Replace print() with logging()
 
   - [ ] Summary Report Building
     - [x] Pull JSONs
     - [x] Create report
     - [ ] Compress chunk reviews for same document (req doc review name first)
     - [ ] Visual dashboard via Streamlit
+    - [ ] Replace print() with logging()
 
 - [ ] Create MVP Version Evaluation Harness
   - [ ] Plan implementation strategy
@@ -91,8 +99,9 @@
 - [ ] Create Full Version
 
 - [ ] Report Downloading
-  - [ ] Scrape html file for facility info
+  - [x] Scrape html file for facility info
   - [x] Add download retries
+  - [ ] Multithreaded downloading (optional)
 
 - [ ] File Routing
 - [ ] Check spreadsheets for EPA template layout - route to Other folder if not using the template
@@ -107,7 +116,7 @@
 
 - [ ] File Renaming
   - [x] Deterministic NLP research
-  - [ ] Chunk file
+  - [x] Chunk file
   - [ ] Ingest (NLP)
   - [ ] Output potential facility names (NLP)
   - [ ] Use LLM to select report type and best name (may not be necessary if html scraping gets name)
@@ -118,8 +127,8 @@
 - [ ] AI Reviewer
   - [ ] Reviewer prompt selection
   - [ ] Reviewer prompt bank
-  - [ ] Seed randomizer and tracking
-  - [ ] RAG retrieval interface
+  - [ ] Seed tracking in JSON
+  - [ ] RAG retrieval interface (may not need)
   - [ ] Tool calling
   - [ ] Flush out JSON information placeholders
   - [ ] Test review task separation based on doc type / size
@@ -141,12 +150,9 @@
   - [ ] Add python scraping to report building
   - [ ] Refactor
 
-- [ ] eCFR RAG
+- [ ] eCFR Injection System
   - [ ] Pull eCFR sections
-  - [ ] Initial RAG scan
-  - [ ] Automated update that scans for eCFR updates
-  - [ ] RAG scans after updates
-  - [ ] RAG retreival integrated into reviewer
+  - [ ] Figure out RAG vs (tool call + subagent summary) - then create to do list 
 - [ ] Cron Trigger
 
 - [ ] Create Full Version Evaluation Harness
