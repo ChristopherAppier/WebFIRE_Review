@@ -128,6 +128,8 @@ def parse_search_results(file_path, state_name):
         "Document Name",
         "Related Attachment(s)",
         "report_url",
+		"Downloaded Filename",
+		"Document List",
     ]
 
 	# Extract the relevant data from the search results table and store it in a list of dictionaries
@@ -155,6 +157,8 @@ def parse_search_results(file_path, state_name):
             "Document Name": document_name,
             "Related Attachment(s)": tds[11].get_text(" ", strip=True),
             "report_url": report_url,
+			"Downloaded Filename": "",
+			"Document List": "",
         })
 
 	output_csv = file_path / f"{state_name}_report_table.csv"
@@ -193,81 +197,102 @@ def get_results(session, raw_data_dir, http_dir, state_name, max_attempts=3, ret
 	# Loop through each report URL in the CSV and GET the report page, saving it to a file
 	with open(csv_path, "r", encoding="utf-8") as csv_file:
 		reader = csv.DictReader(csv_file)
+		rows = list(reader)
 
-		# Finding the number of reports to download for progress tracking
-		num_reports = sum(1 for _ in reader)
-		num_dl = 0
+	# Keep the original column order and append new columns if missing
+	fieldnames = list(reader.fieldnames or [])
+	if "Downloaded Filename" not in fieldnames:
+		fieldnames.append("Downloaded Filename")
+	if "Document List" not in fieldnames:
+		fieldnames.append("Document List")
 
-		# Rewind and rebuild DictReader so header is handled correctly again
-		csv_file.seek(0)
-		reader = csv.DictReader(csv_file)
+	# Finding the number of reports to download for progress tracking
+	num_reports = len(rows)
+	num_dl = 0
 
-		for idx, row in enumerate(reader, start=1):
-			# Read the URL of the report from the CSV row
-			report_url = row.get("report_url", "").strip()
-			if not report_url:
-				continue
+	for idx, row in enumerate(rows, start=1):
+		row.setdefault("Downloaded Filename", "")
+		row.setdefault("Document List", "")
+		# Read the URL of the report from the CSV row
+		report_url = row.get("report_url", "").strip()
+		if not report_url:
+			continue
 
-			# GET the report with a simple retry loop
-			response = None
-			for attempt in range(1, max_attempts + 1):
-				try:
-					response = session.get(report_url, timeout=30, stream=True)
-					response.raise_for_status()
-					break
-				except requests.exceptions.RequestException as e:
-					if attempt == max_attempts:
-						print(f"Failed after {max_attempts} attempts for {report_url}: {e}")
-					else:
-						print(f"Attempt {attempt}/{max_attempts} failed for {report_url}: {e}. Retrying...")
-						time.sleep(retry_delay_seconds)
+		# GET the report with a simple retry loop
+		response = None
+		for attempt in range(1, max_attempts + 1):
+			try:
+				response = session.get(report_url, timeout=30, stream=True)
+				response.raise_for_status()
+				break
+			except requests.exceptions.RequestException as e:
+				if attempt == max_attempts:
+					print(f"Failed after {max_attempts} attempts for {report_url}: {e}")
+				else:
+					print(f"Attempt {attempt}/{max_attempts} failed for {report_url}: {e}. Retrying...")
+					time.sleep(retry_delay_seconds)
 
-			if response is None:
-				continue
+		if response is None:
+			continue
 
-			# Extract the filename from the Content-Disposition header or fallback to the last part of the URL
-			content_disposition = response.headers.get("Content-Disposition", "")
-			filename = None
+		# Extract the filename from the Content-Disposition header or fallback to the last part of the URL
+		content_disposition = response.headers.get("Content-Disposition", "")
+		filename = None
 
-			if "filename=" in content_disposition:
-				filename = content_disposition.split("filename=", 1)[1].strip().strip('"')
+		if "filename=" in content_disposition:
+			filename = content_disposition.split("filename=", 1)[1].strip().strip('"')
 
-			if not filename:
-				filename = f"{state_name}_report_{idx}.bin"
+		if not filename:
+			filename = f"{state_name}_report_{idx}.bin"
 
-			# Safety cleanup for filesystem-invalid characters
-			filename = re.sub(r'[<>:"/\\|?*\x00-\x1F]', "_", filename)
+		# Safety cleanup for filesystem-invalid characters
+		filename = re.sub(r'[<>:"/\\|?*\x00-\x1F]', "_", filename)
 
-			output_file_path = raw_data_dir / filename
-			if output_file_path.exists():
-				stem, suffix = output_file_path.stem, output_file_path.suffix
-				n = 1
-				while output_file_path.exists():
-					output_file_path = raw_data_dir / f"{stem}_{n}{suffix}"
-					n += 1
+		output_file_path = raw_data_dir / filename
+		if output_file_path.exists():
+			stem, suffix = output_file_path.stem, output_file_path.suffix
+			n = 1
+			while output_file_path.exists():
+				output_file_path = raw_data_dir / f"{stem}_{n}{suffix}"
+				n += 1
 
-			total_bytes = int(response.headers.get("Content-Length", 0))
-			chunk_size = 64 * 1024
+		total_bytes = int(response.headers.get("Content-Length", 0))
+		chunk_size = 64 * 1024
 
-			# Save the report content to a file in the raw data directory
-			with open(output_file_path, "wb") as output_file:
-				with tqdm(
-					total=total_bytes if total_bytes > 0 else None,
-					unit="B",
-					unit_scale=True,
-					unit_divisor=1024,
-					desc=f"{state_name} report {idx}",
-					leave=False,
-				) as bar:
-					for chunk in response.iter_content(chunk_size=chunk_size):
-						if not chunk:
-							continue
-						output_file.write(chunk)
-						bar.update(len(chunk))
+		# Save the report content to a file in the raw data directory
+		with open(output_file_path, "wb") as output_file:
+			with tqdm(
+				total=total_bytes if total_bytes > 0 else None,
+				unit="B",
+				unit_scale=True,
+				unit_divisor=1024,
+				desc=f"{state_name} report {idx}",
+				leave=False,
+			) as bar:
+				for chunk in response.iter_content(chunk_size=chunk_size):
+					if not chunk:
+						continue
+					output_file.write(chunk)
+					bar.update(len(chunk))
 
-			# Tracking the number of reports downloaded and printing progress
-			num_dl += 1
-			print(f"Downloaded report {idx} of {num_reports}")
+		# Tracking the number of reports downloaded and printing progress
+		num_dl += 1
+		row["Downloaded Filename"] = output_file_path.name
+
+		# For non-zip files, keep Document List populated with the downloaded filename.
+		# Zip rows are left blank for the extract stage to replace with extracted names.
+		if not output_file_path.name.lower().endswith(".zip"):
+			row["Document List"] = output_file_path.name
+		else:
+			row["Document List"] = ""
+
+		print(f"Downloaded report {idx} of {num_reports}")
+
+	# Rewrite the CSV so downstream steps can map extracted docs back to the correct row
+	with open(csv_path, "w", newline="", encoding="utf-8") as csv_file:
+		writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+		writer.writeheader()
+		writer.writerows(rows)
 
 	if num_dl == num_reports:
 		print(f"\nAll reports successfully downloaded.")

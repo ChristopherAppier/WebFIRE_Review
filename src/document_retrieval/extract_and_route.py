@@ -1,5 +1,8 @@
 import magic
 import zipfile
+import csv
+import shutil
+from pathlib import Path
 
 def extract_and_route_files(paths):
     """
@@ -11,10 +14,8 @@ def extract_and_route_files(paths):
 
     print(f"\nExtracting zip files from raw data directory")
 
-    # Ensure the target directories exist
-    paths['spreadsheet_dir'].mkdir(parents=True, exist_ok=True)
-    paths['pdf_dir'].mkdir(parents=True, exist_ok=True)
-    paths['other_dir'].mkdir(parents=True, exist_ok=True)
+    # Tracks zip filename -> extracted base filenames across all unzip rounds.
+    zip_to_documents = {}
 
     # Check for zip files
     zips_present = check_for_zips(paths)
@@ -22,7 +23,8 @@ def extract_and_route_files(paths):
     # Extracts all zip files in the raw directory while there are still zip files present (handles nested zips)
     while zips_present:
         # Extract all zip files in the raw directory
-        extract_zips(paths)
+        round_zip_documents = extract_zips(paths)
+        merge_zip_documents(zip_to_documents, round_zip_documents)
 
         # Flattens the directory structure in the raw directory (moves all files from subdirectories to the root of the raw directory)
         flatten_directory(paths)
@@ -30,9 +32,13 @@ def extract_and_route_files(paths):
         # Check again if there are any zip files left in the raw directory
         zips_present = check_for_zips(paths)
 
+    # Updates CSV rows for zip records using the files extracted from each zip.
+    update_document_lists(paths, zip_to_documents)
+
     # Route files into the appropriate directories based on their MIME type after unzips
     print(f"\n{'*' * 50}\n\nRouting files into appropriate directories based on file type")
-    route_files(paths)
+    
+    #route_files(paths)
 
 def check_for_zips(paths):
     """
@@ -56,14 +62,123 @@ def extract_zips(paths):
     Args:
         paths (dict): A dictionary of path objects for the various directories used in the process.
     """
+    zip_to_documents = {}
+
     for file_name in paths['raw_data_dir'].iterdir():
         mime_type = magic.from_file(file_name, mime=True)
         if mime_type == 'application/zip':
             # Extract the zip file
             with zipfile.ZipFile(file_name, 'r') as zip_ref:
-                zip_ref.extractall(paths['raw_data_dir'])
+                extracted_files = []
+                for member_name in zip_ref.namelist():
+                    normalized_name = member_name.replace("\\", "/").rstrip("/")
+                    base_name = Path(normalized_name).name
+                    if not base_name:
+                        continue
+                    # Skipping metadata.xml files
+                    if base_name.lower() == "metadata.xml":
+                        continue
+                    target_path = build_unique_target_path(paths['raw_data_dir'], base_name)
+                    with zip_ref.open(member_name) as source, open(target_path, "wb") as destination:
+                        shutil.copyfileobj(source, destination)
+                    extracted_files.append(target_path.name)
+
+                zip_to_documents[file_name.name] = dedupe_preserve_order(extracted_files)
             # Delete the zip file after extraction
             file_name.unlink()
+
+    return zip_to_documents
+
+def build_unique_target_path(raw_data_dir, file_name):
+    """
+    Builds a collision-safe target path in the raw directory.
+
+    Args:
+        raw_data_dir (Path): Root raw directory for extracted files.
+        file_name (str): Desired base filename.
+    """
+    candidate = raw_data_dir / file_name
+    if not candidate.exists():
+        return candidate
+
+    stem = candidate.stem
+    suffix = candidate.suffix
+    copy_index = 1
+
+    while True:
+        copy_suffix = "_copy" if copy_index == 1 else f"_copy{copy_index}"
+        candidate = raw_data_dir / f"{stem}{copy_suffix}{suffix}"
+        if not candidate.exists():
+            return candidate
+        copy_index += 1
+
+def dedupe_preserve_order(items):
+    """
+    Removes duplicates while preserving original order.
+
+    Args:
+        items (list[str]): A list of strings that may contain duplicates.
+    """
+    unique_items = []
+    seen = set()
+    for item in items:
+        if item in seen:
+            continue
+        seen.add(item)
+        unique_items.append(item)
+    return unique_items
+
+def merge_zip_documents(all_zip_documents, round_zip_documents):
+    """
+    Merges per-round zip extraction results into one mapping.
+
+    Args:
+        all_zip_documents (dict): Aggregate mapping of zip name to extracted base filenames.
+        round_zip_documents (dict): Mapping from the current extraction round.
+    """
+    for zip_name, document_names in round_zip_documents.items():
+        if zip_name not in all_zip_documents:
+            all_zip_documents[zip_name] = []
+        all_zip_documents[zip_name].extend(document_names)
+        all_zip_documents[zip_name] = dedupe_preserve_order(all_zip_documents[zip_name])
+
+def update_document_lists(paths, zip_to_documents):
+    """
+    Updates each *_report_table.csv by filling Document List for zip rows from extraction results.
+
+    Args:
+        paths (dict): A dictionary of path objects for the various directories used in the process.
+        zip_to_documents (dict): Mapping of zip filename to extracted base filenames.
+    """
+    for csv_path in paths['http_dir'].glob("*_report_table.csv"):
+        with open(csv_path, "r", encoding="utf-8") as csv_file:
+            reader = csv.DictReader(csv_file)
+            rows = list(reader)
+            fieldnames = list(reader.fieldnames or [])
+
+        if "Document List" not in fieldnames:
+            fieldnames.append("Document List")
+
+        for row in rows:
+            downloaded_filename = row.get("Downloaded Filename", "").strip()
+            if not downloaded_filename:
+                downloaded_filename = row.get("Document Name", "").strip()
+
+            if not downloaded_filename:
+                continue
+
+            if downloaded_filename.lower().endswith(".zip"):
+                document_names = zip_to_documents.get(downloaded_filename, [])
+                if document_names:
+                    row["Document List"] = "|".join(document_names)
+            else:
+                if not row.get("Document List", "").strip():
+                    row["Document List"] = downloaded_filename
+
+        with open(csv_path, "w", newline="", encoding="utf-8") as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
 
 def flatten_directory(paths):
     """

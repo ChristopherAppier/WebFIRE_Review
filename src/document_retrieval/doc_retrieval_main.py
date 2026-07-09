@@ -11,7 +11,7 @@ def main(config, paths):
     extract_and_route_files(paths)
 
     # OCR PDFs
-    apply_ocr(config, paths)
+    #apply_ocr(config, paths)
 
 if __name__ == "__main__":
     from common import utilities

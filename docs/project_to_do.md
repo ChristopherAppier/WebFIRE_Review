@@ -39,7 +39,7 @@
     - [x] Refactor / review
     - [x] Rewrite using magic library (accurately determines file type)
     - [x] Fix zip_extract.py so that it properly routes zips that contained a folder of mixed file types
-    - [ ] Make zip_extract.py write document names in the zip to the http report table (needed for embedding facility name in review JSON) - non zips are already correct
+    - [x] Make zip_extract.py write document names in the zip to the http report table (needed for embedding facility name in review JSON) - non zips are already correct
 
   - [x] Text Chunking
     - [x] Refactor / review
