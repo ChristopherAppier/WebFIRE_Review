@@ -38,7 +38,7 @@ def extract_and_route_files(paths):
     # Route files into the appropriate directories based on their MIME type after unzips
     print(f"\n{'*' * 50}\n\nRouting files into appropriate directories based on file type")
     
-    route_files(paths)
+    #route_files(paths)
 
 def check_for_zips(paths):
     """
@@ -144,41 +144,45 @@ def merge_zip_documents(all_zip_documents, round_zip_documents):
 
 def update_document_lists(paths, zip_to_documents):
     """
-    Updates each *_report_table.csv by filling Document List for zip rows from extraction results.
+    Updates master report_table.csv by filling Document List for zip rows from extraction results.
 
     Args:
         paths (dict): A dictionary of path objects for the various directories used in the process.
         zip_to_documents (dict): Mapping of zip filename to extracted base filenames.
     """
-    for csv_path in paths['http_dir'].glob("*_report_table.csv"):
-        with open(csv_path, "r", encoding="utf-8") as csv_file:
-            reader = csv.DictReader(csv_file)
-            rows = list(reader)
-            fieldnames = list(reader.fieldnames or [])
+    csv_path = paths['http_dir'] / "report_table.csv"
+    if not csv_path.exists():
+        print("\nreport_table.csv not found in http directory. Skipping Document List update.")
+        return
 
-        if "Document List" not in fieldnames:
-            fieldnames.append("Document List")
+    with open(csv_path, "r", encoding="utf-8") as csv_file:
+        reader = csv.DictReader(csv_file)
+        rows = list(reader)
+        fieldnames = list(reader.fieldnames or [])
 
-        for row in rows:
-            downloaded_filename = row.get("Downloaded Filename", "").strip()
-            if not downloaded_filename:
-                downloaded_filename = row.get("Document Name", "").strip()
+    if "Document List" not in fieldnames:
+        fieldnames.append("Document List")
 
-            if not downloaded_filename:
-                continue
+    for row in rows:
+        downloaded_filename = row.get("Downloaded Filename", "").strip()
+        if not downloaded_filename:
+            downloaded_filename = row.get("Document Name", "").strip()
 
-            if downloaded_filename.lower().endswith(".zip"):
-                document_names = zip_to_documents.get(downloaded_filename, [])
-                if document_names:
-                    row["Document List"] = "|".join(document_names)
-            else:
-                if not row.get("Document List", "").strip():
-                    row["Document List"] = downloaded_filename
+        if not downloaded_filename:
+            continue
 
-        with open(csv_path, "w", newline="", encoding="utf-8") as csv_file:
-            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(rows)
+        if downloaded_filename.lower().endswith(".zip"):
+            document_names = zip_to_documents.get(downloaded_filename, [])
+            if document_names:
+                row["Document List"] = "|".join(document_names)
+        else:
+            if not row.get("Document List", "").strip():
+                row["Document List"] = downloaded_filename
+
+    with open(csv_path, "w", newline="", encoding="utf-8") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
 
 def flatten_directory(paths):
     """
