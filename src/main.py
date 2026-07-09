@@ -1,8 +1,8 @@
 from common import utilities
 from document_retrieval.doc_retrieval_main import main as document_retrieval
 from llm_review.llm_review_main import main as llm_review
-from python_review.python_review_main import main as python_review
-from audit.audit_main import main as audit
+#from python_review.python_review_main import main as python_review
+#from audit.audit_main import main as audit
 from summary_report.summary_report_main import main as summary_report
 
 def main():

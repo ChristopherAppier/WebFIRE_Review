@@ -1,5 +1,8 @@
 import random
 import json
+import re
+import csv
+from datetime import datetime, timezone
 import yaml
 import openai
 from openai import OpenAI
@@ -23,7 +26,7 @@ def analyze_chunks(config, paths):
             chunk_text = f.read()
         
         # Get the AI's response as a string
-        raw_output, think_output = single_analysis(config, chunk_name, chunk_text, system_prompt)
+        raw_output, think_output, t_start, t_end = single_analysis(config, chunk_name, chunk_text, system_prompt)
         
         # Trying to load the response string as a JSON with error handling
         try:
@@ -39,21 +42,31 @@ def analyze_chunks(config, paths):
             audit_flag = False
 
         # Pulling information from the report table csv to the JSON
-        chunk_info = pull_chunk_info(paths, chunk_name)
+        file_name = find_file_name(paths, chunk_name)
+        file_info = pull_file_info(paths, file_name)
+
+        # Calculating total review time in seconds
+        t_total = int((datetime.fromisoformat(t_end) - datetime.fromisoformat(t_start)).total_seconds())
 
         # Adding additional information into JSON
         payload = {
                     "audit_flag": audit_flag,
                     "chunk_name": chunk_name.stem,
+                    "file_name": file_name,
                     "think_output": think_output,
-                    "facility_name": None, #TODO add logic to pull from state report request
-                    "review_start_time": None, #TODO add logic to pull from state report request
-                    "review_end_time": None, #TODO add logic to pull from state report request
-                    "llm_seed": None, #TODO add logic to pull from state report request
-                    "prompt_name": None, #TODO add logic to pull from state report request
-                    "RAG_requests": None, #TODO add logic to pull from state report request
-                    "RAG_responses": None #TODO add logic to pull from state report request
-                }
+                    "organization": file_info.get("Organization"),
+                    "facility": file_info.get("Facility"),               
+                    "city": file_info.get("City"),
+                    "state": file_info.get("State"),
+                    "report_type": file_info.get("Report Type"),
+                    "report_subtype": file_info.get("Report Sub Type"),
+                    "submission_date": file_info.get("Submission Date"),
+                    "review_start_time": t_start,
+                    "review_end_time": t_end,
+                    "total_review_time": t_total,
+                    "llm_seed": None,
+                    "prompt_name": None,
+        }
 
         for key, value in payload.items():
             json_output[key] = value
@@ -70,6 +83,8 @@ def analyze_chunks(config, paths):
 def single_analysis(config, chunk_name, chunk_text, sys_prompt):
     """Gives a system prompt to a chosen AI model to conduct an analysis on the chunk of data"""
 
+    t_start = datetime.now(timezone.utc).isoformat()
+
     try:    
         print(f"Reviewing {chunk_name.stem}")
 
@@ -82,6 +97,7 @@ def single_analysis(config, chunk_name, chunk_text, sys_prompt):
     )
         # Making the request to the OpenAI API with the specified model, system prompt, and chunk text
         response = client.responses.create(model=config['llm']['review'],instructions=sys_prompt, input=chunk_text)
+        t_end = datetime.now(timezone.utc).isoformat()
         print(f"Review complete\n")
 
         # Capturing the "think" output from the response if it exists, otherwise setting it to None
@@ -93,14 +109,17 @@ def single_analysis(config, chunk_name, chunk_text, sys_prompt):
             if getattr(part, "text", None)
         ) or None
 
-        return response.output_text, think_output
+        return response.output_text, think_output, t_start, t_end
 
     except openai.APIConnectionError as e:
-        return f"The server could not be reached: {e.__cause__}", None
+        t_end = datetime.now(timezone.utc).isoformat()
+        return f"The server could not be reached: {e.__cause__}", None, t_start, t_end
     except openai.RateLimitError as e:
-        return f"A 429 status code was received; we should back off a bit.", None
+        t_end = datetime.now(timezone.utc).isoformat()
+        return f"A 429 status code was received; we should back off a bit.", None, t_start, t_end
     except openai.APIStatusError as e:
-        return f"Another non-200-range status code was received: {e.status_code}, {e.response}", None
+        t_end = datetime.now(timezone.utc).isoformat()
+        return f"Another non-200-range status code was received: {e.status_code}, {e.response}", None, t_start, t_end   
 
 def load_system_prompt(paths, chunk_name):
     """Loads the appropriate system prompt based on the file type/name being reviewed (currently just uses a single default prompt for MVP implementation)"""
@@ -142,13 +161,56 @@ def store_for_audit(config, paths):
 
     return
 
-def pull_chunk_info(paths, chunk_name):
+def find_file_name(paths, chunk_name):
+    """Finds the original file name for a chunk using Document List in report_table.csv."""
 
-    # PLACEHOLDER FUNCTION - ADD FUNCTIONALITY TO PULL INFORMATION FROM REPORT TABLE CSV AND RETURN AS DICT
+    chunk_base = re.sub(r"_chunk_\d+$", "", chunk_name.stem).lower()
+    table_path = paths['http_dir'] / "report_table.csv"
 
-    # Needs to look at all state report tables
+    if not table_path.exists():
+        return chunk_base
 
-    return
+    with open(table_path, "r", encoding="utf-8-sig", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            for doc_name in (row.get("Document List") or "").split("|"):
+                doc_name = doc_name.strip()
+                if not doc_name:
+                    continue
+
+                doc_stem = doc_name.rsplit(".", 1)[0].lower()
+                if doc_stem == chunk_base:
+                    return doc_name
+
+    return chunk_base
+
+def pull_file_info(paths, file_name):
+    """Finds the row for file_name in report_table.csv and returns key file metadata."""
+
+    table_path = paths['http_dir'] / "report_table.csv"
+    if not table_path.exists():
+        return {}
+
+    target = file_name.lower().strip()
+
+    with open(table_path, "r", encoding="utf-8-sig", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            doc_names = [name.strip() for name in (row.get("Document List") or "").split("|") if name.strip()]
+
+            for doc_name in doc_names:
+                if doc_name.lower() == target:
+                    return {
+                        "Organization": row.get("Organization"),
+                        "Facility": row.get("Facility"),
+                        "City": row.get("City"),
+                        "State": row.get("State"),
+                        "Report Type": row.get("Report Type"),
+                        "Report Sub Type": row.get("Report Sub Type"),
+                        "Submission Date": row.get("Submission Date"),
+                    }
+
+    return {}
 
 if __name__ == "__main__":
     from common import utilities

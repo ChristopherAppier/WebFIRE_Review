@@ -1,5 +1,5 @@
 # Run configuration
-remove_data: 'False' # Set to True to remove all data in the data directories before running the script
+remove_data: 'True' # Set to True to remove all data in the data directories before running the script
 
 # Directory paths
 directories:
