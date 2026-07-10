@@ -43,13 +43,14 @@
     - [x] Rewrite using magic library (accurately determines file type)
     - [x] Fix zip_extract.py so that it properly routes zips that contained a folder of mixed file types
     - [x] Make zip_extract.py write document names in the zip to the http report table (needed for embedding facility name in review JSON) - non zips are already correct
-    - [ ] Compress all state_report_table.csv files into one and use that for the zip_extract.py and everything else.
+    - [x] Compress all state_report_table.csv files into one and use that for the zip_extract.py and everything else.
     - [ ] Replace print() with logging()
 
   - [x] Text Chunking
     - [x] Refactor / review
     - [x] Generalize chunking function for use in renaming (future proof)?
     - [x] Add # chunks created text
+    - [ ] Add optional chunk cap for large files
     - [ ] Replace print() with logging()
 
   - [x] AI Reviewer
@@ -62,8 +63,13 @@
     - [x] Refactor
     - [x] Shift to omlx and openai
     - [x] Add facility/document info to JSON
-    - [ ] Add handling for very large documents (skip for now?)
     - [ ] Replace print() with logging()
+
+  - [ ] Prompt Selection
+    - [ ] Input first report chunk
+    - [ ] Determine report type
+    - [ ] Use report type to pull prompt from prompt bank
+    - [ ] Return prompt text and prompt code (for tracking in JSONs)
 
   - [ ] Summary Report Building
     - [x] Pull JSONs
@@ -115,14 +121,9 @@
   - [ ] Add summarization to chunks
   - [ ] Add context based stitching after summarization to balance context buildup vs coherency of report
 
-- [ ] File Renaming
-  - [x] Deterministic NLP research
-  - [x] Chunk file
-  - [ ] Ingest (NLP)
-  - [ ] Output potential facility names (NLP)
-  - [ ] Use LLM to select report type and best name (may not be necessary if html scraping gets name)
-  - [ ] Check output format
-  - [ ] Change name
+- [ ] Prompt Selection (common utilities for all prompt needs)
+  - [ ] Flush out prompt bank
+  - [ ] Add function for LLM Audit prompt selection
   - [ ] Refactor
 
 - [ ] AI Reviewer
@@ -153,7 +154,7 @@
 
 - [ ] eCFR Injection System
   - [ ] Pull eCFR sections
-  - [ ] Figure out RAG vs (tool call + subagent summary) - then create to do list 
+  - [ ] Figure out RAG vs (tool call + subagent summary) - then create to do list
 - [ ] Cron Trigger
 
 - [ ] Create Full Version Evaluation Harness
