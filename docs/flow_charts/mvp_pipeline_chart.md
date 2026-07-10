@@ -5,6 +5,7 @@ flowchart TB
 	RepPull[Download WebFIRE<br/>Reports]
 	OCR[OCR]
 	TextChunk[Text Chunking]
+	PS[Prompt Selection]
 	AIRev["AI Review<br/>(PDFs + explicit only)"]
 	Summary[Summary Report]
 	INFO[Green = AI<br/>Blue = Script]
@@ -12,7 +13,8 @@ flowchart TB
 	%% Linking the nodes
 	RepPull -- PDFs --> OCR
 	OCR -- PDF Text --> TextChunk
-	TextChunk -- Chunks--> AIRev
+	TextChunk -- Chunks --> PS
+	PS -- Chunks--> AIRev
 	AIRev -- JSONs--> Summary
 
 	%% Create classes for the node colors
@@ -21,5 +23,5 @@ flowchart TB
 
 	%% Assigning the nodes to their classes
 	class RepPull,Route,OCR,TextChunk,Summary blue;
-	class AIRev green;
+	class PS,AIRev green;
 ```
