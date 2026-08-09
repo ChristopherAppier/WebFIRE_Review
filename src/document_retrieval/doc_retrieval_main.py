@@ -2,6 +2,7 @@ from document_retrieval.download_handler import fetch_reports
 from document_retrieval.extract_and_route import extract_and_route_files
 from document_retrieval.ocr_handler import apply_ocr
 
+
 def main(config, paths):
     
     # Downloading reports from WebFIRE API for each state

@@ -1,6 +1,8 @@
-import yaml
 from dataclasses import dataclass
 from pathlib import Path
+
+import yaml
+
 
 def find_project_root(start: Path | None = None) -> Path:
     ROOT_MARKER = "README.md"
@@ -51,7 +53,7 @@ def build_paths(config: dict) -> Paths:
     # Load directory paths from the configuration.
     dirs = config.get("directories", {})
     if not isinstance(dirs, dict):
-        raise ValueError("config['directories'] must be a mapping of name -> relative path")
+        raise TypeError("config['directories'] must be a mapping of name -> relative path")
 
     # Finds the project root
     root = find_project_root()

@@ -1,6 +1,6 @@
-import json
 import csv
-from pathlib import Path
+import json
+
 
 def compile_reviews(config, paths):
     """
@@ -26,12 +26,12 @@ def compile_reviews(config, paths):
 
     # Error message for no review JSON files found
     if not review_data:
-        print(f"\nNo review files found")
+        print("\nNo review files found")
         return
 
     # Write the compiled data to a CSV file under the summary directory
     csv_output_path = paths['summary_dir'] / 'summary_report.csv'
-    fieldnames = [key for review in review_data for key in review.keys()]
+    fieldnames = [key for review in review_data for key in review]
     with open(csv_output_path, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()

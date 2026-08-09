@@ -1,8 +1,10 @@
-import magic
-import zipfile
 import csv
 import shutil
+import zipfile
 from pathlib import Path
+
+import magic
+
 
 def extract_and_route_files(paths):
     """
@@ -12,7 +14,7 @@ def extract_and_route_files(paths):
         paths : A dictionary of path objects for the various directories used in the process.
     """
 
-    print(f"\nExtracting zip files from raw data directory")
+    print("\nExtracting zip files from raw data directory")
 
     # Tracks zip filename -> extracted base filenames across all unzip rounds.
     zip_to_documents = {}

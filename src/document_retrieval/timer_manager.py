@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+
 def check_timer(config):
     """Returns the start and end date to be used for the WebFIRE API request
     

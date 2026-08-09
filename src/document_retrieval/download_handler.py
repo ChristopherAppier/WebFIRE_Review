@@ -1,11 +1,14 @@
-import requests
 import csv
 import re
 import time
-from document_retrieval.timer_manager import check_timer
 from pathlib import Path
+
+import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
+
+from document_retrieval.timer_manager import check_timer
+
 
 def fetch_reports(config, paths):
 	"""Fetches reports from the WebFIRE HTTP for each state specified in the configuration.
@@ -58,13 +61,13 @@ def post_search(webfire_base, session, start_date, end_date, state_name, paths):
 	print(f"\n{'*' * 50}\n\nSearching for reports for state: {state_name} from {start_date} to {end_date}")
 
 	# Request 1: GET the initial search page to establish session cookies
-	response1 = session.get(f"{webfire_base}/reports/esearch.cfm")
+	response1 = session.get(f"{webfire_base}/reports/esearch.cfm")  # noqa: F841
 
 	#print("Request 1 status:", response1.status_code)
 
 	# Request 2: POST to the search page to submit the search form
 	session.headers["Referer"] = f"{webfire_base}/reports/esearch.cfm"
-	response2 = session.post(
+	response2 = session.post(  # noqa: F841
 		f"{webfire_base}/reports/esearch2.cfm",
 		headers={"Content-Type": "application/x-www-form-urlencoded"},
 		data={"reporttype": "All", "Submit": "Submit Search"},
@@ -263,20 +266,19 @@ def get_results(session, raw_data_dir, http_dir, state_name, max_attempts=3, ret
 		chunk_size = 64 * 1024
 
 		# Save the report content to a file in the raw data directory
-		with open(output_file_path, "wb") as output_file:
-			with tqdm(
-				total=total_bytes if total_bytes > 0 else None,
-				unit="B",
-				unit_scale=True,
-				unit_divisor=1024,
-				desc=f"{state_name} report {idx}",
-				leave=False,
-			) as bar:
-				for chunk in response.iter_content(chunk_size=chunk_size):
-					if not chunk:
-						continue
-					output_file.write(chunk)
-					bar.update(len(chunk))
+		with open(output_file_path, "wb") as output_file, tqdm(
+			total=total_bytes if total_bytes > 0 else None,
+			unit="B",
+			unit_scale=True,
+			unit_divisor=1024,
+			desc=f"{state_name} report {idx}",
+			leave=False,
+		) as bar:
+			for chunk in response.iter_content(chunk_size=chunk_size):
+				if not chunk:
+					continue
+				output_file.write(chunk)
+				bar.update(len(chunk))
 
 		# Tracking the number of reports downloaded and printing progress
 		num_dl += 1
@@ -298,7 +300,7 @@ def get_results(session, raw_data_dir, http_dir, state_name, max_attempts=3, ret
 		writer.writerows(rows)
 
 	if num_dl == num_reports:
-		print(f"\nAll reports successfully downloaded")
+		print("\nAll reports successfully downloaded")
 	else:
 		print(f"\nTotal reports downloaded: {num_dl} of {num_reports}. Some reports may have failed to download.")
 
@@ -342,7 +344,7 @@ def build_master_report_table(http_dir):
         writer.writeheader()
         writer.writerows(master_rows)
 
-    print(f"\nBuilding combined report table")
+    print("\nBuilding combined report table")
 
 if __name__ == "__main__":
 	from common import utilities

@@ -1,5 +1,6 @@
 from summary_report.review_compiler import compile_reviews
 
+
 def main(config, paths):
     
     # Compile the review JSONs into a single csv for easy review

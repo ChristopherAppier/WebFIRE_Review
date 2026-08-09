@@ -1,5 +1,6 @@
 import pdfplumber
 
+
 def chunk_pdfs(config, paths):
     """
     Reads OCR'd PDFs and creates overlapping chunks of the text.
@@ -16,7 +17,7 @@ def chunk_pdfs(config, paths):
     pdf_files = sorted([f for f in paths['pdf_dir'].glob("*.pdf")])
 
     if not pdf_files:
-        print(f"\nNo PDF files found")
+        print("\nNo PDF files found")
         return
 
     print(f"\nFound {len(pdf_files)} PDF files to process\n")
@@ -37,7 +38,7 @@ def chunk_pdfs(config, paths):
 
     # Final summary of the chunking process
     if pdfs_processed == len(pdf_files):
-        print(f"\nAll PDFs successfully processed")
+        print("\nAll PDFs successfully processed")
     else:
         print(f"\nTotal PDFs with chunks: {pdfs_processed} of {len(pdf_files)}\nTotal PDFs with 0 chunks: {zero_chunk_count} of {len(pdf_files)}\nSome PDFs may have failed to process or returned 0 chunks")
 

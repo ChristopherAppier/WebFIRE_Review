@@ -1,8 +1,9 @@
-import subprocess
-import tempfile
 import os
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
+
 
 def apply_ocr(config, paths):
     """
@@ -67,7 +68,7 @@ def apply_ocr(config, paths):
             print(f"Unexpected OCR error for {pdf_file.name}: {e}")
             continue
     
-    print(f"\nOCR processing complete for PDFs")
+    print("\nOCR processing complete for PDFs")
 
 if __name__ == "__main__":
     from common import utilities

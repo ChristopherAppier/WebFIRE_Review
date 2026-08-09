@@ -1,11 +1,13 @@
-import random
-import json
-import re
 import csv
+import json
+import random
+import re
 from datetime import datetime, timezone
-import yaml
+
 import openai
+import yaml
 from openai import OpenAI
+
 
 def analyze_chunks(config, paths):
 
@@ -76,9 +78,8 @@ def analyze_chunks(config, paths):
         with open(save_path, "w", encoding="utf-8") as f:
             json.dump(json_output, f, indent=2)
 
-    print(f"LLM review complete") #TODO Add more stat tracking
+    print("LLM review complete") #TODO Add more stat tracking
     
-    return
 
 def single_analysis(config, chunk_name, chunk_text, sys_prompt):
     """Gives a system prompt to a chosen AI model to conduct an analysis on the chunk of data"""
@@ -98,7 +99,7 @@ def single_analysis(config, chunk_name, chunk_text, sys_prompt):
         # Making the request to the OpenAI API with the specified model, system prompt, and chunk text
         response = client.responses.create(model=config['llm']['review'],instructions=sys_prompt, input=chunk_text)
         t_end = datetime.now(timezone.utc).isoformat()
-        print(f"Review complete\n")
+        print("Review complete\n")
 
         # Capturing the "think" output from the response if it exists, otherwise setting it to None
         think_output = "\n".join(
@@ -116,7 +117,7 @@ def single_analysis(config, chunk_name, chunk_text, sys_prompt):
         return f"The server could not be reached: {e.__cause__}", None, t_start, t_end
     except openai.RateLimitError as e:
         t_end = datetime.now(timezone.utc).isoformat()
-        return f"A 429 status code was received; we should back off a bit.", None, t_start, t_end
+        return "A 429 status code was received; back off requests.", None, t_start, t_end
     except openai.APIStatusError as e:
         t_end = datetime.now(timezone.utc).isoformat()
         return f"Another non-200-range status code was received: {e.status_code}, {e.response}", None, t_start, t_end   
@@ -158,8 +159,6 @@ def store_for_audit(config, paths):
     print(f"\n Selecting all reviews with issued flagged and {config['audit_chance']}% of all other reviews for auditing")
 
     # PLACEHOLDER FUNCTION - ADD FUNCTIONALITY
-
-    return
 
 def find_file_name(paths, chunk_name):
     """Finds the original file name for a chunk using Document List in report_table.csv."""

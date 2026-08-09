@@ -1,5 +1,6 @@
-from llm_review.chunk_handler import chunk_pdfs
 from llm_review.analysis_handler import analyze_chunks
+from llm_review.chunk_handler import chunk_pdfs
+
 
 def main(config, paths):
     
