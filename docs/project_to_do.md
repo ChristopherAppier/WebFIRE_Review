@@ -22,10 +22,14 @@
 - [ ] Create MVP Version
   - [x] Add print statements at major steps
 
+  - [ ] Settings
+    - [ ] Add logging dir
+
   - [x] Common
     - [x] find_project_root
     - [x] load_settings
     - [x] build_paths
+    - [ ] setup_logging
     - [ ] Replace print() with logging()
 
   - [x] WebFIRE report pull
@@ -75,7 +79,6 @@
     - [x] Pull JSONs
     - [x] Create report
     - [ ] Compress chunk reviews for same document (req doc review name first)
-    - [ ] Visual dashboard via Streamlit
     - [ ] Replace print() with logging()
 
 - [ ] Create MVP Version Evaluation Harness
