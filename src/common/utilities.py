@@ -1,28 +1,8 @@
 from dataclasses import dataclass
 from pathlib import Path
+import logging
 
 import yaml
-
-
-def find_project_root(start: Path | None = None) -> Path:
-    ROOT_MARKER = "README.md"
-
-    current = (start or Path(__file__)).resolve()
-    for candidate in [current, *current.parents]:
-        if (candidate / ROOT_MARKER).exists():
-            return candidate
-    raise RuntimeError("Could not locate project root")
-
-def load_config():
-    """Load configuration from settings.yml."""
-    print(f"\n\n{'*' * 50}\n\nLoading configuration data from settings.yml")
-
-    project_root = find_project_root() # Finds the root folder of the project
-
-    config_path = project_root / "config" / "settings.yml" # Sets the path for the settings.yml file
-    
-    with open(config_path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
 
 @dataclass(frozen=True)
 class Paths:
@@ -43,6 +23,34 @@ class Paths:
     def __truediv__(self, other: str) -> Path:
         """Behave like the project root Path when used with the / operator."""
         return self.root / other
+
+def initialize_project() -> tuple[dict, Paths]:
+    """Initialize the project by loading configuration and building paths."""
+    config = load_config()
+    paths = build_paths(config)
+    setup_logging(paths.log_dir)
+
+    return config, paths
+
+def find_project_root(start: Path | None = None) -> Path:
+    ROOT_MARKER = "README.md"
+
+    current = (start or Path(__file__)).resolve()
+    for candidate in [current, *current.parents]:
+        if (candidate / ROOT_MARKER).exists():
+            return candidate
+    raise RuntimeError("Could not locate project root")
+
+def load_config():
+    """Load configuration from settings.yml."""
+    print(f"\n\n{'*' * 50}\n\nLoading configuration data from settings.yml")
+
+    project_root = find_project_root() # Finds the root folder of the project
+
+    config_path = project_root / "config" / "settings.yml" # Sets the path for the settings.yml file
+    
+    with open(config_path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
 
 def build_paths(config: dict) -> Paths:
 
@@ -89,3 +97,15 @@ def data_dir_clean(config: dict, paths: Paths) -> None:
     for dir_path in paths.directories.values():
         dir_path.mkdir(parents=True, exist_ok=True)
         (dir_path / ".gitkeep").touch(exist_ok=True)
+
+def setup_logging(log_dir: Path) -> None:
+    """Configures logging setup."""
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s: %(message)s",
+        handlers=[
+            logging.FileHandler(log_dir / "webfire_review.log"),
+            logging.StreamHandler(),
+        ],
+    )

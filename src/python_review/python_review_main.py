@@ -5,10 +5,7 @@ def main(config, paths):
 if __name__ == "__main__":
     from common import utilities
 
-    # Load configuration
-    config = utilities.load_config()
-
-    # Builds the paths for the data directories
-    paths = utilities.build_paths(config)
+    # Setting up logging and loading configuration options and paths from settings.yml
+    config, paths = utilities.initialize_project()
 
     main(config, paths)

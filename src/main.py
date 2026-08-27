@@ -8,11 +8,8 @@ from summary_report.summary_report_main import main as summary_report
 
 def main():
     
-    # Load configuration settings from settings.yml and store them in a dictionary
-    config = utilities.load_config()
-
-    # Builds the paths for the data directories and store them in a Paths object
-    paths = utilities.build_paths(config)
+    # Setting up logging and loading configuration options and paths from settings.yml
+    config, paths = utilities.initialize_project()
 
     # Runs the document retrieval process
     document_retrieval(config, paths)

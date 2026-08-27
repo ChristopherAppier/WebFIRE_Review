@@ -4,6 +4,7 @@ remove_data: 'False' # Set to True to remove all data in the data directories be
 # Directory paths
 directories:
   config_dir: 'config'
+  log_dir: 'data/logs'
   audit_dir: 'data/audits'
   eval_dir: 'data/evals'
   http_dir: 'data/http'
