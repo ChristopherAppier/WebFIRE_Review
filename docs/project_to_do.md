@@ -23,24 +23,24 @@
   - [x] Add print statements at major steps
 
   - [ ] Settings
-    - [ ] Add logging dir
+    - [x] Add logging dir
 
   - [x] Common
     - [x] find_project_root
     - [x] load_settings
     - [x] build_paths
-    - [ ] setup_logging
-    - [ ] Replace print() with logging()
+    - [x] setup_logging
+    - [x] Replace print() with logging()
 
   - [x] WebFIRE report pull
     - [x] Refactor / review
     - [x] Fix HTTPS TLS certificate verification
     - [x] Use settings.yml info for URLs, etc.
-    - [ ] Replace print() with logging()
+    - [x] Replace print() with logging()
 
   - [x] OCR
     - [x] Refactor / review
-    - [ ] Replace print() with logging()
+    - [x] Replace print() with logging()
 
   - [x] Routing
     - [x] Refactor / review
@@ -48,14 +48,14 @@
     - [x] Fix zip_extract.py so that it properly routes zips that contained a folder of mixed file types
     - [x] Make zip_extract.py write document names in the zip to the http report table (needed for embedding facility name in review JSON) - non zips are already correct
     - [x] Compress all state_report_table.csv files into one and use that for the zip_extract.py and everything else.
-    - [ ] Replace print() with logging()
+    - [x] Replace print() with logging()
 
   - [x] Text Chunking
     - [x] Refactor / review
     - [x] Generalize chunking function for use in renaming (future proof)?
     - [x] Add # chunks created text
-    - [ ] Add optional chunk cap for large files
-    - [ ] Replace print() with logging()
+    - [x] Add optional chunk cap for large files
+    - [x] Replace print() with logging()
 
   - [x] AI Reviewer
     - [x] Ingest chunk + prompt
@@ -67,7 +67,7 @@
     - [x] Refactor
     - [x] Shift to omlx and openai
     - [x] Add facility/document info to JSON
-    - [ ] Replace print() with logging()
+    - [x] Replace print() with logging()
 
   - [ ] Prompt Selection
     - [ ] Input first report chunk

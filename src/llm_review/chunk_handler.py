@@ -58,6 +58,7 @@ def process_single_pdf(config, output_dir, pdf_file):
     # Extract configuration parameters and defining chunking variables
     chunk_size = config.get('chunk_size')
     overlap = config.get('chunk_overlap')
+    chunk_cap = config.get('chunk_cap', None)  # Optional cap on number of chunks
     chunk_num = 0
     step = chunk_size - overlap
 
@@ -87,6 +88,9 @@ def process_single_pdf(config, output_dir, pdf_file):
 
     # Create overlapping chunks of the extracted text and save them
     for current_start in range(0, len(word_tokens), step):
+        if chunk_cap is not None and chunk_num >= chunk_cap:
+            break
+
         # Sets the end index for the current chunk at the smaller of chunk size or end of the word list
         chunk_end = min(current_start + chunk_size, len(word_tokens))
         chunk_text = ' '.join(word_tokens[current_start:chunk_end])
