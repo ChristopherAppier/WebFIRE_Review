@@ -68,6 +68,7 @@
     - [x] Shift to omlx and openai
     - [x] Add facility/document info to JSON
     - [x] Replace print() with logging()
+    - [ ] Add basic prompt selector
 
   - [ ] Prompt Selection
     - [ ] Input first report chunk

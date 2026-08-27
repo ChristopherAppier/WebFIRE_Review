@@ -1,13 +1,13 @@
-- [x] Create a wrapper around application initialization (config, paths)
-
-- [x] Replace all calls to the unified function in all scripts (this makes it easier to add startup functions without changing every individual script)
-
-- [x] Add a function to setup logging
-
-- [x] Add logging dir to settings
-
-- [x] Add logging setup to initialization wrapper
-
-- [x] Replace print statements with logging statements
-
-- [ ] Test functionality and debug until working properly
+- [ ] Add basic prompt selector
+  # analyze_chunks()
+  - [ ] Load new system prompt for the first chunk (use chunk name/number)
+  # settings.yml
+  - [ ] Add prompt for stack test and one for other reports
+  - [ ] Add prompt bank choice descriptions
+  # load_system_prompt()
+  - [ ] Feed prompt bank choice descriptions and first chunk in each set in
+  - [ ] LLM outputs choice name
+  - [ ] Pull full prompt text from settings.yml based on LLM choice
+  - [ ] Return full prompt text and choice
+  # analyze_chunks()
+  - [ ] Save prompt choice to JSON w metadata
