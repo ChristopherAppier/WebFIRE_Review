@@ -1,10 +1,12 @@
 import csv
+import logging
 import shutil
 import zipfile
 from pathlib import Path
 
 import magic
 
+logger = logging.getLogger(__name__)
 
 def extract_and_route_files(paths):
     """
@@ -14,7 +16,7 @@ def extract_and_route_files(paths):
         paths : A dictionary of path objects for the various directories used in the process.
     """
 
-    print("\nExtracting zip files from raw data directory")
+    logger.info("\nExtracting zip files from raw data directory")
 
     # Tracks zip filename -> extracted base filenames across all unzip rounds.
     zip_to_documents = {}
@@ -41,7 +43,7 @@ def extract_and_route_files(paths):
     update_document_lists(paths, zip_to_documents)
 
     # Route files into the appropriate directories based on their MIME type after unzips
-    print(f"\n{'*' * 50}\n\nRouting files into appropriate directories based on file type")
+    logger.info(f"\n{'*' * 50}\n\nRouting files into appropriate directories based on file type")
     
     route_files(paths)
 
@@ -190,7 +192,7 @@ def update_document_lists(paths, zip_to_documents):
     """
     csv_path = paths['http_dir'] / "report_table.csv"
     if not csv_path.exists():
-        print("\nreport_table.csv not found in http directory. Skipping Document List update.")
+        logger.warning("\nreport_table.csv not found in http directory. Skipping Document List update.")
         return
 
     with open(csv_path, "r", encoding="utf-8") as csv_file:

@@ -1,6 +1,8 @@
 import csv
+import logging
 import json
 
+logger = logging.getLogger(__name__)
 
 def compile_reviews(config, paths):
     """
@@ -11,7 +13,7 @@ def compile_reviews(config, paths):
         paths (dict): Paths to the data directories.
     """
 
-    print(f"\n{'*' * 50}\n\nCompiling review files")
+    logger.info(f"\n{'*' * 50}\n\nCompiling review files")
 
     review_data = []
 
@@ -26,7 +28,7 @@ def compile_reviews(config, paths):
 
     # Error message for no review JSON files found
     if not review_data:
-        print("\nNo review files found")
+        logger.warning("\nNo review files found")
         return
 
     # Write the compiled data to a CSV file under the summary directory
@@ -38,7 +40,7 @@ def compile_reviews(config, paths):
         for review in review_data:
             writer.writerow(review)
 
-    print(f"\nCompiled {len(review_data)} review files\n\n{'*' * 50}\n")
+    logger.info(f"\nCompiled {len(review_data)} review files\n\n{'*' * 50}\n")
 
 if __name__ == "__main__":
     from common import utilities

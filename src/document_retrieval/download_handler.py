@@ -1,4 +1,5 @@
 import csv
+import logging
 import re
 import time
 from pathlib import Path
@@ -9,6 +10,7 @@ from tqdm import tqdm
 
 from document_retrieval.timer_manager import check_timer
 
+logger = logging.getLogger(__name__)
 
 def fetch_reports(config, paths):
 	"""Fetches reports from the WebFIRE HTTP for each state specified in the configuration.
@@ -23,7 +25,7 @@ def fetch_reports(config, paths):
 	start_date, end_date = check_timer(config).values()
 
 	# Start a session to maintain cookies and headers across requests
-	print(f"\n{'*' * 50}\n\nStarting session for WebFIRE HTTP requests")
+	logger.info(f"\n{'*' * 50}\n\nStarting session for WebFIRE HTTP requests")
 	session = requests.Session()
 	session.headers["User-Agent"] = "Mozilla/5.0"
 
@@ -58,7 +60,7 @@ def post_search(webfire_base, session, start_date, end_date, state_name, paths):
 		paths (dict): A dictionary containing paths to various data directories.
 	"""
 
-	print(f"\n{'*' * 50}\n\nSearching for reports for state: {state_name} from {start_date} to {end_date}")
+	logger.info(f"\n{'*' * 50}\n\nSearching for reports for state: {state_name} from {start_date} to {end_date}")
 
 	# Request 1: GET the initial search page to establish session cookies
 	response1 = session.get(f"{webfire_base}/reports/esearch.cfm")  # noqa: F841
@@ -111,7 +113,7 @@ def parse_search_results(file_path, state_name):
 		state_name (str): The name of the state for which reports are being parsed.
 	"""
 
-	print(f"\n\nParsing search results for state: {state_name}")
+	logger.info(f"\n\nParsing search results for state: {state_name}")
 
 	# Create the path to the search results HTML file and read its content using BeautifulSoup
 	state_file = file_path / f"results_{state_name}.html"
@@ -173,9 +175,9 @@ def parse_search_results(file_path, state_name):
 		writer.writeheader()
 		writer.writerows(rows)
 
-	# Calculating the number of reports found and printing the result
+	# Calculating the number of reports found and logging the result
 	num_reports = len(rows)
-	print(f"\n\nFound {num_reports} reports for state: {state_name}")
+	logger.info(f"\n\nFound {num_reports} reports for state: {state_name}")
 
 def get_results(session, raw_data_dir, http_dir, state_name, max_attempts=3, retry_delay_seconds=2):
 	"""
@@ -190,7 +192,7 @@ def get_results(session, raw_data_dir, http_dir, state_name, max_attempts=3, ret
 		retry_delay_seconds (int): The delay in seconds between retry attempts.
 	"""
 	
-	print(f"\n\nDownloading reports for state: {state_name}\n")
+	logger.info(f"\n\nDownloading reports for state: {state_name}\n")
 	
 	# Read the CSV file containing report URLs for the state
 	csv_path = http_dir / f"{state_name}_report_table.csv"
@@ -233,9 +235,9 @@ def get_results(session, raw_data_dir, http_dir, state_name, max_attempts=3, ret
 				break
 			except requests.exceptions.RequestException as e:
 				if attempt == max_attempts:
-					print(f"Failed after {max_attempts} attempts for {report_url}: {e}")
+					logger.error(f"Failed after {max_attempts} attempts for {report_url}: {e}")
 				else:
-					print(f"Attempt {attempt}/{max_attempts} failed for {report_url}: {e}. Retrying...")
+					logger.warning(f"Attempt {attempt}/{max_attempts} failed for {report_url}: {e}. Retrying...")
 					time.sleep(retry_delay_seconds)
 
 		if response is None:
@@ -280,7 +282,7 @@ def get_results(session, raw_data_dir, http_dir, state_name, max_attempts=3, ret
 				output_file.write(chunk)
 				bar.update(len(chunk))
 
-		# Tracking the number of reports downloaded and printing progress
+		# Tracking the number of reports downloaded and logging progress
 		num_dl += 1
 		row["Downloaded Filename"] = output_file_path.name
 
@@ -291,7 +293,7 @@ def get_results(session, raw_data_dir, http_dir, state_name, max_attempts=3, ret
 		else:
 			row["Document List"] = ""
 
-		print(f"Downloaded report {idx} of {num_reports}")
+		logger.info(f"Downloaded report {idx} of {num_reports}")
 
 	# Rewrite the CSV so downstream steps can map extracted docs back to the correct row
 	with open(csv_path, "w", newline="", encoding="utf-8") as csv_file:
@@ -300,12 +302,12 @@ def get_results(session, raw_data_dir, http_dir, state_name, max_attempts=3, ret
 		writer.writerows(rows)
 
 	if num_dl == num_reports:
-		print("\nAll reports successfully downloaded")
+		logger.info("\nAll reports successfully downloaded")
 	else:
-		print(f"\nTotal reports downloaded: {num_dl} of {num_reports}. Some reports may have failed to download.")
+		logger.warning(f"\nTotal reports downloaded: {num_dl} of {num_reports}. Some reports may have failed to download.")
 
-	# Printing a separator line to indicate the end of the download process for the state
-	print(f"\n{'*' * 50}")
+	# Logging a separator line to indicate the end of the download process for the state
+	logger.info(f"\n{'*' * 50}")
 
 def build_master_report_table(http_dir):
     """
@@ -320,7 +322,7 @@ def build_master_report_table(http_dir):
     )
 
     if not state_tables:
-        print("\nNo state report tables found to combine.")
+        logger.warning("\nNo state report tables found to combine.")
         return
 
     master_rows = []
@@ -344,7 +346,7 @@ def build_master_report_table(http_dir):
         writer.writeheader()
         writer.writerows(master_rows)
 
-    print("\nBuilding combined report table")
+    logger.info("\nBuilding combined report table")
 
 if __name__ == "__main__":
 	from common import utilities

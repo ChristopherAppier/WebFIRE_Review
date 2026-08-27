@@ -1,5 +1,8 @@
+import logging
+
 from datetime import datetime, timedelta
 
+logger = logging.getLogger(__name__)
 
 def check_timer(config):
     """Returns the start and end date to be used for the WebFIRE API request
@@ -11,7 +14,7 @@ def check_timer(config):
         dict: A dictionary containing the start and end dates in MM/DD/YYYY format.
     """
 
-    print(f"\n{'*' * 50}\n\nLoading timestamps from settings.yml")
+    logging.info(f"\n{'*' * 50}\n\nLoading timestamps from settings.yml")
     
     # Read last_run_timestamp
     last_run = config['last_run_timestamp']

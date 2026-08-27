@@ -1,5 +1,7 @@
+import logging
 import pdfplumber
 
+logger = logging.getLogger(__name__)
 
 def chunk_pdfs(config, paths):
     """
@@ -9,7 +11,7 @@ def chunk_pdfs(config, paths):
         paths: Dictionary containing paths to various directories
         config: Dictionary containing chunking configuration
     """
-    print(f"\n{'*' * 50}\n\nStarting PDF chunking process")
+    logger.info(f"\n{'*' * 50}\n\nStarting PDF chunking process")
 
     # Creating a list of all PDF files
     pdfs_processed = 0
@@ -17,10 +19,10 @@ def chunk_pdfs(config, paths):
     pdf_files = sorted([f for f in paths['pdf_dir'].glob("*.pdf")])
 
     if not pdf_files:
-        print("\nNo PDF files found")
+        logger.warning("\nNo PDF files found")
         return
 
-    print(f"\nFound {len(pdf_files)} PDF files to process\n")
+    logger.info(f"\nFound {len(pdf_files)} PDF files to process\n")
 
     # Process each PDF file and create chunks
     for pdf_file in pdf_files:
@@ -33,14 +35,14 @@ def chunk_pdfs(config, paths):
                 zero_chunk_count += 1
 
         except Exception as e:
-            print(f"Error processing {pdf_file.name}: {str(e)}")
+            logger.error(f"Error processing {pdf_file.name}: {str(e)}")
             continue
 
     # Final summary of the chunking process
     if pdfs_processed == len(pdf_files):
-        print("\nAll PDFs successfully processed")
+        logger.info("\nAll PDFs successfully processed")
     else:
-        print(f"\nTotal PDFs with chunks: {pdfs_processed} of {len(pdf_files)}\nTotal PDFs with 0 chunks: {zero_chunk_count} of {len(pdf_files)}\nSome PDFs may have failed to process or returned 0 chunks")
+        logger.warning(f"\nTotal PDFs with chunks: {pdfs_processed} of {len(pdf_files)}\nTotal PDFs with 0 chunks: {zero_chunk_count} of {len(pdf_files)}\nSome PDFs may have failed to process or returned 0 chunks")
 
 def process_single_pdf(config, output_dir, pdf_file):
     """
@@ -61,7 +63,7 @@ def process_single_pdf(config, output_dir, pdf_file):
 
     # Error handling for invalid configuration values
     if step <= 0:
-        print("Overlap must be smaller than chunk_size. Using default step size of 5000 words.")
+        logger.warning("Overlap must be smaller than chunk_size. Using default step size of 5000 words.")
         step = 5000
 
     # Extract text from the PDF using pdfplumber
@@ -74,13 +76,13 @@ def process_single_pdf(config, output_dir, pdf_file):
                 if page_text:
                     word_tokens.extend(page_text.split())
 
-    # If any error occurs during text extraction, print the error and skip to the next PDF
+    # If any error occurs during text extraction, log the error and skip to the next PDF
     except Exception as e:
-        print(f"Failed to extract text from {pdf_file.name}: {str(e)}")
+        logger.error(f"Failed to extract text from {pdf_file.name}: {str(e)}")
         return -1
-    # If no text was extracted, print a message and skip to the next PDF
+    # If no text was extracted, log a message and skip to the next PDF
     if not word_tokens:
-        print(f"No text extracted from {pdf_file.name}, skipping")
+        logger.warning(f"No text extracted from {pdf_file.name}, skipping")
         return 0
 
     # Create overlapping chunks of the extracted text and save them
@@ -98,7 +100,7 @@ def process_single_pdf(config, output_dir, pdf_file):
                 f.write(chunk_text)
             chunk_num += 1
 
-    print(f"Processed {pdf_file.name}:\nCreated {chunk_num} chunks")
+    logger.info(f"Processed {pdf_file.name}:\nCreated {chunk_num} chunks")
 
     return chunk_num
 

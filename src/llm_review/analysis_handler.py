@@ -1,5 +1,6 @@
 import csv
 import json
+import logging
 import random
 import re
 from datetime import datetime, timezone
@@ -8,10 +9,11 @@ import openai
 import yaml
 from openai import OpenAI
 
+logger = logging.getLogger(__name__)
 
 def analyze_chunks(config, paths):
 
-    print(f"\n{'*' * 50}\n\nAnalyzing text chunks using: {config['llm']['review']}\n")
+    logger.info(f"\n{'*' * 50}\n\nAnalyzing text chunks using: {config['llm']['review']}\n")
 
     #Looping through all chunks
     for chunk_name in paths['chunk_dir'].iterdir():
@@ -34,7 +36,7 @@ def analyze_chunks(config, paths):
         try:
             json_output = json_check(raw_output)
         except ValueError as e:
-            print(f"Skipping {chunk_name}: {e}")
+            logger.warning(f"Skipping {chunk_name}: {e}")
             continue
 
         # Determining if audit flag triggers
@@ -78,7 +80,7 @@ def analyze_chunks(config, paths):
         with open(save_path, "w", encoding="utf-8") as f:
             json.dump(json_output, f, indent=2)
 
-    print("LLM review complete") #TODO Add more stat tracking
+    logger.info("LLM review complete") #TODO Add more stat tracking
     
 
 def single_analysis(config, chunk_name, chunk_text, sys_prompt):
@@ -87,7 +89,7 @@ def single_analysis(config, chunk_name, chunk_text, sys_prompt):
     t_start = datetime.now(timezone.utc).isoformat()
 
     try:    
-        print(f"Reviewing {chunk_name.stem}")
+        logger.info(f"Reviewing {chunk_name.stem}")
 
         # Setting up the OpenAI client with the provided configuration
         client = OpenAI(
@@ -99,7 +101,7 @@ def single_analysis(config, chunk_name, chunk_text, sys_prompt):
         # Making the request to the OpenAI API with the specified model, system prompt, and chunk text
         response = client.responses.create(model=config['llm']['review'],instructions=sys_prompt, input=chunk_text)
         t_end = datetime.now(timezone.utc).isoformat()
-        print("Review complete\n")
+        logger.info("Review complete\n")
 
         # Capturing the "think" output from the response if it exists, otherwise setting it to None
         think_output = "\n".join(
@@ -156,7 +158,7 @@ def store_for_audit(config, paths):
     """Stores associated chunks and the output JSON in an auditing folder for audit at a later time based on issue flags and audit chance defined in settings.yml
     """
     
-    print(f"\n Selecting all reviews with issued flagged and {config['audit_chance']}% of all other reviews for auditing")
+    logger.info(f"\n Selecting all reviews with issued flagged and {config['audit_chance']}% of all other reviews for auditing")
 
     # PLACEHOLDER FUNCTION - ADD FUNCTIONALITY
 

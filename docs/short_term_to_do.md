@@ -8,6 +8,6 @@
 
 - [x] Add logging setup to initialization wrapper
 
-- [ ] Replace print statements with logging statements
+- [x] Replace print statements with logging statements
 
 - [ ] Test functionality and debug until working properly

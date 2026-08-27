@@ -1,9 +1,11 @@
+import logging
 import os
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
 
 def apply_ocr(config, paths):
     """
@@ -13,7 +15,7 @@ def apply_ocr(config, paths):
         config (dict): Dictionary containing OCR configuration.
         paths (dict): Dictionary containing paths to various data directories.
     """
-    print(f"\n{'*' * 50}\n\nStarting OCR processing for PDFs\n")
+    logger.info(f"\n{'*' * 50}\n\nStarting OCR processing for PDFs\n")
 
     pdf_files = sorted(
         pdf_file
@@ -47,28 +49,28 @@ def apply_ocr(config, paths):
                 cmd, check=True, capture_output=True, text=True
             )
             os.replace(temp_output, pdf_file)
-            print(f"Processed: {pdf_file.name}")
+            logger.info(f"Processed: {pdf_file.name}")
             if result.stderr:
-                print(result.stderr.strip())
+                logger.warning(result.stderr.strip())
         except subprocess.CalledProcessError as e:
             if temp_output.exists():
                 temp_output.unlink(missing_ok=True)
-            print(f"OCR failed for {pdf_file.name}: {e}")
+            logger.error(f"OCR failed for {pdf_file.name}: {e}")
             if e.stderr:
-                print(e.stderr.strip())
+                logger.error(e.stderr.strip())
             continue
         except FileNotFoundError as e:
             if temp_output.exists():
                 temp_output.unlink(missing_ok=True)
-            print(f"ocrmypdf not found: {e}")
+            logger.error(f"ocrmypdf not found: {e}")
             continue
         except Exception as e:
             if temp_output.exists():
                 temp_output.unlink(missing_ok=True)
-            print(f"Unexpected OCR error for {pdf_file.name}: {e}")
+            logger.error(f"Unexpected OCR error for {pdf_file.name}: {e}")
             continue
     
-    print("\nOCR processing complete for PDFs")
+    logger.info("\nOCR processing complete for PDFs")
 
 if __name__ == "__main__":
     from common import utilities
