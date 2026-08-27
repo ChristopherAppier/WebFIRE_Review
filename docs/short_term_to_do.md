@@ -1,13 +1,18 @@
+# Prompt selection functionality
+
 - [ ] Add basic prompt selector
-  # analyze_chunks()
-  - [ ] Load new system prompt for the first chunk (use chunk name/number)
   # settings.yml
-  - [ ] Add prompt for stack test and one for other reports
-  - [ ] Add prompt bank choice descriptions
-  # load_system_prompt()
+  - [x] Add prompt for stack test and one for other reports
+  - [x] Add prompt bank choice descriptions
+  # prompt_selecter.py
   - [ ] Feed prompt bank choice descriptions and first chunk in each set in
   - [ ] LLM outputs choice name
-  - [ ] Pull full prompt text from settings.yml based on LLM choice
-  - [ ] Return full prompt text and choice
+  - [ ] Write prompt choice to spreadsheet (using chunk name to find it?)
+  # load_system_prompt()
+  - [x] Pull prompt choice from spreadsheet
+  - [x] Pull full prompt text from settings.yml based on spreadsheet \*\*\*
+  - [x] Return full prompt text
   # analyze_chunks()
-  - [ ] Save prompt choice to JSON w metadata
+  - [x] Save prompt choice to JSON w metadata
+
+\*\*\* What is a good way to stop from reading the spreadsheet/settings.yaml every chunk? Order the chunks?

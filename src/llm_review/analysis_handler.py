@@ -22,8 +22,12 @@ def analyze_chunks(config, paths):
         if chunk_name.suffix != ".txt":
             continue
 
+        # Pulling information from the report table csv
+        file_name = find_file_name(paths, chunk_name)
+        file_info = pull_file_info(paths, file_name)
+
         # Loads the system prompt based on the file type/name being reviewed
-        system_prompt = load_system_prompt(paths, chunk_name)
+        system_prompt = load_system_prompt(paths, file_info.get("Prompt Name"))
         
         # Load text from chunk_name.txt
         with open(chunk_name,"r") as f:
@@ -45,10 +49,6 @@ def analyze_chunks(config, paths):
         else:
             audit_flag = False
 
-        # Pulling information from the report table csv to the JSON
-        file_name = find_file_name(paths, chunk_name)
-        file_info = pull_file_info(paths, file_name)
-
         # Calculating total review time in seconds
         t_total = int((datetime.fromisoformat(t_end) - datetime.fromisoformat(t_start)).total_seconds())
 
@@ -68,8 +68,7 @@ def analyze_chunks(config, paths):
                     "review_end_time": t_end,
                     "total_review_time": t_total,
                     "think_output": think_output,
-                    "llm_seed": None,
-                    "prompt_name": None,
+                    "prompt_name": file_info.get("Prompt Name"),
         }
 
         for key, value in payload.items():
@@ -124,8 +123,8 @@ def single_analysis(config, chunk_name, chunk_text, sys_prompt):
         t_end = datetime.now(timezone.utc).isoformat()
         return f"Another non-200-range status code was received: {e.status_code}, {e.response}", None, t_start, t_end   
 
-def load_system_prompt(paths, chunk_name):
-    """Loads the appropriate system prompt based on the file type/name being reviewed (currently just uses a single default prompt for MVP implementation)"""
+def load_system_prompt(paths, prompt_name):
+    """Loads the appropriate system prompt based on the file type/name being reviewed (currently just uses a single default prompt for MVP implementation)""" #TODO update
 
     # Load the list of prompts available from the prompt_bank.yml
     prompt_bank_dir = paths['config_dir'] / "prompt_bank.yml"
@@ -134,7 +133,7 @@ def load_system_prompt(paths, chunk_name):
         prompt_bank = yaml.safe_load(f)
 
     # Selecting the appropriate prompt based on the file type/name (currently all use one default)
-    prompt = prompt_bank['review']['generic']
+    prompt = prompt_bank['review'][prompt_name]
 
     return prompt
 
@@ -209,6 +208,7 @@ def pull_file_info(paths, file_name):
                         "Report Type": row.get("Report Type"),
                         "Report Sub Type": row.get("Report Sub Type"),
                         "Submission Date": row.get("Submission Date"),
+                        "Prompt Name": row.get("Prompt Name"),
                     }
 
     return {}

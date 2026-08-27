@@ -5,7 +5,7 @@
 - [x] VS Code
   - [x] Extensions
   - [x] Settings
-  - [ ] Formatter and Linter
+  - [x] Formatter and Linter
 - [x] Python
   - [x] Create env
   - [x] Download libraries
@@ -24,6 +24,7 @@
 
   - [ ] Settings
     - [x] Add logging dir
+    - [ ] Change all ref to file names to variables in settings (is it just settings.yml?)
 
   - [x] Common
     - [x] find_project_root
@@ -79,8 +80,8 @@
   - [ ] Summary Report Building
     - [x] Pull JSONs
     - [x] Create report
-    - [ ] Compress chunk reviews for same document (req doc review name first)
-    - [ ] Replace print() with logging()
+    - [ ] Compress chunk reviews for same document
+    - [x] Replace print() with logging()
 
 - [ ] Create MVP Version Evaluation Harness
   - [ ] Plan implementation strategy
