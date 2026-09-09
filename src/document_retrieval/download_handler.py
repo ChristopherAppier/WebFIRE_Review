@@ -138,6 +138,8 @@ def parse_search_results(file_path, state_name):
         "report_url",
 		"Downloaded Filename",
 		"Document List",
+		"System Prompt",
+		"Overall Context Filename",
     ]
 
 	# Extract the relevant data from the search results table and store it in a list of dictionaries
@@ -167,6 +169,8 @@ def parse_search_results(file_path, state_name):
             "report_url": report_url,
 			"Downloaded Filename": "",
 			"Document List": "",
+			"System Prompt": "",
+			"Overall Context Filename": "",
         })
 
 	output_csv = file_path / f"{state_name}_report_table.csv"
@@ -213,6 +217,10 @@ def get_results(session, raw_data_dir, http_dir, state_name, max_attempts=3, ret
 		fieldnames.append("Downloaded Filename")
 	if "Document List" not in fieldnames:
 		fieldnames.append("Document List")
+	if "System Prompt" not in fieldnames:
+		fieldnames.append("System Prompt")
+	if "Overall Context Filename" not in fieldnames:
+		fieldnames.append("Overall Context Filename")
 
 	# Finding the number of reports to download for progress tracking
 	num_reports = len(rows)
@@ -221,6 +229,8 @@ def get_results(session, raw_data_dir, http_dir, state_name, max_attempts=3, ret
 	for idx, row in enumerate(rows, start=1):
 		row.setdefault("Downloaded Filename", "")
 		row.setdefault("Document List", "")
+		row.setdefault("System Prompt", "")
+		row.setdefault("Overall Context Filename", "")
 		# Read the URL of the report from the CSV row
 		report_url = row.get("report_url", "").strip()
 		if not report_url:

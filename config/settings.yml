@@ -15,6 +15,7 @@ directories:
   spreadsheet_dir: 'data/spreadsheets'
   summary_dir: 'data/summary_report'
   chunk_dir: 'data/pdfs/chunks'
+  overall_context_dir: 'data/context'
 
 # Document Retrieval
 ## Timer Manager
