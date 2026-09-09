@@ -9,10 +9,12 @@ audit:
   generic: 'default audit prompt'
 
 # JSON Revision Prompts
-json:
-  generic: 'default json prompt'
+json: 'default json prompt'
 
 # Prompt Bank Descriptions
 review:
   stack_test: "This prompt is used to review stack tests reports and relative accuracy test audits for potential compliance issues."
   generic: "This prompt is used to review reports other than stack tests and relative accuracy test audits for potential compliance issues."
+
+# Overall Context Prompts
+overall_context: 'default overall context prompt'

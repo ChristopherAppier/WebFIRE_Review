@@ -1,7 +1,7 @@
 # Prompt selection functionality
 
 - [ ] Add basic prompt selector
-  ## settings.yml
+  ## prompt_bank.yml
   - [x] Add prompt for stack test and one for other reports
   - [x] Add prompt bank choice descriptions
   ## download_handler.py > parse_search_results()
@@ -20,9 +20,10 @@
 # Overall context carry forward
 
 - [ ] Add a mechanism to carry forward the overall context of the document into each analysis
-  ## settings.yml
+  ## prompt_bank.yml
   - [ ] Revise prompts to accommodate the initial context chunk
   - [ ] Add prompt for creating overall context to carry forward
+  ## settings.yml
   - [x] Add directory for overall context files
   ## download_handler.py > parse_search_results()
   - [x] Add overall context column
@@ -35,5 +36,6 @@
   - [ ] Pull file name from spreadsheet
   - [ ] Pull overall context from file
   - [ ] Stitch to chunk
+  * May need to revise other functions to adapt method of pulling info from spreadsheet
   ## analysis_handler.py > analyze_chunks()
   - [ ] Save overall context to JSON
