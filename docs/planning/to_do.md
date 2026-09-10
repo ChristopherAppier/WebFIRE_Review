@@ -1,5 +1,13 @@
-# Prompt selection functionality
+# Update environment.yml
+- [ ] Update environment.yml with necessary dependencies for final MVP version
 
+# Extra Token Burn Tasks
+- [ ] Update architecture.md for final MVP version
+- [ ] Update setup.md for final MVP version
+- [ ] Update configuration.md for final MVP version
+- [ ] Update output_formats.md for final MVP version
+
+# Prompt selection functionality
 - [ ] Add basic prompt selector
   ## prompt_bank.yml
   - [x] Add prompt for stack test and one for other reports
@@ -18,7 +26,6 @@
   - [x] Save prompt choice to JSON w metadata
 
 # Overall context carry forward
-
 - [ ] Add a mechanism to carry forward the overall context of the document into each analysis
   ## prompt_bank.yml
   - [ ] Revise prompts to accommodate the initial context chunk

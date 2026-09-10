@@ -1,30 +1,31 @@
-from audit.audit_main import main as audit
-from common import utilities
-from document_retrieval.doc_retrieval_main import main as document_retrieval
-from llm_review.llm_review_main import main as llm_review
-from python_review.python_review_main import main as python_review
-from summary_report.summary_report_main import main as summary_report
+from ai_review.pipeline import main as ai_review
+from audit.pipeline import main as audit_reviews
+from common import startup
+from python_review.pipeline import main as python_review
+from retrieve.pipeline import main as retrieve_documents
+from summarize.pipeline import main as summarize_reviews
 
 
 def main():
-    
+
     # Setting up logging and loading configuration options and paths from settings.yml
-    config, paths = utilities.initialize_project()
+    config, paths = startup.initialize_project()
 
     # Runs the document retrieval process
-    document_retrieval(config, paths)
+    retrieve_documents(config, paths)
 
     # Runs the LLM review process
-    llm_review(config, paths)
+    ai_review(config, paths)
 
     # Runs the python review process
     python_review(config, paths)
 
     # Runs the audit process
-    audit(config, paths)
+    audit_reviews(config, paths)
 
     # Runs the summary report building process
-    summary_report(config, paths)
+    summarize_reviews(config, paths)
+
 
 if __name__ == "__main__":
-    main() 
+    main()

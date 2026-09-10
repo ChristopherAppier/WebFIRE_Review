@@ -1,10 +1,12 @@
 import os
 import random
 import time
+
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from document_retrieval.timer_manager import check_timer
+
+from retrieve.time import check_timer
 
 # Download settings
 CONNECT_TIMEOUT = 10
@@ -17,6 +19,7 @@ MAX_RETRIES = 5
 RETRIABLE_STATUS_CODES = {429, 500, 502, 503, 504}
 RETRY_BACKOFF_BASE = 0.5
 RETRY_BACKOFF_CAP = 8.0
+
 
 def fetch_reports(config, state, paths):
     """
@@ -45,45 +48,42 @@ def fetch_reports(config, state, paths):
                 f"Search failed for state={state} after retries: {search_exc.reason_code} - {search_exc}"
             )
             return {
-                'success': False,
-                'downloaded_count': 0,
-                'errors': {'_search': str(search_exc)},
-                'reports': []
+                "success": False,
+                "downloaded_count": 0,
+                "errors": {"_search": str(search_exc)},
+                "reports": [],
             }
 
         if not reports:
-            return {
-                'success': True,
-                'downloaded_count': 0,
-                'errors': {},
-                'reports': []
-            }
+            return {"success": True, "downloaded_count": 0, "errors": {}, "reports": []}
 
         # Step 2: Download each report
         results = []
         errors = {}
 
         for i, report in enumerate(reports, 1):
-            download_result = download_report_with_details(session, report['id'], output_dir)
-            success = download_result['success']
-            filepath = download_result['filepath']
-            file_type = download_result['file_type']
-            error_message = download_result['error']
-            reason_code = download_result['reason_code']
-            attempts = download_result['attempts']
-            
+            download_result = download_report_with_details(
+                session, report["id"], output_dir
+            )
+            success = download_result["success"]
+            filepath = download_result["filepath"]
+            file_type = download_result["file_type"]
+            error_message = download_result["error"]
+            reason_code = download_result["reason_code"]
+            attempts = download_result["attempts"]
+
             result = {
-                'id': report['id'],
-                'facility': report['facility'],
-                'city': report['city'],
-                'state': report['state'],
-                'date': report['date'],
-                'success': success,
-                'file_path': str(filepath) if filepath else None,
-                'file_type': file_type,
-                'reason_code': reason_code,
-                'attempts': attempts,
-                'error': error_message,
+                "id": report["id"],
+                "facility": report["facility"],
+                "city": report["city"],
+                "state": report["state"],
+                "date": report["date"],
+                "success": success,
+                "file_path": str(filepath) if filepath else None,
+                "file_type": file_type,
+                "reason_code": reason_code,
+                "attempts": attempts,
+                "error": error_message,
             }
             results.append(result)
 
@@ -92,22 +92,23 @@ def fetch_reports(config, state, paths):
                     f"[{i}/{len(reports)}] Downloaded {report['id']} in {attempts} attempt(s): {filepath}"
                 )
             else:
-                errors[report['id']] = error_message
+                errors[report["id"]] = error_message
                 print(
                     f"[{i}/{len(reports)}] Failed to download {report['id']} "
                     f"after {attempts} attempt(s) [{reason_code}]: {error_message}"
                 )
 
         return {
-            'success': len(errors) == 0,
-            'downloaded_count': sum(1 for r in results if r['success']),
-            'errors': errors,
-            'reports': results,
+            "success": len(errors) == 0,
+            "downloaded_count": sum(1 for r in results if r["success"]),
+            "errors": errors,
+            "reports": results,
         }
-    
+
     finally:
         if session is not None:
             session.close()
+
 
 class SearchError(Exception):
     """Raised when the report search fails after retries."""
@@ -115,6 +116,7 @@ class SearchError(Exception):
     def __init__(self, reason_code, message):
         super().__init__(message)
         self.reason_code = reason_code
+
 
 def _configure_adapter_retries(session):
     """Set shallow transport-level retries for transient HTTP failures."""
@@ -133,6 +135,7 @@ def _configure_adapter_retries(session):
     session.mount("https://", adapter)
     session.mount("http://", adapter)
 
+
 def _classify_exception(exc):
     """Map request exceptions to reason codes for retry decisions."""
     if isinstance(exc, requests.Timeout):
@@ -148,13 +151,16 @@ def _classify_exception(exc):
         return "request_error", str(exc)
     return "unexpected_error", str(exc)
 
+
 def _is_retriable_reason(reason):
     return reason in {"timeout", "http_429", "http_5xx", "request_error"}
+
 
 def _backoff_seconds(attempt):
     raw = RETRY_BACKOFF_BASE * (2 ** (attempt - 1))
     jitter = random.uniform(0, RETRY_BACKOFF_BASE)
     return min(RETRY_BACKOFF_CAP, raw + jitter)
+
 
 def _write_atomic_bytes(path, data):
     """Write bytes atomically to avoid partial cached files."""
@@ -172,13 +178,16 @@ def _write_atomic_bytes(path, data):
             pass
         raise
 
+
 def _run_bootstrap_request(session, method, url, timeout, **kwargs):
     """Run a session bootstrap request with transient retry handling."""
     last_reason = "bootstrap_failed"
     last_error = "Unknown bootstrap error"
     for attempt in range(1, MAX_RETRIES + 2):
         try:
-            response = session.request(method, url, timeout=timeout, verify=False, **kwargs)
+            response = session.request(
+                method, url, timeout=timeout, verify=False, **kwargs
+            )
             response.raise_for_status()
             return response
         except Exception as exc:
@@ -194,10 +203,11 @@ def _run_bootstrap_request(session, method, url, timeout, **kwargs):
             break
     raise SearchError(last_reason, f"Session bootstrap failed: {last_error}")
 
+
 def build_session():
     """
     Establish a session with WebFIRE API.
-    
+
     Returns:
         requests.Session: Ready-to-use session with headers initialized
     """
@@ -208,7 +218,7 @@ def build_session():
         "AppleWebKit/605.1.15 (KHTML, like Gecko) "
         "Version/16.0 Safari/605.1.15"
     )
-    
+
     # Initialize session by visiting homepage
     _run_bootstrap_request(
         s,
@@ -217,7 +227,7 @@ def build_session():
         timeout=BOOTSTRAP_TIMEOUT,
     )
     s.headers["Referer"] = "https://cfpub.epa.gov/webfire/reports/esearch.cfm"
-    
+
     # Submit dummy search to initialize cookies
     _run_bootstrap_request(
         s,
@@ -227,19 +237,20 @@ def build_session():
         data={"reporttype": "All", "Submit": "Submit Search"},
     )
     s.headers["Referer"] = "https://cfpub.epa.gov/webfire/reports/esearch2.cfm"
-    
+
     return s
+
 
 def search_reports(session, start_date, end_date, state):
     """
     Search for reports in the date range.
-    
+
     Args:
         session: requests.Session from build_session()
         start_date: MM/DD/YYYY start date string
         end_date: MM/DD/YYYY end date string
         state: State to search for
-    
+
     Returns:
         List of dicts with report metadata including download link
     """
@@ -284,67 +295,75 @@ def search_reports(session, start_date, end_date, state):
 
     raise SearchError(last_reason, f"Search failed for state {state}: {last_error}")
 
+
 def parse_search_results(html):
     """
     Parse HTML search results into list of report dicts.
-    
+
     Args:
         html: HTML response text from eSearchResults.cfm
-    
+
     Returns:
         List of report metadata dicts
     """
     try:
         from bs4 import BeautifulSoup
+
         soup = BeautifulSoup(html, "html.parser")
         table = soup.find("table", class_="cell-border")
     except ImportError:
         return []
-    
+
     if not table:
-        print(f"parse_search_results: No table found in response. First 500 chars: {html[:500]}")
+        print(
+            f"parse_search_results: No table found in response. First 500 chars: {html[:500]}"
+        )
         return []
-    
+
     reports = []
     for row in table.find_all("tr")[2:]:  # Skip header rows
         cells = row.find_all("td")
         if len(cells) < 11:
             continue
-        
+
         link = cells[10].find("a", href=True)
         if not link or "ID=" not in link["href"]:
             continue
-        
+
         doc_id = link["href"].split("ID=")[-1].strip()
-        reports.append({
-            "id": doc_id,
-            "facility": cells[1].get_text(strip=True),
-            "city": cells[2].get_text(strip=True),
-            "state": cells[3].get_text(strip=True),
-            "date": cells[5].get_text(strip=True),
-            "report_type": cells[6].get_text(strip=True),
-            "report_subtype": cells[7].get_text(strip=True),
-            "pollutants": cells[8].get_text(strip=True),
-            "filename": link.get("title", ""),
-            "download_url": "https://cfpub.epa.gov/webfire/FIRE/view/dspERTDocumentDetails.cfm",
-        })
-    
+        reports.append(
+            {
+                "id": doc_id,
+                "facility": cells[1].get_text(strip=True),
+                "city": cells[2].get_text(strip=True),
+                "state": cells[3].get_text(strip=True),
+                "date": cells[5].get_text(strip=True),
+                "report_type": cells[6].get_text(strip=True),
+                "report_subtype": cells[7].get_text(strip=True),
+                "pollutants": cells[8].get_text(strip=True),
+                "filename": link.get("title", ""),
+                "download_url": "https://cfpub.epa.gov/webfire/FIRE/view/dspERTDocumentDetails.cfm",
+            }
+        )
+
     return reports
+
 
 def download_report(session, doc_id, output_dir):
     """
     Download a single report from WebFIRE API.
-    
+
     Args:
         session: requests.Session from build_session()
         doc_id: Report ID (e.g., "12345")
         output_dir: Path to save downloaded file
-    
+
     Returns:
         tuple: (success: bool, filepath: Path|None, file_type: str|None, error: str|None)
     """
     result = download_report_with_details(session, doc_id, output_dir)
     return result["success"], result["filepath"], result["file_type"], result["error"]
+
 
 def download_report_with_details(session, doc_id, output_dir):
     """Download one report with retries and return diagnostic metadata."""
@@ -424,16 +443,17 @@ def download_report_with_details(session, doc_id, output_dir):
         "attempts": last_attempt,
     }
 
+
 if __name__ == "__main__":
     from common import utilities
-    
+
     # Load configuration
     config = utilities.load_config()
 
     # Builds the paths for the data directories
     paths = utilities.build_paths(config)
-    
+
     # Downloading reports from WebFIRE API for each state
-    state_names = [state['name'] for state in config['states']]
+    state_names = [state["name"] for state in config["states"]]
     for state_name in state_names:
         fetch_reports(config, state_name, paths)

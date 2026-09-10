@@ -2,13 +2,14 @@ def main(config, paths):
 
     return
 
+
 if __name__ == "__main__":
-    from common import utilities
+    from common import startup
 
     # Load configuration
-    config = utilities.load_config()
+    config = startup.load_config()
 
     # Builds the paths for the data directories
-    paths = utilities.build_paths(config)
+    paths = startup.build_paths(config)
 
     main(config, paths)

@@ -1,7 +1,9 @@
 import logging
+
 import pdfplumber
 
 logger = logging.getLogger(__name__)
+
 
 def chunk_pdfs(config, paths):
     """
@@ -16,7 +18,7 @@ def chunk_pdfs(config, paths):
     # Creating a list of all PDF files
     pdfs_processed = 0
     zero_chunk_count = 0
-    pdf_files = sorted([f for f in paths['pdf_dir'].glob("*.pdf")])
+    pdf_files = sorted([f for f in paths["pdf_dir"].glob("*.pdf")])
 
     if not pdf_files:
         logger.warning("\nNo PDF files found")
@@ -27,7 +29,7 @@ def chunk_pdfs(config, paths):
     # Process each PDF file and create chunks
     for pdf_file in pdf_files:
         try:
-            num_chunks = process_single_pdf(config, paths['chunk_dir'], pdf_file)
+            num_chunks = process_single_pdf(config, paths["chunk_dir"], pdf_file)
             # Tracking the number of successfully proccessed PDFs
             if num_chunks > 0:
                 pdfs_processed += 1
@@ -35,14 +37,17 @@ def chunk_pdfs(config, paths):
                 zero_chunk_count += 1
 
         except Exception as e:
-            logger.error(f"Error processing {pdf_file.name}: {str(e)}")
+            logger.error(f"Error processing {pdf_file.name}: {e!s}")
             continue
 
     # Final summary of the chunking process
     if pdfs_processed == len(pdf_files):
         logger.info("\nAll PDFs successfully processed")
     else:
-        logger.warning(f"\nTotal PDFs with chunks: {pdfs_processed} of {len(pdf_files)}\nTotal PDFs with 0 chunks: {zero_chunk_count} of {len(pdf_files)}\nSome PDFs may have failed to process or returned 0 chunks")
+        logger.warning(
+            f"\nTotal PDFs with chunks: {pdfs_processed} of {len(pdf_files)}\nTotal PDFs with 0 chunks: {zero_chunk_count} of {len(pdf_files)}\nSome PDFs may have failed to process or returned 0 chunks"
+        )
+
 
 def process_single_pdf(config, output_dir, pdf_file):
     """
@@ -56,15 +61,17 @@ def process_single_pdf(config, output_dir, pdf_file):
         int: Number of chunks created for the PDF
     """
     # Extract configuration parameters and defining chunking variables
-    chunk_size = config.get('chunk_size')
-    overlap = config.get('chunk_overlap')
-    chunk_cap = config.get('chunk_cap', None)  # Optional cap on number of chunks
+    chunk_size = config.get("chunk_size")
+    overlap = config.get("chunk_overlap")
+    chunk_cap = config.get("chunk_cap", None)  # Optional cap on number of chunks
     chunk_num = 0
     step = chunk_size - overlap
 
     # Error handling for invalid configuration values
     if step <= 0:
-        logger.warning("Overlap must be smaller than chunk_size. Using default step size of 5000 words.")
+        logger.warning(
+            "Overlap must be smaller than chunk_size. Using default step size of 5000 words."
+        )
         step = 5000
 
     # Extract text from the PDF using pdfplumber
@@ -79,7 +86,7 @@ def process_single_pdf(config, output_dir, pdf_file):
 
     # If any error occurs during text extraction, log the error and skip to the next PDF
     except Exception as e:
-        logger.error(f"Failed to extract text from {pdf_file.name}: {str(e)}")
+        logger.error(f"Failed to extract text from {pdf_file.name}: {e!s}")
         return -1
     # If no text was extracted, log a message and skip to the next PDF
     if not word_tokens:
@@ -93,14 +100,14 @@ def process_single_pdf(config, output_dir, pdf_file):
 
         # Sets the end index for the current chunk at the smaller of chunk size or end of the word list
         chunk_end = min(current_start + chunk_size, len(word_tokens))
-        chunk_text = ' '.join(word_tokens[current_start:chunk_end])
+        chunk_text = " ".join(word_tokens[current_start:chunk_end])
 
         # Saving the chunk to a text file if it contains any text
         if chunk_text.strip():
             chunk_id = f"{chunk_num:03d}"
             filename = f"{pdf_file.stem}_chunk_{chunk_id}.txt"
             filepath = output_dir / filename
-            with open(filepath, 'w', encoding='utf-8') as f:
+            with open(filepath, "w", encoding="utf-8") as f:
                 f.write(chunk_text)
             chunk_num += 1
 
@@ -108,10 +115,11 @@ def process_single_pdf(config, output_dir, pdf_file):
 
     return chunk_num
 
+
 if __name__ == "__main__":
-    from common import utilities
+    from common import startup
 
     # Setting up logging and loading configuration options and paths from settings.yml
-    config, paths = utilities.initialize_project()
+    config, paths = startup.initialize_project()
 
     chunk_pdfs(config, paths)

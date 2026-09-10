@@ -1,8 +1,9 @@
 import csv
-import logging
 import json
+import logging
 
 logger = logging.getLogger(__name__)
+
 
 def compile_reviews(config, paths):
     """
@@ -18,11 +19,11 @@ def compile_reviews(config, paths):
     review_data = []
 
     # Path to the directory containing review JSON files and selecting only JSON files
-    review_files = paths['review_dir'].glob('*.json')
+    review_files = paths["review_dir"].glob("*.json")
 
     # Iterate through the review JSON files in the configured directory
     for review_file in review_files:
-        with open(review_file, 'r', encoding='utf-8') as f:
+        with open(review_file, "r", encoding="utf-8") as f:
             data = json.load(f)
             review_data.append(data)
 
@@ -32,9 +33,9 @@ def compile_reviews(config, paths):
         return
 
     # Write the compiled data to a CSV file under the summary directory
-    csv_output_path = paths['summary_dir'] / 'summary_report.csv'
+    csv_output_path = paths["summary_dir"] / "summary_report.csv"
     fieldnames = [key for review in review_data for key in review]
-    with open(csv_output_path, 'w', newline='', encoding='utf-8') as csvfile:
+    with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for review in review_data:
@@ -42,10 +43,11 @@ def compile_reviews(config, paths):
 
     logger.info(f"\nCompiled {len(review_data)} review files\n\n{'*' * 50}\n")
 
+
 if __name__ == "__main__":
-    from common import utilities
+    from common import startup
 
     # Setting up logging and loading configuration options and paths from settings.yml
-    config, paths = utilities.initialize_project()
+    config, paths = startup.initialize_project()
 
     compile_reviews(config, paths)

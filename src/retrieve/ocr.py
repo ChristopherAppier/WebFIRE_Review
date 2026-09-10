@@ -7,10 +7,11 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+
 def apply_ocr(config, paths):
     """
     Apply OCR to every PDF in the specified folder.
-    
+
     Args:
         config (dict): Dictionary containing OCR configuration.
         paths (dict): Dictionary containing paths to various data directories.
@@ -19,7 +20,7 @@ def apply_ocr(config, paths):
 
     pdf_files = sorted(
         pdf_file
-        for pdf_file in paths['pdf_dir'].glob("*")
+        for pdf_file in paths["pdf_dir"].glob("*")
         if pdf_file.is_file() and pdf_file.suffix.lower() == ".pdf"
     )
 
@@ -34,9 +35,9 @@ def apply_ocr(config, paths):
             "-m",
             "ocrmypdf",
             "--jobs",
-            str(config['ocr_jobs_per_file']),
+            str(config["ocr_jobs_per_file"]),
             "--pdf-renderer",
-            config['ocr_pdf_renderer'],
+            config["ocr_pdf_renderer"],
             "-s",
             "-q",
             "--invalidate-digital-signatures",
@@ -45,9 +46,7 @@ def apply_ocr(config, paths):
         ]
 
         try:
-            result = subprocess.run(
-                cmd, check=True, capture_output=True, text=True
-            )
+            result = subprocess.run(cmd, check=True, capture_output=True, text=True)
             os.replace(temp_output, pdf_file)
             logger.info(f"Processed: {pdf_file.name}")
             if result.stderr:
@@ -69,13 +68,14 @@ def apply_ocr(config, paths):
                 temp_output.unlink(missing_ok=True)
             logger.error(f"Unexpected OCR error for {pdf_file.name}: {e}")
             continue
-    
+
     logger.info("\nOCR processing complete for PDFs")
 
+
 if __name__ == "__main__":
-    from common import utilities
+    from common import startup
 
     # Setting up logging and loading configuration options and paths from settings.yml
-    config, paths = utilities.initialize_project()
+    config, paths = startup.initialize_project()
 
     apply_ocr(config, paths)

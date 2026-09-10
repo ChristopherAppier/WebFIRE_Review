@@ -1,10 +1,10 @@
-from document_retrieval.download_handler import fetch_reports
-from document_retrieval.extract_and_route import extract_and_route_files
-from document_retrieval.ocr_handler import apply_ocr
+from retrieve.download import fetch_reports
+from retrieve.extract import extract_and_route_files
+from retrieve.ocr import apply_ocr
 
 
 def main(config, paths):
-    
+
     # Downloading reports from WebFIRE API for each state
     fetch_reports(config, paths)
 
@@ -14,10 +14,11 @@ def main(config, paths):
     # OCR PDFs
     apply_ocr(config, paths)
 
+
 if __name__ == "__main__":
-    from common import utilities
+    from common import startup
 
     # Setting up logging and loading configuration options and paths from settings.yml
-    config, paths = utilities.initialize_project()
+    config, paths = startup.initialize_project()
 
     main(config, paths)
