@@ -1,3 +1,10 @@
+# VERY IMPORTANT - IMPLEMENT THESE ITEMS
+
+- Create a file that tracks progress in a run and a setting that allows it to pick up from that spot on the next attempt
+- For chunking, use "layout aware parsing" libraries
+- For chunking, use metadata carry-forward. Have a summary of the document from the first review and keep it with every other chunk for the overall context of the document. (maybe do this at prompt selection step. Have llm review for prompt selection and one for the "core idea" of the document to be appended to all chunks)
+-
+
 # Unsorted
 
 - Use facility name in doc dl spreadsheet for doc naming
