@@ -95,7 +95,7 @@
     - [x] Create report
     - [x] Replace print() with logging()
 
-## /src/evaluate
+## /test
 - [ ] Create MVP Version Evaluation Harness
   - [ ] Plan implementation strategy
   - [ ] Define inputs (edge cases included)
@@ -103,7 +103,7 @@
   - [ ] Analyze performance metrics
   - [ ] Output performance metrics
 
-## /docs/evaluation/evaluation.md
+## /docs/evaluation.md
 - [ ] Add MVP Version Evaluation Metrics
   - [ ] Plan implementation strategy
   - [ ] Define metrics
@@ -114,6 +114,83 @@
   - [ ] Test, modify, repeat until success
 
 ## /docs/info
+- [x] Documentation
+  - [x] Update README.md
+  - [x] Update architecture.md
+  - [x] Update setup.md
+  - [x] Update configuration.md
+  - [x] Update output_formats.md
+
+# Potential Additions
+
+- [ ] Progress Tracking and Resume (optional)
+  - [ ] Implement progress tracking mechanism
+  - [ ] Implement resume functionality
+
+- [x] Report Downloading
+  - [x] Scrape html file for facility info
+  - [x] Add download retries
+  - [x] Multithreaded downloading (optional)
+
+- [ ] OCR
+  - [ ] Add LLM w vision + text capabilities or structured table parser for table OCR (layout aware parsing)
+  - [ ] Add setting to OCR all reports (do not rely on other sources for OCR quality)
+
+- [ ] Text Chunking (optional)
+  - [ ] Add summarization to chunks
+  - [ ] Add context based stitching after summarization to balance context buildup vs coherency of report
+
+- [ ] Prompt Selection
+  - [ ] Flush out prompt bank
+  - [x] Add function for LLM Audit prompt selection
+  - [ ] Refactor
+
+- [ ] Review
+  - [x] Reviewer prompt bank
+  - [ ] More robust JSON checking
+  - [ ] RAG and/or other tool calls
+  - [ ] Test review task separation based on doc type / size
+  - [ ] Refactor
+
+- [ ] Audit
+  - [ ] Auditor prompt bank
+  - [ ] Auditor prompt selection
+  - [ ] Seed randomizer and tracking
+  - [ ] Refactor
+
+- [ ] Python Scraping (optional)
+  - [ ] Read in spreadsheets
+  - [ ] Identify flags
+  - [ ] Build output JSON
+  - [ ] Refactor
+
+- [ ] Summary Report Building
+  - [ ] Add python scraping to report building
+  - [ ] Compress chunk reviews for same document
+  - [ ] Refactor
+
+- [ ] eCFR RAG
+  - [ ] Pull eCFR sections
+  - [ ] RAG (direct or small model summary?)
+
+- [ ] Automated Trigger (systemd)
+
+- [ ] Create Full Version Evaluation Harness
+  - [ ] Plan implementation strategy
+  - [ ] Define inputs (edge cases included)
+  - [ ] Load inputs
+  - [ ] Analyze performance metrics
+  - [ ] Output performance metrics
+
+- [ ] Add Full Version Evaluation Metrics
+  - [ ] Plan implementation strategy
+  - [ ] Define metrics
+  - [ ] Define success
+  - [ ] Embed performance metrics into code
+
+- [ ] Harden Full Version
+  - [ ] Test, modify, repeat until pass
+
 - [ ] Documentation
   - [ ] Update README.md
   - [ ] Update architecture.md
@@ -121,93 +198,9 @@
   - [ ] Update configuration.md
   - [ ] Update output_formats.md
 
-# Full Version
-
-- [ ] Create Full Version
-
-  - [ ] Progress Tracking and Resume
-    - [ ] Implement progress tracking mechanism
-    - [ ] Implement resume functionality
-
-  - [ ] Report Downloading
-    - [x] Scrape html file for facility info
-    - [x] Add download retries
-    - [ ] Multithreaded downloading (optional)
-
-  - [ ] File Routing
-  - [ ] Check spreadsheets for EPA template layout - route to Other folder if not using the template
-
-  - [ ] OCR
-    - [ ] Add LLM w vision + text capabilities or structured table parser for table OCR (layout aware parsing)
-    - [ ] Add setting to OCR all reports (do not rely on other sources for OCR quality)
-
-  - [ ] Text Chunking
-    - [ ] Add summarization to chunks
-    - [ ] Add context based stitching after summarization to balance context buildup vs coherency of report
-
-  - [ ] Prompt Selection
-    - [ ] Flush out prompt bank
-    - [ ] Add function for LLM Audit prompt selection
-    - [ ] Refactor
-
-  - [ ] AI Reviewer
-    - [ ] Reviewer prompt selection
-    - [ ] Reviewer prompt bank
-    - [ ] More robust JSON checking
-    - [ ] RAG and/or other tool calls
-    - [ ] Test review task separation based on doc type / size
-    - [ ] Refactor
-
-  - [ ] AI Auditor
-    - [ ] Auditor prompt bank
-    - [ ] Auditor prompt selection
-    - [ ] Seed randomizer and tracking
-    - [ ] Refactor
-
-  - [ ] Python Scraping
-    - [ ] Read in spreadsheets
-    - [ ] Identify flags
-    - [ ] Build output JSON
-    - [ ] Refactor
-
-  - [ ] Summary Report Building
-    - [ ] Add python scraping to report building
-    - [ ] Compress chunk reviews for same document
-    - [ ] Refactor
-
-  - [ ] eCFR RAG
-    - [ ] Pull eCFR sections
-    - [ ] Figure out RAG vs (tool call + subagent summary) - then create to do list
-
-  - [ ] Automated Trigger
-
-  - [ ] Create Full Version Evaluation Harness
-    - [ ] Plan implementation strategy
-    - [ ] Define inputs (edge cases included)
-    - [ ] Load inputs
-    - [ ] Analyze performance metrics
-    - [ ] Output performance metrics
-
-  - [ ] Add Full Version Evaluation Metrics
-    - [ ] Plan implementation strategy
-    - [ ] Define metrics
-    - [ ] Define success
-    - [ ] Embed performance metrics into code
-
-  - [ ] Harden Full Version
-    - [ ] Test, modify, repeat until pass
-
-  - [ ] Documentation
-    - [ ] Update README.md
-    - [ ] Update architecture.md
-    - [ ] Update setup.md
-    - [ ] Update configuration.md
-    - [ ] Update output_formats.md
-
 # Future Additions
 
 - [ ] Config validation (check that settings are appropriate)
 - [ ] Data dashboard (live or post run?)
-
 
 # Notes
