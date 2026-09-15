@@ -14,7 +14,7 @@ def check_timer(config):
         dict: A dictionary containing the start and end dates in MM/DD/YYYY format.
     """
 
-    logging.info(f"\n{'*' * 50}\n\nLoading timestamps from settings.yml")
+    logger.info("\n%s\n\nLoading timestamps from settings.yml", "*" * 50)
 
     # Read last_run_timestamp
     last_run = config["last_run_timestamp"]

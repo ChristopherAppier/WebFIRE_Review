@@ -1,6 +1,7 @@
 import csv
 import logging
 import re
+from dataclasses import dataclass
 from pathlib import Path
 
 import openai
@@ -8,6 +9,20 @@ import yaml
 from openai import OpenAI
 
 logger = logging.getLogger(__name__)
+
+
+class PromptSelectionError(RuntimeError):
+    """Raised when the prompt-selection service cannot complete a request."""
+
+
+class PromptLoadError(RuntimeError):
+    """Raised when local prompt-selection input cannot be loaded."""
+
+
+@dataclass(frozen=True)
+class PromptSelection:
+    name: str
+    used_fallback: bool = False
 
 
 def select_prompts(config, paths):
@@ -21,16 +36,35 @@ def select_prompts(config, paths):
     # Logging the start of the prompt selection process
     logger.info(f"\n{'*' * 50}\n\nStarting prompt selection process\n")
 
-    # Creating a list of chunk paths
     chunks = list_chunks(paths["chunk_dir"])
+    selected_count = 0
+    fallback_count = 0
+    failed_count = 0
 
-    # Looping through first chunk of each PDF
-    for chunk_path in chunks:
-        if chunk_path.stem.endswith("_chunk_000"):
-            # Chooses the appropriate system prompt based on the contents of this chunk
-            prompt_name = choose_system_prompt(chunk_path, config, paths)
-            # Write the selected prompt to the report table
-            save_to_table(chunk_path, prompt_name, paths["http_dir"])
+    try:
+        for chunk_path in chunks:
+            if not chunk_path.stem.endswith("_chunk_000"):
+                continue
+
+            try:
+                selection = choose_system_prompt(chunk_path, config, paths)
+            except PromptSelectionError:
+                failed_count += 1
+                logger.exception("Prompt selection failed for %s", chunk_path)
+                continue
+
+            save_to_table(chunk_path, selection.name, paths["http_dir"])
+            if selection.used_fallback:
+                fallback_count += 1
+            else:
+                selected_count += 1
+    finally:
+        logger.info(
+            "Prompt selection complete: selected=%d, defaulted=%d, failed=%d",
+            selected_count,
+            fallback_count,
+            failed_count,
+        )
 
 
 def list_chunks(chunk_dir):
@@ -60,22 +94,32 @@ def choose_system_prompt(chunk_name, config, paths):
     # Combining the system prompt selection prompt, the chunk, and system prompt descriptions
     instructions_prompt = load_system_prompt(paths, "selection")
     prompt_descriptions = load_system_prompt(paths, "review_desc")
+    prompt_bank_path = paths["config_dir"] / "prompts.yml"
+    if not isinstance(instructions_prompt, str):
+        raise PromptLoadError(f"Prompt 'selection' in {prompt_bank_path} must be text")
+    if not isinstance(prompt_descriptions, dict):
+        raise PromptLoadError(
+            f"Prompt 'review_desc' in {prompt_bank_path} must be a mapping"
+        )
 
     prompt_descriptions_text = yaml.safe_dump(prompt_descriptions, sort_keys=True)
     system_prompt = (
         f"{instructions_prompt}\n\nPrompt choices:\n{prompt_descriptions_text}"
     )
 
-    with open(chunk_name, "r", encoding="utf-8") as f:
-        chunk_text = f.read()
+    try:
+        with open(chunk_name, "r", encoding="utf-8") as f:
+            chunk_text = f.read()
+    except OSError as exc:
+        raise PromptLoadError(
+            f"Could not read prompt-selection chunk {chunk_name}"
+        ) from exc
 
     # Sending the prompt to the model for system prompt selection
     response = choose_prompt(config, system_prompt, chunk_text, chunk_name)
 
     # Checking the model's response and defaulting to a generic prompt if the response is invalid
-    prompt_name = check_model_response(response, prompt_descriptions.keys())
-
-    return prompt_name
+    return check_model_response(response, prompt_descriptions.keys())
 
 
 def load_system_prompt(paths, prompt_name):
@@ -84,13 +128,23 @@ def load_system_prompt(paths, prompt_name):
     # Load the list of prompts available from the prompts.yml
     prompt_bank_dir = paths["config_dir"] / "prompts.yml"
 
-    with open(prompt_bank_dir, "r", encoding="utf-8") as f:
-        prompt_bank = yaml.safe_load(f)
+    try:
+        with open(prompt_bank_dir, "r", encoding="utf-8") as f:
+            prompt_bank = yaml.safe_load(f)
+    except (OSError, yaml.YAMLError) as exc:
+        raise PromptLoadError(
+            f"Could not load prompt bank from {prompt_bank_dir}"
+        ) from exc
 
-    # Selecting the appropriate prompt based on the file type/name (currently all use one default)
-    prompt = prompt_bank[prompt_name]
+    if not isinstance(prompt_bank, dict):
+        raise PromptLoadError(f"Prompt bank in {prompt_bank_dir} must be a mapping")
 
-    return prompt
+    try:
+        return prompt_bank[prompt_name]
+    except KeyError as exc:
+        raise PromptLoadError(
+            f"Prompt '{prompt_name}' was not found in {prompt_bank_dir}"
+        ) from exc
 
 
 def choose_prompt(config, system_prompt, chunk_text, chunk_name):
@@ -114,17 +168,18 @@ def choose_prompt(config, system_prompt, chunk_text, chunk_name):
 
         return response.output_text
 
-    except openai.APIConnectionError as e:
-        logger.error(f"The server could not be reached: {e.__cause__}")
-        return "The server could not be reached."
-    except openai.RateLimitError:
-        logger.error("A 429 status code was received; back off requests.")
-        return "A 429 status code was received; back off requests."
-    except openai.APIStatusError as e:
-        logger.error(
-            f"Another non-200-range status code was received: {e.status_code}, {e.response}"
-        )
-        return f"Another non-200-range status code was received: {e.status_code}, {e.response}"
+    except openai.APIConnectionError as exc:
+        raise PromptSelectionError(
+            f"Could not reach the prompt-selection service for {chunk_name}"
+        ) from exc
+    except openai.RateLimitError as exc:
+        raise PromptSelectionError(
+            f"Prompt-selection rate limit reached for {chunk_name}"
+        ) from exc
+    except openai.APIStatusError as exc:
+        raise PromptSelectionError(
+            f"Prompt-selection service returned HTTP {exc.status_code} for {chunk_name}"
+        ) from exc
 
 
 def check_model_response(response, valid_prompts):
@@ -135,14 +190,14 @@ def check_model_response(response, valid_prompts):
         response: The response from the model.
 
     Returns:
-        The validated system prompt name as a string.
+        The validated prompt selection and whether a fallback was used.
     """
     prompt_name = response.strip()
 
     if prompt_name in valid_prompts:
-        return prompt_name
+        return PromptSelection(prompt_name)
     logger.warning(f"Invalid response received: {response}. Defaulting to 'generic'.")
-    return "generic"
+    return PromptSelection("generic", used_fallback=True)
 
 
 def save_to_table(chunk_name, prompt_name, http_dir):

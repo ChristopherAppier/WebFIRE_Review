@@ -37,31 +37,46 @@ def fetch_reports(config, paths):
     dl_retries = int(config.get("download_retry_attempts"))
     dl_retry_delay = float(config.get("download_retry_delay_seconds"))
     dl_workers = max(1, int(config.get("download_workers", 4)))
+    http_timeout = float(config.get("http_timeout_seconds", 30))
 
-    # Loop through each state and perform the search and download process
-    for state_name in state_names:
-        # POST to the search results page with the specified parameters
-        post_search(webfire_base, session, start_date, end_date, state_name, paths)
+    try:
+        # Loop through each state and perform the search and download process
+        for state_name in state_names:
+            # POST to the search results page with the specified parameters
+            post_search(
+                webfire_base,
+                session,
+                start_date,
+                end_date,
+                state_name,
+                paths,
+                timeout=http_timeout,
+            )
 
-        # Parse the search results page to extract the URLs of the reports and save as CSV
-        parse_search_results(paths["http_dir"], state_name)
+            # Parse the search results page to extract the URLs of the reports and save as CSV
+            parse_search_results(paths["http_dir"], state_name)
 
-        # Request 4: GET the report pages for each URL in the parsed CSV and save to file
-        get_results(
-            session,
-            paths["raw_data_dir"],
-            paths["http_dir"],
-            state_name,
-            dl_retries,
-            dl_retry_delay,
-            dl_workers,
-        )
+            # Request 4: GET the report pages for each URL in the parsed CSV and save to file
+            get_results(
+                session,
+                paths["raw_data_dir"],
+                paths["http_dir"],
+                state_name,
+                dl_retries,
+                dl_retry_delay,
+                dl_workers,
+                http_timeout,
+            )
+    finally:
+        session.close()
 
     # After all states have been processed, build a master report table combining all state CSVs
     build_master_report_table(paths["http_dir"])
 
 
-def post_search(webfire_base, session, start_date, end_date, state_name, paths):
+def post_search(
+    webfire_base, session, start_date, end_date, state_name, paths, timeout=30
+):
     """Posts a search request to the WebFIRE HTTP for a specific state and date range.
 
     Args:
@@ -77,43 +92,51 @@ def post_search(webfire_base, session, start_date, end_date, state_name, paths):
         f"\n{'*' * 50}\n\nSearching for reports for state: {state_name} from {start_date} to {end_date}"
     )
 
-    # Request 1: GET the initial search page to establish session cookies
-    response1 = session.get(f"{webfire_base}/reports/esearch.cfm")  # noqa: F841
+    try:
+        # Request 1: GET the initial search page to establish session cookies
+        response1 = session.get(f"{webfire_base}/reports/esearch.cfm", timeout=timeout)
+        response1.raise_for_status()
 
-    # print("Request 1 status:", response1.status_code)
+        # Request 2: POST to the search page to submit the search form
+        session.headers["Referer"] = f"{webfire_base}/reports/esearch.cfm"
+        response2 = session.post(
+            f"{webfire_base}/reports/esearch2.cfm",
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            data={"reporttype": "All", "Submit": "Submit Search"},
+            timeout=timeout,
+        )
+        response2.raise_for_status()
 
-    # Request 2: POST to the search page to submit the search form
-    session.headers["Referer"] = f"{webfire_base}/reports/esearch.cfm"
-    response2 = session.post(  # noqa: F841
-        f"{webfire_base}/reports/esearch2.cfm",
-        headers={"Content-Type": "application/x-www-form-urlencoded"},
-        data={"reporttype": "All", "Submit": "Submit Search"},
-    )
-    # print("Request 2 status:", response2.status_code)
-
-    # Request 3: POST to the search results page with the specified parameters
-    session.headers["Referer"] = f"{webfire_base}/reports/esearch2.cfm"
-    response3 = session.post(
-        f"{webfire_base}/reports/eSearchResults.cfm",
-        headers={"Content-Type": "application/x-www-form-urlencoded"},
-        data={
-            "organization": "",
-            "facility": "",
-            "startdate": start_date,
-            "enddate": end_date,
-            "state": state_name,
-            "county": "",
-            "city": "",
-            "zip": "",
-            "CFRpart": "All",
-            "CFRSubpart": "",
-            "FRS": "",
-            "Submit": "Submit Search",
-        },
-    )
-
-    # print("Request 3 status:", response3.status_code)
-    # print(response3.text)
+        # Request 3: POST to the search results page with the specified parameters
+        session.headers["Referer"] = f"{webfire_base}/reports/esearch2.cfm"
+        response3 = session.post(
+            f"{webfire_base}/reports/eSearchResults.cfm",
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            data={
+                "organization": "",
+                "facility": "",
+                "startdate": start_date,
+                "enddate": end_date,
+                "state": state_name,
+                "county": "",
+                "city": "",
+                "zip": "",
+                "CFRpart": "All",
+                "CFRSubpart": "",
+                "FRS": "",
+                "Submit": "Submit Search",
+            },
+            timeout=timeout,
+        )
+        response3.raise_for_status()
+    except requests.exceptions.RequestException:
+        logger.exception(
+            "WebFIRE search request failed for state %s (%s to %s)",
+            state_name,
+            start_date,
+            end_date,
+        )
+        raise
 
     # Save the response content to a file for further processing
     output_file_path = Path(paths["http_dir"]) / f"results_{state_name}.html"
@@ -137,6 +160,12 @@ def parse_search_results(file_path, state_name):
     with open(state_file, "r", encoding="utf-8") as html_file:
         soup = BeautifulSoup(html_file.read(), "html.parser")
 
+    results_table = soup.select_one("#myDocTable")
+    if results_table is None:
+        raise ValueError(
+            f"WebFIRE response for state {state_name} did not contain the expected results table"
+        )
+
     # Define the fieldnames for the CSV file that will store the extracted report URLs
     fieldnames = [
         "Organization",
@@ -159,7 +188,7 @@ def parse_search_results(file_path, state_name):
 
     # Extract the relevant data from the search results table and store it in a list of dictionaries
     rows = []
-    for tr in soup.select("#myDocTable tbody tr"):
+    for tr in results_table.select("tbody tr"):
         tds = tr.find_all("td")
         if len(tds) < 12:
             continue
@@ -213,6 +242,7 @@ def _download_report(
     cookies,
     reserved_names,
     filename_lock,
+    request_timeout,
 ):
     report_url = row.get("report_url", "").strip()
     worker_session = requests.Session()
@@ -222,7 +252,9 @@ def _download_report(
     response = None
     for attempt in range(1, max_attempts + 1):
         try:
-            response = worker_session.get(report_url, timeout=30, stream=True)
+            response = worker_session.get(
+                report_url, timeout=request_timeout, stream=True
+            )
             response.raise_for_status()
             break
         except requests.exceptions.RequestException as error:
@@ -262,9 +294,9 @@ def _download_report(
             for chunk in response.iter_content(chunk_size=64 * 1024):
                 if chunk:
                     output_file.write(chunk)
-    except OSError as error:
+    except Exception:
         output_file_path.unlink(missing_ok=True)
-        logger.error(f"Failed to save {report_url}: {error}")
+        logger.exception("Failed to save report %s", report_url)
         return False
     finally:
         response.close()
@@ -285,6 +317,7 @@ def get_results(
     max_attempts=3,
     retry_delay_seconds=2,
     max_workers=4,
+    request_timeout=30,
 ):
     """
     GETs the report pages for each URL in the parsed CSV and saves them to files in the raw data directory.
@@ -297,6 +330,7 @@ def get_results(
             max_attempts (int): The maximum number of retry attempts for failed requests.
             retry_delay_seconds (int): The delay in seconds between retry attempts.
             max_workers (int): The maximum number of concurrent downloads.
+            request_timeout (float): Timeout in seconds for each report request.
     """
 
     logger.info(f"\n\nDownloading reports for state: {state_name}\n")
@@ -307,6 +341,7 @@ def get_results(
 
     # If the CSV file does not exist, return early
     if not csv_path.exists():
+        logger.warning("Report table not found for state %s: %s", state_name, csv_path)
         return
 
     # Loop through each report URL in the CSV and GET the report page, saving it to a file
@@ -324,7 +359,6 @@ def get_results(
         fieldnames.append("Prompt Name")
 
     # Finding the number of reports to download for progress tracking
-    num_reports = len(rows)
     num_dl = 0
     jobs = []
     for idx, row in enumerate(rows, start=1):
@@ -340,7 +374,7 @@ def get_results(
     filename_lock = Lock()
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [
+        futures = {
             executor.submit(
                 _download_report,
                 row,
@@ -353,13 +387,23 @@ def get_results(
                 cookies,
                 reserved_names,
                 filename_lock,
-            )
+                request_timeout,
+            ): (idx, row)
             for idx, row in jobs
-        ]
+        }
         for future in tqdm(
             as_completed(futures), total=len(futures), desc=f"{state_name} reports"
         ):
-            num_dl += int(future.result())
+            idx, row = futures[future]
+            try:
+                num_dl += int(future.result())
+            except Exception:
+                logger.exception(
+                    "Unexpected download failure for state %s report %s (%s)",
+                    state_name,
+                    idx,
+                    row.get("report_url", ""),
+                )
 
     # Rewrite the CSV so downstream steps can map extracted docs back to the correct row
     with open(csv_path, "w", newline="", encoding="utf-8") as csv_file:
@@ -367,6 +411,7 @@ def get_results(
         writer.writeheader()
         writer.writerows(rows)
 
+    num_reports = len(jobs)
     if num_dl == num_reports:
         logger.info("\nAll reports successfully downloaded")
     else:

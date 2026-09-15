@@ -12,97 +12,119 @@ from openai import OpenAI
 logger = logging.getLogger(__name__)
 
 
-def review_chunks(config, paths):
+class ReviewRequestError(RuntimeError):
+    """Raised when the configured review service cannot complete a request."""
 
+
+class InvalidReviewResponse(ValueError):
+    """Raised when a model response does not match the review contract."""
+
+
+def review_chunks(config, paths):
     logger.info(
         f"\n{'*' * 50}\n\nAnalyzing text chunks using: {config['llm']['review']}\n"
     )
 
-    # Looping through all chunks
-    for chunk_name in paths["chunk_dir"].iterdir():
-        # Skips the file if it isn't a text file
-        if chunk_name.suffix != ".txt":
-            continue
+    chunk_paths = sorted(paths["chunk_dir"].glob("*.txt"))
+    if not chunk_paths:
+        logger.warning("No text chunks found in %s", paths["chunk_dir"])
+        return {"attempted": 0, "succeeded": 0, "skipped": 0, "failed": 0}
 
-        # Pulling information from the report table csv
-        file_name = find_file_name(paths, chunk_name)
-        file_info = pull_file_info(paths, file_name)
-
-        # Loads the system prompt and name based on the file type/name being reviewed
-        system_prompt, prompt_name = load_system_prompt(
-            paths, file_info.get("Prompt Name"), return_prompt_name=True
-        )
-
-        # Load text from chunk_name.txt
-        if chunk_name.stem.endswith("_chunk_000"):
-            with open(chunk_name, "r") as f:
-                chunk_text = f.read()
-        else:
-            chunk_zero = (
-                paths["chunk_dir"]
-                / f"{chunk_name.stem.split('_chunk_')[0]}_chunk_000.txt"
-            )
-            with open(chunk_zero, "r") as f:
-                chunk_zero_text = f.read()
-            with open(chunk_name, "r") as f:
-                current_chunk_text = f.read()
-            chunk_text = chunk_zero_text + "\n\n" + current_chunk_text
-
-        # Get the AI's response as a string
-        raw_output, think_output, t_start, t_end = single_analysis(
-            config, chunk_name, chunk_text, system_prompt
-        )
-
-        # Trying to load the response string as a JSON with error handling
+    counts = {"attempted": len(chunk_paths), "succeeded": 0, "skipped": 0, "failed": 0}
+    for chunk_name in chunk_paths:
         try:
-            json_output = json_check(raw_output)
-        except ValueError as e:
-            logger.warning(f"Skipping {chunk_name}: {e}")
-            continue
-
-        # Determining if audit flag triggers
-        if json_output["issue_flag"] == True or random.random() < (
-            config["audit_chance"] / 100
-        ):
-            audit_flag = True
+            review_single_chunk(config, paths, chunk_name)
+        except InvalidReviewResponse as error:
+            counts["skipped"] += 1
+            logger.warning("Skipping chunk %s: %s", chunk_name.name, error)
+        except (
+            ReviewRequestError,
+            OSError,
+            csv.Error,
+            yaml.YAMLError,
+            KeyError,
+            TypeError,
+        ) as error:
+            counts["failed"] += 1
+            logger.error("Review failed for chunk %s: %s", chunk_name.name, error)
+        except Exception:
+            counts["failed"] += 1
+            logger.exception("Unexpected review failure for chunk %s", chunk_name.name)
         else:
-            audit_flag = False
+            counts["succeeded"] += 1
 
-        # Calculating total review time in seconds
-        t_total = int(
-            (
-                datetime.fromisoformat(t_end) - datetime.fromisoformat(t_start)
-            ).total_seconds()
+    log_summary = (
+        logger.info if counts["failed"] == counts["skipped"] == 0 else logger.warning
+    )
+    log_summary(
+        "LLM review finished: attempted=%d succeeded=%d skipped=%d failed=%d",
+        counts["attempted"],
+        counts["succeeded"],
+        counts["skipped"],
+        counts["failed"],
+    )
+    return counts
+
+
+def review_single_chunk(config, paths, chunk_name):
+    """Review one text chunk and store its validated result."""
+
+    file_name = find_file_name(paths, chunk_name)
+    file_info = pull_file_info(paths, file_name)
+
+    system_prompt, prompt_name = load_system_prompt(
+        paths, file_info.get("Prompt Name"), return_prompt_name=True
+    )
+
+    if chunk_name.stem.endswith("_chunk_000"):
+        chunk_text = chunk_name.read_text(encoding="utf-8")
+    else:
+        chunk_zero = (
+            paths["chunk_dir"] / f"{chunk_name.stem.split('_chunk_')[0]}_chunk_000.txt"
         )
+        chunk_zero_text = chunk_zero.read_text(encoding="utf-8")
+        current_chunk_text = chunk_name.read_text(encoding="utf-8")
+        chunk_text = chunk_zero_text + "\n\n" + current_chunk_text
 
-        # Adding additional information into JSON
-        payload = {
-            "audit_flag": audit_flag,
-            "file_name": file_name,
-            "chunk_name": chunk_name.stem,
-            "organization": file_info.get("Organization"),
-            "facility": file_info.get("Facility"),
-            "city": file_info.get("City"),
-            "state": file_info.get("State"),
-            "report_type": file_info.get("Report Type"),
-            "report_subtype": file_info.get("Report Sub Type"),
-            "submission_date": file_info.get("Submission Date"),
-            "review_start_time": t_start,
-            "review_end_time": t_end,
-            "total_review_time": t_total,
-            "think_output": think_output,
-            "prompt_name": prompt_name,
-        }
+    raw_output, think_output, t_start, t_end = single_analysis(
+        config, chunk_name, chunk_text, system_prompt
+    )
 
-        for key, value in payload.items():
-            json_output[key] = value
+    json_output = json_check(raw_output)
 
-        # Storing the JSON output containing the analysis for that chunk
-        save_path = paths["review_dir"] / f"{chunk_name.stem}.json"
-        with open(save_path, "w", encoding="utf-8") as f:
-            json.dump(json_output, f, indent=2)
+    audit_flag = json_output["issue_flag"] == 1 or random.random() < (
+        config["audit_chance"] / 100
+    )
 
-    logger.info("LLM review complete")  # TODO Add more stat tracking
+    t_total = int(
+        (
+            datetime.fromisoformat(t_end) - datetime.fromisoformat(t_start)
+        ).total_seconds()
+    )
+
+    payload = {
+        "audit_flag": audit_flag,
+        "file_name": file_name,
+        "chunk_name": chunk_name.stem,
+        "organization": file_info.get("Organization"),
+        "facility": file_info.get("Facility"),
+        "city": file_info.get("City"),
+        "state": file_info.get("State"),
+        "report_type": file_info.get("Report Type"),
+        "report_subtype": file_info.get("Report Sub Type"),
+        "submission_date": file_info.get("Submission Date"),
+        "review_start_time": t_start,
+        "review_end_time": t_end,
+        "total_review_time": t_total,
+        "think_output": think_output,
+        "prompt_name": prompt_name,
+    }
+
+    json_output.update(payload)
+
+    save_path = paths["review_dir"] / f"{chunk_name.stem}.json"
+    with open(save_path, "w", encoding="utf-8") as output_file:
+        json.dump(json_output, output_file, indent=2)
 
 
 def single_analysis(config, chunk_name, chunk_text, sys_prompt):
@@ -141,25 +163,14 @@ def single_analysis(config, chunk_name, chunk_text, sys_prompt):
 
         return response.output_text, think_output, t_start, t_end
 
-    except openai.APIConnectionError as e:
-        t_end = datetime.now(timezone.utc).isoformat()
-        return f"The server could not be reached: {e.__cause__}", None, t_start, t_end
-    except openai.RateLimitError:
-        t_end = datetime.now(timezone.utc).isoformat()
-        return (
-            "A 429 status code was received; back off requests.",
-            None,
-            t_start,
-            t_end,
-        )
-    except openai.APIStatusError as e:
-        t_end = datetime.now(timezone.utc).isoformat()
-        return (
-            f"Another non-200-range status code was received: {e.status_code}, {e.response}",
-            None,
-            t_start,
-            t_end,
-        )
+    except openai.APIConnectionError as error:
+        raise ReviewRequestError("review service connection failed") from error
+    except openai.RateLimitError as error:
+        raise ReviewRequestError("review service rate limit exceeded") from error
+    except openai.APIStatusError as error:
+        raise ReviewRequestError(
+            f"review service returned HTTP {error.status_code}"
+        ) from error
 
 
 def load_system_prompt(paths, prompt_name, return_prompt_name=False):
@@ -190,8 +201,10 @@ def load_system_prompt(paths, prompt_name, return_prompt_name=False):
 
 
 def json_check(raw_string):
-    """Strips markdown fences if present, then parses and returns a JSON dict.
-    Raises ValueError if the string cannot be parsed as valid JSON."""
+    """Parse and validate the model's JSON review response."""
+
+    if not isinstance(raw_string, str):
+        raise InvalidReviewResponse("Model response must be text containing JSON")
 
     cleaned = raw_string.strip()
 
@@ -201,9 +214,39 @@ def json_check(raw_string):
         cleaned = cleaned.removesuffix("```").strip()
 
     try:
-        return json.loads(cleaned)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Model returned invalid JSON: {e}\nRaw output:\n{raw_string}")
+        result = json.loads(cleaned)
+    except json.JSONDecodeError as error:
+        raise InvalidReviewResponse(
+            f"Model returned invalid JSON: {error.msg}"
+        ) from error
+
+    if not isinstance(result, dict):
+        raise InvalidReviewResponse("Model response must be a JSON object")
+
+    required_fields = {"issue_flag", "issue_descr", "conf_score", "importance"}
+    missing_fields = sorted(required_fields - result.keys())
+    if missing_fields:
+        raise InvalidReviewResponse(
+            f"Model response is missing required fields: {', '.join(missing_fields)}"
+        )
+
+    issue_flag = result["issue_flag"]
+    if isinstance(issue_flag, bool) or issue_flag not in (0, 1):
+        raise InvalidReviewResponse("Model field 'issue_flag' must be 0 or 1")
+    if not isinstance(result["issue_descr"], str):
+        raise InvalidReviewResponse("Model field 'issue_descr' must be a string")
+    for field_name in ("conf_score", "importance"):
+        value = result[field_name]
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, (int, float))
+            or not 0 <= value <= 10
+        ):
+            raise InvalidReviewResponse(
+                f"Model field '{field_name}' must be a number from 0 to 10"
+            )
+
+    return result
 
 
 def store_for_audit(config, paths):

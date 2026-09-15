@@ -1,12 +1,9 @@
+# Extra Token Burn Tasks
+- [ ] Update documentation (after MVP finalized)
+- [ ] Update / cleanup comments in all scripts
+
 # Update environment.yml
 - [x] Update environment.yml with necessary dependencies for final MVP version
-
-# Extra Token Burn Tasks
-- [ ] Update architecture.md for final MVP version
-- [ ] Update setup.md for final MVP version
-- [ ] Update configuration.md for final MVP version
-- [ ] Update output_formats.md for final MVP version
-- [ ] Update / cleanup comments in all scripts
 
 # Prompt selection functionality
 - [x] Add basic prompt selector
@@ -27,7 +24,24 @@
   - [x] Save prompt choice to JSON w metadata
 
 # Overall context carry forward
-- [ ] Add a mechanism to carry forward the overall context of the document into each analysis
-## use the first chunk as part of the prompt sent for each review. Should be an easy mod.
+- [x] Add a mechanism to carry forward the overall context of the document into each analysis
 
-# Add concise error handling / logging for each script individually via Plan>Agent
+# Concurrent downloads
+- [x] Add concurrent download for webfire files
+
+# Add error handling / logging for each /src subfolder individually via Plan>Agent
+- [x] Logging fully implemented
+
+# Evaluation implementation
+- [ ] Evaluation specifics (docs/info/evaluation.md)
+- [ ] Create a test harness for each pipeline
+
+# Run evaluation testing
+- [ ] Assemble data set
+  - [ ] Good dataset of each type w answers
+  - [ ] Bad/invalid data set
+- [ ] Evaluate each pipeline
+- [ ] Evaluate entire workflow
+- [ ] Revise / retest until criteria pass
+
+# Update documentation

@@ -5,6 +5,34 @@ import pdfplumber
 logger = logging.getLogger(__name__)
 
 
+class PdfExtractionError(RuntimeError):
+    """Raised when text cannot be extracted from a PDF."""
+
+
+def validate_chunk_config(config):
+    """Return validated chunk size, overlap, and optional cap settings."""
+    chunk_size = config.get("chunk_size")
+    overlap = config.get("chunk_overlap")
+    chunk_cap = config.get("chunk_cap")
+
+    if (
+        isinstance(chunk_size, bool)
+        or not isinstance(chunk_size, int)
+        or chunk_size < 1
+    ):
+        raise ValueError("chunk_size must be a positive integer")
+    if isinstance(overlap, bool) or not isinstance(overlap, int) or overlap < 0:
+        raise ValueError("chunk_overlap must be a non-negative integer")
+    if overlap >= chunk_size:
+        raise ValueError("chunk_overlap must be smaller than chunk_size")
+    if chunk_cap is not None and (
+        isinstance(chunk_cap, bool) or not isinstance(chunk_cap, int) or chunk_cap < 1
+    ):
+        raise ValueError("chunk_cap must be a positive integer or null")
+
+    return chunk_size, overlap, chunk_cap
+
+
 def chunk_pdfs(config, paths):
     """
     Reads OCR'd PDFs and creates overlapping chunks of the text.
@@ -15,41 +43,47 @@ def chunk_pdfs(config, paths):
     """
     logger.info(f"\n{'*' * 50}\n\nStarting PDF chunking process")
 
-    # Creating a list of all PDF files
-    pdfs_processed = 0
-    zero_chunk_count = 0
+    chunk_settings = validate_chunk_config(config)
     pdf_files = sorted([f for f in paths["pdf_dir"].glob("*.pdf")])
+    counts = {"total": len(pdf_files), "chunked": 0, "empty": 0, "failed": 0}
 
     if not pdf_files:
-        logger.warning("\nNo PDF files found")
-        return
+        logger.warning("No PDF files found in %s", paths["pdf_dir"])
+        return counts
 
     logger.info(f"\nFound {len(pdf_files)} PDF files to process\n")
 
     # Process each PDF file and create chunks
     for pdf_file in pdf_files:
         try:
-            num_chunks = process_single_pdf(config, paths["chunk_dir"], pdf_file)
-            # Tracking the number of successfully proccessed PDFs
+            num_chunks = process_single_pdf(
+                config,
+                paths["chunk_dir"],
+                pdf_file,
+                chunk_settings=chunk_settings,
+            )
             if num_chunks > 0:
-                pdfs_processed += 1
-            if num_chunks == 0:
-                zero_chunk_count += 1
+                counts["chunked"] += 1
+            else:
+                counts["empty"] += 1
+        except Exception:
+            counts["failed"] += 1
+            logger.exception("Failed to process PDF %s", pdf_file.name)
 
-        except Exception as e:
-            logger.error(f"Error processing {pdf_file.name}: {e!s}")
-            continue
+    log_summary = (
+        logger.info if counts["failed"] == counts["empty"] == 0 else logger.warning
+    )
+    log_summary(
+        "PDF chunking finished: total=%d chunked=%d empty=%d failed=%d",
+        counts["total"],
+        counts["chunked"],
+        counts["empty"],
+        counts["failed"],
+    )
+    return counts
 
-    # Final summary of the chunking process
-    if pdfs_processed == len(pdf_files):
-        logger.info("\nAll PDFs successfully processed")
-    else:
-        logger.warning(
-            f"\nTotal PDFs with chunks: {pdfs_processed} of {len(pdf_files)}\nTotal PDFs with 0 chunks: {zero_chunk_count} of {len(pdf_files)}\nSome PDFs may have failed to process or returned 0 chunks"
-        )
 
-
-def process_single_pdf(config, output_dir, pdf_file):
+def process_single_pdf(config, output_dir, pdf_file, *, chunk_settings=None):
     """
     Process a single PDF and create fixed-size overlapping chunks.
 
@@ -60,19 +94,9 @@ def process_single_pdf(config, output_dir, pdf_file):
     Returns:
         int: Number of chunks created for the PDF
     """
-    # Extract configuration parameters and defining chunking variables
-    chunk_size = config.get("chunk_size")
-    overlap = config.get("chunk_overlap")
-    chunk_cap = config.get("chunk_cap", None)  # Optional cap on number of chunks
+    chunk_size, overlap, chunk_cap = chunk_settings or validate_chunk_config(config)
     chunk_num = 0
     step = chunk_size - overlap
-
-    # Error handling for invalid configuration values
-    if step <= 0:
-        logger.warning(
-            "Overlap must be smaller than chunk_size. Using default step size of 5000 words."
-        )
-        step = 5000
 
     # Extract text from the PDF using pdfplumber
     try:
@@ -84,10 +108,10 @@ def process_single_pdf(config, output_dir, pdf_file):
                 if page_text:
                     word_tokens.extend(page_text.split())
 
-    # If any error occurs during text extraction, log the error and skip to the next PDF
-    except Exception as e:
-        logger.error(f"Failed to extract text from {pdf_file.name}: {e!s}")
-        return -1
+    except Exception as error:
+        raise PdfExtractionError(
+            f"Could not extract text from {pdf_file.name}"
+        ) from error
     # If no text was extracted, log a message and skip to the next PDF
     if not word_tokens:
         logger.warning(f"No text extracted from {pdf_file.name}, skipping")
@@ -111,7 +135,7 @@ def process_single_pdf(config, output_dir, pdf_file):
                 f.write(chunk_text)
             chunk_num += 1
 
-    logger.info(f"Processed {pdf_file.name}:\nCreated {chunk_num} chunks")
+    logger.info("Processed %s: created %d chunks", pdf_file.name, chunk_num)
 
     return chunk_num
 

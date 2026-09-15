@@ -66,10 +66,8 @@
     - [x] Replace print() with logging()
 
 ## /src/ai_review/overall_context_creator.py
-  - [ ] Overall Context Carry-Forward Mechanism
-    - [ ] Create overall context creation prompt
-    - [ ] Overall context creation function
-    - [ ] Integrate overall context into subsequent chunk processing
+  - [x] Overall Context Carry-Forward Mechanism
+    - [x] Feed first chunk into all others
 
 ## /src/ai_review/analysis_handler.py
   - [x] AI Reviewer
@@ -85,17 +83,16 @@
     - [x] Replace print() with logging()
 
 ## /src/common/prompt_selection.py
-  - [ ] Prompt Selection
-    - [ ] Input first report chunk
-    - [ ] Determine report type
-    - [ ] Use report type to pull prompt from prompt bank
-    - [ ] Return prompt text and prompt code (for tracking in JSONs)
+  - [x] Prompt Selection
+    - [x] Input first report chunk
+    - [x] Determine report type
+    - [x] Use report type to pull prompt from prompt bank
+    - [x] Return prompt text and prompt code (for tracking in JSONs)
 
 ## /src/summarize/report_compiler.py
-  - [ ] Summary Report Building
+  - [x] Summary Report Building
     - [x] Pull JSONs
     - [x] Create report
-    - [ ] Compress chunk reviews for same document
     - [x] Replace print() with logging()
 
 ## /src/evaluate
@@ -175,6 +172,7 @@
 
   - [ ] Summary Report Building
     - [ ] Add python scraping to report building
+    - [ ] Compress chunk reviews for same document
     - [ ] Refactor
 
   - [ ] eCFR RAG

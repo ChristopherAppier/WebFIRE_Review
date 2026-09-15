@@ -60,7 +60,14 @@ def check_for_zips(paths):
     """
     # Check if there are any zip files in the raw directory using magic library
     for file_name in paths["raw_data_dir"].iterdir():
-        mime_type = magic.from_file(file_name, mime=True)
+        if not file_name.is_file():
+            continue
+        try:
+            mime_type = magic.from_file(file_name, mime=True)
+        except (OSError, magic.MagicException) as error:
+            raise RuntimeError(
+                f"Could not identify file type for {file_name}"
+            ) from error
         if mime_type == "application/zip":
             return True
 
@@ -75,38 +82,60 @@ def extract_zips(paths):
         paths (dict): A dictionary of path objects for the various directories used in the process.
     """
     zip_to_documents = {}
+    extraction_errors = []
 
     for file_name in paths["raw_data_dir"].iterdir():
-        mime_type = magic.from_file(file_name, mime=True)
+        if not file_name.is_file():
+            continue
+        try:
+            mime_type = magic.from_file(file_name, mime=True)
+        except (OSError, magic.MagicException) as error:
+            logger.exception("Could not identify file type for %s", file_name)
+            extraction_errors.append((file_name, error))
+            continue
         if mime_type == "application/zip":
-            # Extract the zip file
-            with zipfile.ZipFile(file_name, "r") as zip_ref:
-                extracted_files = []
-                for member_name in zip_ref.namelist():
-                    if member_name.endswith("/"):
-                        continue
-                    normalized_name = member_name.replace("\\", "/").rstrip("/")
-                    base_name = Path(normalized_name).name
-                    if not base_name:
-                        continue
-                    # Skipping metadata.xml files
-                    if base_name.lower() == "metadata.xml":
-                        continue
-                    target_path = build_unique_target_path(
-                        paths["raw_data_dir"], base_name
-                    )
-                    with (
-                        zip_ref.open(member_name) as source,
-                        open(target_path, "wb") as destination,
-                    ):
-                        shutil.copyfileobj(source, destination)
-                    extracted_files.append(target_path.name)
+            extracted_paths = []
+            try:
+                with zipfile.ZipFile(file_name, "r") as zip_ref:
+                    extracted_files = []
+                    for member_name in zip_ref.namelist():
+                        if member_name.endswith("/"):
+                            continue
+                        normalized_name = member_name.replace("\\", "/").rstrip("/")
+                        base_name = Path(normalized_name).name
+                        if not base_name or base_name.lower() == "metadata.xml":
+                            continue
+                        target_path = build_unique_target_path(
+                            paths["raw_data_dir"], base_name
+                        )
+                        with (
+                            zip_ref.open(member_name) as source,
+                            open(target_path, "wb") as destination,
+                        ):
+                            shutil.copyfileobj(source, destination)
+                        extracted_paths.append(target_path)
+                        extracted_files.append(target_path.name)
 
-                zip_to_documents[file_name.name] = dedupe_preserve_order(
-                    extracted_files
-                )
-            # Delete the zip file after extraction
-            file_name.unlink()
+                    zip_to_documents[file_name.name] = dedupe_preserve_order(
+                        extracted_files
+                    )
+                file_name.unlink()
+            except (
+                OSError,
+                zipfile.BadZipFile,
+                RuntimeError,
+                NotImplementedError,
+            ) as error:
+                for extracted_path in extracted_paths:
+                    extracted_path.unlink(missing_ok=True)
+                logger.exception("Failed to extract archive %s", file_name)
+                extraction_errors.append((file_name, error))
+
+    if extraction_errors:
+        failed_names = ", ".join(path.name for path, _ in extraction_errors)
+        raise RuntimeError(
+            f"Failed to process {len(extraction_errors)} file(s): {failed_names}"
+        )
 
     return zip_to_documents
 
@@ -252,13 +281,22 @@ def flatten_directory(paths):
         if subdir.is_dir():
             for file_name in subdir.iterdir():
                 # Move the file to the raw directory (adding a suffix if a file with the same name already exists)
-                target_path = paths["raw_data_dir"] / file_name.name
-                if target_path.exists():
-                    target_path = (
-                        paths["raw_data_dir"]
-                        / f"{file_name.stem}_copy{file_name.suffix}"
+                target_path = build_unique_target_path(
+                    paths["raw_data_dir"], file_name.name
+                )
+                try:
+                    file_name.rename(target_path)
+                except OSError:
+                    logger.exception(
+                        "Failed to flatten %s to %s", file_name, target_path
                     )
-                file_name.rename(target_path)
+                    raise
+                if target_path.name != file_name.name:
+                    logger.info(
+                        "Renamed colliding file %s to %s",
+                        file_name.name,
+                        target_path.name,
+                    )
             # Delete the now-empty subdirectory
             subdir.rmdir()
 
@@ -270,8 +308,16 @@ def route_files(paths):
     Args:
         paths (dict): A dictionary of path objects for the various directories used in the process.
     """
+    routing_errors = []
     for file_name in paths["raw_data_dir"].iterdir():
-        mime_type = magic.from_file(file_name, mime=True)
+        if not file_name.is_file():
+            continue
+        try:
+            mime_type = magic.from_file(file_name, mime=True)
+        except (OSError, magic.MagicException) as error:
+            logger.exception("Could not identify file type for %s", file_name)
+            routing_errors.append((file_name, error))
+            continue
 
         # Targets .pdf files to the pdf directory
         if mime_type == "application/pdf":
@@ -289,8 +335,25 @@ def route_files(paths):
             target_dir = paths["other_dir"]
 
         # Move the file to the appropriate directory
-        target_path = target_dir / file_name.name
-        file_name.rename(target_path)
+        target_path = build_unique_target_path(target_dir, file_name.name)
+        try:
+            file_name.rename(target_path)
+        except OSError as error:
+            logger.exception("Failed to route %s to %s", file_name, target_path)
+            routing_errors.append((file_name, error))
+            continue
+        if target_path.name != file_name.name:
+            logger.info(
+                "Routed colliding file %s as %s",
+                file_name.name,
+                target_path.name,
+            )
+
+    if routing_errors:
+        failed_names = ", ".join(path.name for path, _ in routing_errors)
+        raise RuntimeError(
+            f"Failed to route {len(routing_errors)} file(s): {failed_names}"
+        )
 
 
 if __name__ == "__main__":
