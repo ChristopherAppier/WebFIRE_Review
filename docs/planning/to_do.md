@@ -1,14 +1,15 @@
 # Update environment.yml
-- [ ] Update environment.yml with necessary dependencies for final MVP version
+- [x] Update environment.yml with necessary dependencies for final MVP version
 
 # Extra Token Burn Tasks
 - [ ] Update architecture.md for final MVP version
 - [ ] Update setup.md for final MVP version
 - [ ] Update configuration.md for final MVP version
 - [ ] Update output_formats.md for final MVP version
+- [ ] Update / cleanup comments in all scripts
 
 # Prompt selection functionality
-- [ ] Add basic prompt selector
+- [x] Add basic prompt selector
   ## prompt_bank.yml
   - [x] Add prompt for stack test and one for other reports
   - [x] Add prompt bank choice descriptions

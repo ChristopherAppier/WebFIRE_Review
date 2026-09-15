@@ -18,6 +18,9 @@ def select_prompts(config, paths):
         config: Configuration settings for the prompt selection process.
         paths: Paths to the necessary files and directories.
     """
+    # Logging the start of the prompt selection process
+    logger.info(f"\n{'*' * 50}\n\nStarting prompt selection process\n")
+
     # Creating a list of chunk paths
     chunks = list_chunks(paths["chunk_dir"])
 

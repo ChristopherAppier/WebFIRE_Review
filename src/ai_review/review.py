@@ -28,14 +28,25 @@ def review_chunks(config, paths):
         file_name = find_file_name(paths, chunk_name)
         file_info = pull_file_info(paths, file_name)
 
-        # Loads the system prompt based on the file type/name being reviewed
+        # Loads the system prompt and name based on the file type/name being reviewed
         system_prompt, prompt_name = load_system_prompt(
             paths, file_info.get("Prompt Name"), return_prompt_name=True
         )
 
         # Load text from chunk_name.txt
-        with open(chunk_name, "r") as f:
-            chunk_text = f.read()
+        if chunk_name.stem.endswith("_chunk_000"):
+            with open(chunk_name, "r") as f:
+                chunk_text = f.read()
+        else:
+            chunk_zero = (
+                paths["chunk_dir"]
+                / f"{chunk_name.stem.split('_chunk_')[0]}_chunk_000.txt"
+            )
+            with open(chunk_zero, "r") as f:
+                chunk_zero_text = f.read()
+            with open(chunk_name, "r") as f:
+                current_chunk_text = f.read()
+            chunk_text = chunk_zero_text + "\n\n" + current_chunk_text
 
         # Get the AI's response as a string
         raw_output, think_output, t_start, t_end = single_analysis(
@@ -152,7 +163,7 @@ def single_analysis(config, chunk_name, chunk_text, sys_prompt):
 
 
 def load_system_prompt(paths, prompt_name, return_prompt_name=False):
-    """Loads the appropriate system prompt based on the file type/name being reviewed (currently just uses a single default prompt for MVP implementation)"""  # TODO update
+    """Loads the appropriate system prompt based on the file type/name being reviewed"""
 
     # Load the list of prompts available from the prompts.yml
     prompt_bank_dir = paths["config_dir"] / "prompts.yml"
