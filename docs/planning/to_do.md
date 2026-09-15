@@ -32,6 +32,9 @@
 # Add error handling / logging for each /src subfolder individually via Plan>Agent
 - [x] Logging fully implemented
 
+# Convert spreadsheets into text files for review
+- [ ] Convert into .txt
+
 # Evaluation implementation
 - [ ] Evaluation specifics (docs/info/evaluation.md)
 - [ ] Create a test harness for each pipeline

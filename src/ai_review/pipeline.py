@@ -1,4 +1,4 @@
-from ai_review.chunk import chunk_pdfs
+from ai_review.chunk import chunk_pdfs, chunk_spreadsheets
 from ai_review.review import review_chunks
 from common.prompts import select_prompts
 
@@ -7,6 +7,9 @@ def main(config, paths):
 
     # Chunking the OCR'd PDFs into overlapping text chunks and saving them
     chunk_pdfs(config, paths)
+
+    # Converting spreadsheets into text chunks for review
+    chunk_spreadsheets(config, paths)
 
     # Selecting the prompts for each report based on the overall context
     select_prompts(config, paths)

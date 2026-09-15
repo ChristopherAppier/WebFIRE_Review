@@ -5,7 +5,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
-from ai_review import chunk, review
+from ai_review import chunk, pipeline, review
 
 
 class ChunkingTests(unittest.TestCase):
@@ -14,8 +14,12 @@ class ChunkingTests(unittest.TestCase):
         self.addCleanup(self.temp_dir.cleanup)
         self.root = Path(self.temp_dir.name)
         self.pdf_dir = self.root / "pdfs"
+        self.spreadsheet_dir = self.root / "spreadsheets"
+        self.other_dir = self.root / "other"
         self.chunk_dir = self.root / "chunks"
         self.pdf_dir.mkdir()
+        self.spreadsheet_dir.mkdir()
+        self.other_dir.mkdir()
         self.chunk_dir.mkdir()
         self.config = {"chunk_size": 3, "chunk_overlap": 1, "chunk_cap": 2}
 
@@ -96,6 +100,104 @@ class ChunkingTests(unittest.TestCase):
         self.assertEqual(process_pdf.call_count, 2)
         self.assertIn(first_pdf.name, "\n".join(logs.output))
 
+    def test_chunk_spreadsheets_writes_one_text_chunk(self):
+        spreadsheet_path = self.spreadsheet_dir / "report.xlsx"
+        spreadsheet_path.touch()
+        paths = {
+            "spreadsheet_dir": self.spreadsheet_dir,
+            "other_dir": self.other_dir,
+            "chunk_dir": self.chunk_dir,
+        }
+
+        with patch(
+            "ai_review.chunk.spreadsheet_to_text",
+            return_value="Workbook: report.xlsx\nSheet: Data\nvalue\n",
+        ):
+            counts = chunk.chunk_spreadsheets(self.config, paths)
+
+        output_path = self.chunk_dir / "report_chunk_000.txt"
+        self.assertEqual(counts, {"total": 1, "chunked": 1, "empty": 0, "failed": 0})
+        self.assertEqual(
+            output_path.read_text(encoding="utf-8"),
+            "Workbook: report.xlsx\nSheet: Data\nvalue\n",
+        )
+
+    def test_spreadsheet_to_text_includes_sheets_and_values(self):
+        spreadsheet_path = self.spreadsheet_dir / "report.xlsx"
+        workbook = Mock()
+        workbook.__enter__ = Mock(return_value=workbook)
+        workbook.__exit__ = Mock(return_value=False)
+        workbook.sheet_names = ["Data"]
+        workbook.parse.return_value = chunk.pd.DataFrame(
+            [["Facility", "Status"], ["A", "OK"]]
+        )
+
+        with patch("ai_review.chunk.pd.ExcelFile", return_value=workbook):
+            text = chunk.spreadsheet_to_text(spreadsheet_path)
+
+        self.assertIn("Workbook: report.xlsx", text)
+        self.assertIn("Sheet: Data", text)
+        self.assertIn("Facility\tStatus", text)
+        self.assertIn("A\tOK", text)
+
+    def test_chunk_spreadsheets_skips_xls_files_for_now(self):
+        (self.spreadsheet_dir / "legacy.xls").touch()
+        paths = {
+            "spreadsheet_dir": self.spreadsheet_dir,
+            "other_dir": self.other_dir,
+            "chunk_dir": self.chunk_dir,
+        }
+
+        counts = chunk.chunk_spreadsheets(self.config, paths)
+
+        self.assertEqual(counts, {"total": 0, "chunked": 0, "empty": 0, "failed": 0})
+        self.assertEqual(list(self.chunk_dir.glob("*.txt")), [])
+
+    def test_chunk_spreadsheets_writes_xml_from_other_dir(self):
+        xml_path = self.other_dir / "report.xml"
+        xml_path.write_text(
+            "<Report><Facility>Plant A</Facility></Report>", encoding="utf-8"
+        )
+        paths = {
+            "spreadsheet_dir": self.spreadsheet_dir,
+            "other_dir": self.other_dir,
+            "chunk_dir": self.chunk_dir,
+        }
+
+        counts = chunk.chunk_spreadsheets(self.config, paths)
+
+        output_path = self.chunk_dir / "report_chunk_000.txt"
+        output_text = output_path.read_text(encoding="utf-8")
+        self.assertEqual(counts, {"total": 1, "chunked": 1, "empty": 0, "failed": 0})
+        self.assertIn("XML Document: report.xml", output_text)
+        self.assertIn("Report/Facility: Plant A", output_text)
+
+    def test_xml_to_text_includes_nested_values(self):
+        xml_path = self.other_dir / "report.xml"
+        xml_path.write_text(
+            "<Report><Facility><Name>Plant A</Name></Facility></Report>",
+            encoding="utf-8",
+        )
+
+        text = chunk.xml_to_text(xml_path)
+
+        self.assertIn("XML Document: report.xml", text)
+        self.assertIn("Report/Facility/Name: Plant A", text)
+
+    def test_chunk_spreadsheets_reports_malformed_xml_failure(self):
+        (self.other_dir / "bad.xml").write_text("<Report>", encoding="utf-8")
+        paths = {
+            "spreadsheet_dir": self.spreadsheet_dir,
+            "other_dir": self.other_dir,
+            "chunk_dir": self.chunk_dir,
+        }
+
+        with self.assertLogs("ai_review.chunk", level="ERROR"):
+            counts = chunk.chunk_spreadsheets(self.config, paths)
+
+        self.assertEqual(counts, {"total": 1, "chunked": 0, "empty": 0, "failed": 1})
+        self.assertEqual(list(self.chunk_dir.glob("*.txt")), [])
+
 
 class ReviewJsonTests(unittest.TestCase):
     def test_json_check_accepts_plain_and_fenced_review_objects(self):
@@ -134,6 +236,33 @@ class ReviewJsonTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, expected_message) as raised:
                     review.json_check(raw_output)
                 self.assertNotIn("sensitive-text", str(raised.exception))
+
+
+class ReviewPipelineTests(unittest.TestCase):
+    def test_pipeline_chunks_spreadsheets_before_prompt_selection(self):
+        calls = []
+
+        with (
+            patch(
+                "ai_review.pipeline.chunk_pdfs",
+                side_effect=lambda *_: calls.append("pdfs"),
+            ),
+            patch(
+                "ai_review.pipeline.chunk_spreadsheets",
+                side_effect=lambda *_: calls.append("spreadsheets"),
+            ),
+            patch(
+                "ai_review.pipeline.select_prompts",
+                side_effect=lambda *_: calls.append("prompts"),
+            ),
+            patch(
+                "ai_review.pipeline.review_chunks",
+                side_effect=lambda *_: calls.append("review"),
+            ),
+        ):
+            pipeline.main({}, {})
+
+        self.assertEqual(calls, ["pdfs", "spreadsheets", "prompts", "review"])
 
 
 class ReviewProcessingTests(unittest.TestCase):

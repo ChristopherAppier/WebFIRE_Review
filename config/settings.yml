@@ -20,7 +20,7 @@ directories:
   review_dir: 'data/reviews'
   spreadsheet_dir: 'data/spreadsheets'
   summary_dir: 'data/summary_report'
-  chunk_dir: 'data/pdfs/chunks'
+  chunk_dir: 'data/chunks'
 
 # Document Retrieval
 ## Timer Manager

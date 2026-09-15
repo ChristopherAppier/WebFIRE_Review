@@ -1,8 +1,12 @@
 import logging
+from xml.etree import ElementTree
 
+import pandas as pd
 import pdfplumber
 
 logger = logging.getLogger(__name__)
+SPREADSHEET_EXTENSIONS = {".xlsx", ".xlsm"}
+XML_EXTENSIONS = {".xml"}
 
 
 class PdfExtractionError(RuntimeError):
@@ -81,6 +85,111 @@ def chunk_pdfs(config, paths):
         counts["failed"],
     )
     return counts
+
+
+def chunk_spreadsheets(config, paths):
+    """Convert spreadsheets and XML files into one text chunk per file."""
+    logger.info(f"\n{'*' * 50}\n\nStarting spreadsheet/XML chunking process")
+
+    spreadsheet_files = sorted(
+        f
+        for f in paths["spreadsheet_dir"].iterdir()
+        if f.is_file() and f.suffix.lower() in SPREADSHEET_EXTENSIONS
+    )
+    xml_files = sorted(
+        f
+        for f in paths["other_dir"].iterdir()
+        if f.is_file() and f.suffix.lower() in XML_EXTENSIONS
+    )
+    structured_files = spreadsheet_files + xml_files
+    counts = {"total": len(structured_files), "chunked": 0, "empty": 0, "failed": 0}
+
+    if not structured_files:
+        logger.warning(
+            "No spreadsheet or XML files found in %s or %s",
+            paths["spreadsheet_dir"],
+            paths["other_dir"],
+        )
+        return counts
+
+    for structured_file in structured_files:
+        try:
+            if structured_file.suffix.lower() in XML_EXTENSIONS:
+                text = xml_to_text(structured_file)
+            else:
+                text = spreadsheet_to_text(structured_file)
+
+            if not text.strip():
+                counts["empty"] += 1
+                logger.warning(
+                    "No text extracted from %s, skipping", structured_file.name
+                )
+                continue
+
+            output_path = paths["chunk_dir"] / f"{structured_file.stem}_chunk_000.txt"
+            output_path.write_text(text, encoding="utf-8")
+            counts["chunked"] += 1
+        except Exception:
+            counts["failed"] += 1
+            logger.exception(
+                "Failed to process structured file %s", structured_file.name
+            )
+
+    log_summary = (
+        logger.info if counts["failed"] == counts["empty"] == 0 else logger.warning
+    )
+    log_summary(
+        "Spreadsheet/XML chunking finished: total=%d chunked=%d empty=%d failed=%d",
+        counts["total"],
+        counts["chunked"],
+        counts["empty"],
+        counts["failed"],
+    )
+    return counts
+
+
+def spreadsheet_to_text(spreadsheet_file):
+    """Return workbook contents as plain text grouped by sheet."""
+    sections = [f"Workbook: {spreadsheet_file.name}"]
+
+    with pd.ExcelFile(spreadsheet_file) as workbook:
+        for sheet_name in workbook.sheet_names:
+            data = workbook.parse(sheet_name=sheet_name, header=None, dtype=str).fillna(
+                ""
+            )
+            rows = [
+                "\t".join(str(value).strip() for value in row).rstrip()
+                for row in data.itertuples(index=False, name=None)
+            ]
+            rows = [row for row in rows if row]
+            sections.append(f"\nSheet: {sheet_name}")
+            sections.extend(rows)
+
+    return "\n".join(sections).strip() + "\n"
+
+
+def xml_to_text(xml_file):
+    """Return XML leaf text as readable path/value lines."""
+    root = ElementTree.parse(xml_file).getroot()
+    lines = []
+
+    def clean_tag(tag):
+        return tag.rsplit("}", 1)[-1]
+
+    def walk(element, path):
+        current_path = path + [clean_tag(element.tag)]
+        text = (element.text or "").strip()
+        if text:
+            lines.append(f"{'/'.join(current_path)}: {text}")
+
+        for child in element:
+            walk(child, current_path)
+
+    walk(root, [])
+    if not lines:
+        return ""
+
+    return "\n".join([f"XML Document: {xml_file.name}", *lines]) + "\n"
 
 
 def process_single_pdf(config, output_dir, pdf_file, *, chunk_settings=None):
