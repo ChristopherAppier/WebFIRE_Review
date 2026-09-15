@@ -5,7 +5,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
-from ai_review import chunk, pipeline, review
+from review import chunk, pipeline, review
 
 
 class ChunkingTests(unittest.TestCase):
