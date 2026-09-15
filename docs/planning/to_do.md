@@ -33,10 +33,10 @@
 - [x] Logging fully implemented
 
 # Convert spreadsheets into text files for review
-- [ ] Convert into .txt
+- [x] Convert into .txt
 
 # Evaluation implementation
-- [ ] Evaluation specifics (docs/info/evaluation.md)
+- [x] Evaluation specifics (docs/info/evaluation.md)
 - [ ] Create a test harness for each pipeline
 
 # Run evaluation testing
