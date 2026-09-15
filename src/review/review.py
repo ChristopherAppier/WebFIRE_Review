@@ -25,12 +25,14 @@ def review_chunks(config, paths):
         f"\n{'*' * 50}\n\nAnalyzing text chunks using: {config['llm']['review']}\n"
     )
 
+    # Find all text chunks and return early when there is nothing to review
     chunk_paths = sorted(paths["chunk_dir"].glob("*.txt"))
     if not chunk_paths:
         logger.warning("No text chunks found in %s", paths["chunk_dir"])
         return {"attempted": 0, "succeeded": 0, "skipped": 0, "failed": 0}
 
     counts = {"attempted": len(chunk_paths), "succeeded": 0, "skipped": 0, "failed": 0}
+    # Review each chunk independently so one failure does not stop the batch
     for chunk_name in chunk_paths:
         try:
             review_single_chunk(config, paths, chunk_name)
@@ -69,6 +71,7 @@ def review_chunks(config, paths):
 def review_single_chunk(config, paths, chunk_name):
     """Review one text chunk and store its validated result."""
 
+    # Resolve the source document and metadata associated with the chunk
     file_name = find_file_name(paths, chunk_name)
     file_info = pull_file_info(paths, file_name)
 
@@ -76,6 +79,7 @@ def review_single_chunk(config, paths, chunk_name):
         paths, file_info.get("Prompt Name"), return_prompt_name=True
     )
 
+    # Include the first chunk as context when reviewing a later chunk
     if chunk_name.stem.endswith("_chunk_000"):
         chunk_text = chunk_name.read_text(encoding="utf-8")
     else:
@@ -90,8 +94,10 @@ def review_single_chunk(config, paths, chunk_name):
         config, chunk_name, chunk_text, system_prompt
     )
 
+    # Validate the model response before adding review metadata
     json_output = json_check(raw_output)
 
+    # Flag reported issues and a configured sample of other reviews for audit
     audit_flag = json_output["issue_flag"] == 1 or random.random() < (
         config["audit_chance"] / 100
     )
@@ -122,6 +128,7 @@ def review_single_chunk(config, paths, chunk_name):
 
     json_output.update(payload)
 
+    # Save the validated review and associated metadata for later stages
     save_path = paths["review_dir"] / f"{chunk_name.stem}.json"
     with open(save_path, "w", encoding="utf-8") as output_file:
         json.dump(json_output, output_file, indent=2)
@@ -223,6 +230,7 @@ def json_check(raw_string):
     if not isinstance(result, dict):
         raise InvalidReviewResponse("Model response must be a JSON object")
 
+    # Verify the required fields and their expected value ranges
     required_fields = {"issue_flag", "issue_descr", "conf_score", "importance"}
     missing_fields = sorted(required_fields - result.keys())
     if missing_fields:

@@ -24,12 +24,14 @@ def apply_ocr(config, paths):
         if pdf_file.is_file() and pdf_file.suffix.lower() == ".pdf"
     )
 
+    # Process each PDF through ocrmypdf using a temporary output file
     for pdf_file in pdf_files:
         with tempfile.NamedTemporaryFile(
             suffix=".pdf", dir=pdf_file.parent, delete=False
         ) as tmp_file:
             temp_output = Path(tmp_file.name)
 
+        # Build the OCR command from the configured renderer and worker count
         cmd = [
             sys.executable,
             "-m",
@@ -46,12 +48,14 @@ def apply_ocr(config, paths):
         ]
 
         try:
+            # Replace the original PDF only after OCR completes successfully
             result = subprocess.run(cmd, check=True, capture_output=True, text=True)
             os.replace(temp_output, pdf_file)
             logger.info(f"Processed: {pdf_file.name}")
             if result.stderr:
                 logger.warning(result.stderr.strip())
         except subprocess.CalledProcessError as e:
+            # Remove incomplete output before continuing with the next PDF
             if temp_output.exists():
                 temp_output.unlink(missing_ok=True)
             logger.error(f"OCR failed for {pdf_file.name}: {e}")
@@ -59,11 +63,13 @@ def apply_ocr(config, paths):
                 logger.error(e.stderr.strip())
             continue
         except FileNotFoundError as e:
+            # Report a missing OCR executable without stopping the batch
             if temp_output.exists():
                 temp_output.unlink(missing_ok=True)
             logger.error(f"ocrmypdf not found: {e}")
             continue
         except Exception as e:
+            # Clean up unexpected failures so temporary files are not retained
             if temp_output.exists():
                 temp_output.unlink(missing_ok=True)
             logger.error(f"Unexpected OCR error for {pdf_file.name}: {e}")

@@ -45,6 +45,7 @@ def initialize_project() -> tuple[dict, Paths]:
 def find_project_root(start: Path | None = None) -> Path:
     ROOT_MARKER = "README.md"
 
+    # Walk upward until the project marker identifies the repository root
     current = (start or Path(__file__)).resolve()
     for candidate in [current, *current.parents]:
         if (candidate / ROOT_MARKER).exists():
@@ -83,6 +84,7 @@ def build_paths(config: dict, *, initialize_directories: bool = True) -> Paths:
     if "log_dir" not in dirs:
         raise ValueError("config['directories'] must define 'log_dir'")
 
+    # Resolve configured directories and keep them inside the project root
     root = find_project_root().resolve()
     resolved_directories = {}
     for name, relative_path in dirs.items():
@@ -137,6 +139,7 @@ def data_dir_clean(config: dict, paths: Paths) -> None:
         raise ValueError(f"Refusing to clean unexpected data directory: {data_dir}")
 
     try:
+        # Optionally remove prior data while preserving the log directory
         if _validate_remove_data(config.get("remove_data", False)):
             logger.info("Removing data files from %s", data_dir)
             log_dir = paths.log_dir.resolve()
@@ -152,6 +155,7 @@ def data_dir_clean(config: dict, paths: Paths) -> None:
             logger.info("Finished removing data files from %s", data_dir)
 
         data_dir.mkdir(parents=True, exist_ok=True)
+        # Recreate the configured directories and keep the data root tracked
         for gitkeep_path in data_dir.glob("**/.gitkeep"):
             if gitkeep_path.parent != data_dir:
                 gitkeep_path.unlink()

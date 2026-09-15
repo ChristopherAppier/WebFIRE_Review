@@ -112,6 +112,7 @@ def chunk_spreadsheets(config, paths):
         )
         return counts
 
+    # Convert each structured file and save one text chunk for downstream review
     for structured_file in structured_files:
         try:
             if structured_file.suffix.lower() in XML_EXTENSIONS:
@@ -126,6 +127,7 @@ def chunk_spreadsheets(config, paths):
                 )
                 continue
 
+            # Use the source filename so downstream stages can map the chunk back
             output_path = paths["chunk_dir"] / f"{structured_file.stem}_chunk_000.txt"
             output_path.write_text(text, encoding="utf-8")
             counts["chunked"] += 1
