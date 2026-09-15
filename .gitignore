@@ -11,8 +11,6 @@ data/**
 .continue/
 
 # VS Code
-.vscode/*
-!.vscode/launch.json
-!.vscode/settings.json
+.vscode/
 !.vscode/extensions.json
 !.vscode/tasks.json
