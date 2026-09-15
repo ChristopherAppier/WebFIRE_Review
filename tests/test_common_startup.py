@@ -78,8 +78,35 @@ class StartupTests(unittest.TestCase):
 
         self.assertTrue((log_dir / "webfire_review.log").exists())
         self.assertFalse(old_dir.exists())
-        self.assertTrue((self.root / "data" / "reviews" / ".gitkeep").exists())
-        self.assertTrue((log_dir / ".gitkeep").exists())
+        self.assertTrue((self.root / "data" / ".gitkeep").exists())
+        self.assertTrue((self.root / "data" / "reviews").exists())
+        self.assertFalse((self.root / "data" / "reviews" / ".gitkeep").exists())
+        self.assertFalse((log_dir / ".gitkeep").exists())
+
+    def test_cleanup_removes_stale_gitkeep_files_without_removing_data(self):
+        data_dir = self.root / "data"
+        log_dir = data_dir / "logs"
+        review_dir = data_dir / "reviews"
+        log_dir.mkdir(parents=True)
+        review_dir.mkdir()
+        (data_dir / ".gitkeep").touch()
+        (log_dir / ".gitkeep").touch()
+        (review_dir / ".gitkeep").touch()
+        (review_dir / "keep.txt").write_text("keep", encoding="utf-8")
+
+        config = {
+            "remove_data": False,
+            "directories": {
+                "log_dir": "data/logs",
+                "review_dir": "data/reviews",
+            },
+        }
+        self.build_paths(config)
+
+        self.assertTrue((data_dir / ".gitkeep").exists())
+        self.assertTrue((review_dir / "keep.txt").exists())
+        self.assertFalse((log_dir / ".gitkeep").exists())
+        self.assertFalse((review_dir / ".gitkeep").exists())
 
     def test_cleanup_logs_and_reraises_filesystem_errors(self):
         data_dir = self.root / "data"
