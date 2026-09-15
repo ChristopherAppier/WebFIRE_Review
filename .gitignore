@@ -1,9 +1,10 @@
 # Ignore all files under data/
 data/**
 
-# Keep the root data directory placeholder
+# Keep the data directory structure while ignoring its contents
 !data/
-!data/.gitkeep
+!data/**/
+!data/**/.gitkeep
 
 # Other common ignores
 .DS_Store

@@ -155,14 +155,14 @@ def data_dir_clean(config: dict, paths: Paths) -> None:
             logger.info("Finished removing data files from %s", data_dir)
 
         data_dir.mkdir(parents=True, exist_ok=True)
-        # Recreate the configured directories and keep the data root tracked
-        for gitkeep_path in data_dir.glob("**/.gitkeep"):
-            if gitkeep_path.parent != data_dir:
-                gitkeep_path.unlink()
         (data_dir / ".gitkeep").touch(exist_ok=True)
-
         for dir_path in paths.directories.values():
             dir_path.mkdir(parents=True, exist_ok=True)
+            try:
+                dir_path.relative_to(data_dir)
+            except ValueError:
+                continue
+            (dir_path / ".gitkeep").touch(exist_ok=True)
     except OSError:
         logger.exception("Failed to initialize project directories under %s", data_dir)
         raise
