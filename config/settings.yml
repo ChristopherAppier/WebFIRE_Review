@@ -43,8 +43,8 @@ chunk_overlap: 300 # Number of words to overlap between chunks (to avoid losing 
 chunk_cap: 10 # Maximum number of chunks to process per document
 audit_chance: 10 # In percent as an integer
 llm:
-  review: 'gemma4:26b'
-  audit: 'gemma4:26b'
+  review: 'gemma-4-26b-a4b-it-qat-6bit'
+  audit: 'gemma-4-31B-it-qat-6bit'
 llm_url: 'http://localhost:11436/v1'
 llm_api_key: 'secret_api_key'
 llm_timeout: 600 # Timeout in seconds for LLM requests
