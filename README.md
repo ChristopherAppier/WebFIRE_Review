@@ -2,38 +2,72 @@
 
 ## Overview
 
-This automation pipeline pulls multiple Clean Air Act reports from EPA's public WebFIRE database, reviews the reports for potential deviations, and compiles the findings into a summary for enforcement staff review.
+WebFIRE Review is a Python MVP for retrieving Clean Air Act compliance reports from the EPA WebFIRE database, preparing them for analysis, reviewing report chunks with an OpenAI-compatible local open-weight language model, and compiling the results for EPA enforcement staff review.
 
-This pipeline is intended to be used to explore the viability of using a combination of scripting, deterministic natural language processing, and large language models to review environmental reports in bulk. Capabilities will be evaluated using human reviewed data sets, success metrics, and a testing harness.
+The project is intended to evaluate the capability of LLMs for use in bulk environmental-report review. Results are exploratory and require human verification.
 
-## Main Workflow
+## Current Workflow
 
-- Automated trigger
-- Reports pull via WebFIRE
-- Documents are sorted based on file type and content
-- PDFs are OCR'd
-- Standardized reporting spreadsheets are scraped via python for reported deviations/violations/excess emissions
-- Unstructured reports are separated into chunks via scripting to manage LLM context buildup
-- A report review prompt is selected based on the report type
-- The report chunk and prompt are sent to a reviewer LLM for report review
-- The reviewer LLM can call sub-agents to retreive relevant regulatory information from the eCFR
-- Sub-agents use the eCFR API to pull data, summarize the relevant portions, and feed it back into the reviewer LLM
-- The reviewer LLM outputs a structured JSON with review results for each chunk
-- An auditor LLM reviews each chunk with a deviation flag and as well as an adjustable percentage of reports without deviation flags
-- Review JSONs are aggregated in a report so that users can easily find the source document and investigate
+The end-to-end entry point is `src/main.py`. It currently:
 
-## Requirements
+1. Retrieves reports for the configured states and date range from WebFIRE.
+2. Extracts downloaded archives and routes files into PDF and spreadsheet inputs.
+3. Applies OCR to PDFs.
+4. Chunks OCR text and spreadsheet content using the configured size, overlap, and per-document cap.
+5. Selects a review prompt and sends each chunk to the configured review model.
+6. Validates each model response and writes one JSON result per reviewed chunk.
+7. Compiles review JSON files into `data/summary_report/summary_report.csv`.
 
-- Python 3.12 (environment is pinned to `python=3.12.13`)
-- Conda (recommended) to create and manage the `webfire_review` environment from `config/environment.yml`
-- Core Python packages are installed through the environment file, including:
-  - Document parsing and OCR pipeline: `ocrmypdf`, `pdfplumber`, `pdfminer-six`, `pikepdf`, `pypdfium2`, `img2pdf`, `pillow`
-  - Web and content parsing: `requests`, `beautifulsoup4`, `lxml`
-  - Data/config and validation: `pyyaml`, `pydantic`
-  - Reporting/output support: `fpdf2`, `rich`
-- External tools/services:
-  - No paid external service is required by the environment definition
-  - `ocrmypdf` requires Tesseract
-- Access and permissions:
-  - Read/write access to project data folders (for example, `data/raw`)
-  - Network access is needed for document retrieval steps
+The current audit pipeline is reserved for future implementation. It is wired into `src/main.py`, but does not yet perform a second-model audit. Regulatory retrieval through eCFR sub-agents, scheduled triggers, and a user interface are also not part of the current entry-point workflow, but planned future expansions.
+
+## Setup
+
+Requirements:
+
+- Conda, with Python 3.12.13 as pinned in `config/environment.yml`
+- The dependencies installed by `config/environment.yml`, including `ocrmypdf`, PDF and image-processing libraries, `pandas`, `openpyxl`, `numpy`, `torch`, and the `openai` client
+- Tesseract, required by `ocrmypdf`
+- Network access to WebFIRE
+- An OpenAI-compatible LLM endpoint for review requests
+
+Create the environment from the repository root:
+
+```bash
+conda env create -f config/environment.yml
+conda activate webfire_review
+```
+
+The environment includes OCR and document-processing packages (`ocrmypdf`, `pdfplumber`, `pdfminer-six`, `pikepdf`, `pypdfium2`, `img2pdf`, and `pillow`), web and configuration packages, the `openai` client, and data/reporting packages including `pandas`, `openpyxl`, `numpy`, and `fpdf2`.
+
+## Configuration
+
+Runtime settings are in `config/settings.yml`; review prompts are in `config/prompts.yml`. Important settings include:
+
+- `states`, WebFIRE endpoint, download timeout/retry settings, and download worker count
+- OCR worker count and renderer
+- Chunk size, overlap, chunk cap, and the percentage of non-flagged chunks selected for future auditing
+- Review and audit model names, OpenAI-compatible `llm_url`, API key, timeout, and retry count
+- `remove_data`, which defaults to `'True'` and cleans generated data before a run while preserving logs
+
+Review models are accessed through the configured OpenAI-compatible endpoint. The default endpoint is `http://localhost:11436/v1`; make sure the endpoint is running and the model names in `settings.yml` are available before starting a full run.
+
+## Run
+
+From the repository root, with the Conda environment active:
+
+```bash
+python src/main.py
+```
+
+Generated files are organized under `data/`, including raw downloads, PDFs, spreadsheets, chunks, per-chunk reviews, logs, and the compiled summary CSV. Set `remove_data` to `False` when preserving existing generated data is required.
+
+## Project Layout
+
+- `src/retrieve/`: WebFIRE downloads, archive extraction, file routing, and OCR
+- `src/review/`: PDF/spreadsheet chunking, prompt selection, and LLM review
+- `src/audit/`: audit-stage integration point; currently a placeholder
+- `src/summarize/`: review JSON compilation into CSV
+- `src/common/`: configuration, path initialization, logging, and prompts
+- `config/`: runtime settings and prompt definitions
+- `data/`: generated inputs, intermediate files, logs, and outputs
+- `tests/`: unit tests for the implemented components
