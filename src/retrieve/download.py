@@ -2,7 +2,9 @@ import csv
 import logging
 import re
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+from threading import Lock
 
 import requests
 from bs4 import BeautifulSoup
@@ -34,6 +36,7 @@ def fetch_reports(config, paths):
     state_names = [state["name"] for state in config["states"]]
     dl_retries = int(config.get("download_retry_attempts"))
     dl_retry_delay = float(config.get("download_retry_delay_seconds"))
+    dl_workers = max(1, int(config.get("download_workers", 4)))
 
     # Loop through each state and perform the search and download process
     for state_name in state_names:
@@ -51,6 +54,7 @@ def fetch_reports(config, paths):
             state_name,
             dl_retries,
             dl_retry_delay,
+            dl_workers,
         )
 
     # After all states have been processed, build a master report table combining all state CSVs
@@ -198,8 +202,89 @@ def parse_search_results(file_path, state_name):
     logger.info(f"\n\nFound {num_reports} reports for state: {state_name}")
 
 
+def _download_report(
+    row,
+    idx,
+    state_name,
+    raw_data_dir,
+    max_attempts,
+    retry_delay_seconds,
+    headers,
+    cookies,
+    reserved_names,
+    filename_lock,
+):
+    report_url = row.get("report_url", "").strip()
+    worker_session = requests.Session()
+    worker_session.headers.update(headers)
+    worker_session.cookies.update(cookies)
+
+    response = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = worker_session.get(report_url, timeout=30, stream=True)
+            response.raise_for_status()
+            break
+        except requests.exceptions.RequestException as error:
+            if response is not None:
+                response.close()
+                response = None
+            if attempt == max_attempts:
+                logger.error(
+                    f"Failed after {max_attempts} attempts for {report_url}: {error}"
+                )
+            else:
+                time.sleep(retry_delay_seconds)
+
+    if response is None:
+        worker_session.close()
+        return False
+
+    content_disposition = response.headers.get("Content-Disposition", "")
+    filename = None
+    if "filename=" in content_disposition:
+        filename = content_disposition.split("filename=", 1)[1].strip().strip('"')
+    if not filename:
+        filename = f"{state_name}_report_{idx}.bin"
+    filename = re.sub(r'[<>:"/\\|?*\x00-\x1F]', "_", filename)
+
+    with filename_lock:
+        output_file_path = raw_data_dir / filename
+        stem, suffix = output_file_path.stem, output_file_path.suffix
+        number = 1
+        while output_file_path.exists() or output_file_path.name in reserved_names:
+            output_file_path = raw_data_dir / f"{stem}_{number}{suffix}"
+            number += 1
+        reserved_names.add(output_file_path.name)
+
+    try:
+        with open(output_file_path, "wb") as output_file:
+            for chunk in response.iter_content(chunk_size=64 * 1024):
+                if chunk:
+                    output_file.write(chunk)
+    except OSError as error:
+        output_file_path.unlink(missing_ok=True)
+        logger.error(f"Failed to save {report_url}: {error}")
+        return False
+    finally:
+        response.close()
+        worker_session.close()
+
+    row["Downloaded Filename"] = output_file_path.name
+    row["Document List"] = (
+        "" if output_file_path.name.lower().endswith(".zip") else output_file_path.name
+    )
+    return True
+
+
 def get_results(
-    session, raw_data_dir, http_dir, state_name, max_attempts=3, retry_delay_seconds=2
+    session,
+    raw_data_dir,
+    http_dir,
+    state_name,
+    max_attempts=3,
+    retry_delay_seconds=2,
+    max_workers=4,
 ):
     """
     GETs the report pages for each URL in the parsed CSV and saves them to files in the raw data directory.
@@ -211,6 +296,7 @@ def get_results(
             state_name (str): The name of the state for which reports are being downloaded.
             max_attempts (int): The maximum number of retry attempts for failed requests.
             retry_delay_seconds (int): The delay in seconds between retry attempts.
+            max_workers (int): The maximum number of concurrent downloads.
     """
 
     logger.info(f"\n\nDownloading reports for state: {state_name}\n")
@@ -240,91 +326,40 @@ def get_results(
     # Finding the number of reports to download for progress tracking
     num_reports = len(rows)
     num_dl = 0
-
+    jobs = []
     for idx, row in enumerate(rows, start=1):
         row.setdefault("Downloaded Filename", "")
         row.setdefault("Document List", "")
         row.setdefault("Prompt Name", "")
-        # Read the URL of the report from the CSV row
-        report_url = row.get("report_url", "").strip()
-        if not report_url:
-            continue
+        if row.get("report_url", "").strip():
+            jobs.append((idx, row))
 
-        # GET the report with a simple retry loop
-        response = None
-        for attempt in range(1, max_attempts + 1):
-            try:
-                response = session.get(report_url, timeout=30, stream=True)
-                response.raise_for_status()
-                break
-            except requests.exceptions.RequestException as e:
-                if attempt == max_attempts:
-                    logger.error(
-                        f"Failed after {max_attempts} attempts for {report_url}: {e}"
-                    )
-                else:
-                    logger.warning(
-                        f"Attempt {attempt}/{max_attempts} failed for {report_url}: {e}. Retrying..."
-                    )
-                    time.sleep(retry_delay_seconds)
+    headers = dict(session.headers)
+    cookies = session.cookies.get_dict()
+    reserved_names = set()
+    filename_lock = Lock()
 
-        if response is None:
-            continue
-
-        # Extract the filename from the Content-Disposition header or fallback to the last part of the URL
-        content_disposition = response.headers.get("Content-Disposition", "")
-        filename = None
-
-        if "filename=" in content_disposition:
-            filename = content_disposition.split("filename=", 1)[1].strip().strip('"')
-
-        if not filename:
-            filename = f"{state_name}_report_{idx}.bin"
-
-        # Safety cleanup for filesystem-invalid characters
-        filename = re.sub(r'[<>:"/\\|?*\x00-\x1F]', "_", filename)
-
-        output_file_path = raw_data_dir / filename
-        if output_file_path.exists():
-            stem, suffix = output_file_path.stem, output_file_path.suffix
-            n = 1
-            while output_file_path.exists():
-                output_file_path = raw_data_dir / f"{stem}_{n}{suffix}"
-                n += 1
-
-        total_bytes = int(response.headers.get("Content-Length", 0))
-        chunk_size = 64 * 1024
-
-        # Save the report content to a file in the raw data directory
-        with (
-            open(output_file_path, "wb") as output_file,
-            tqdm(
-                total=total_bytes if total_bytes > 0 else None,
-                unit="B",
-                unit_scale=True,
-                unit_divisor=1024,
-                desc=f"{state_name} report {idx}",
-                leave=False,
-            ) as bar,
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [
+            executor.submit(
+                _download_report,
+                row,
+                idx,
+                state_name,
+                raw_data_dir,
+                max_attempts,
+                retry_delay_seconds,
+                headers,
+                cookies,
+                reserved_names,
+                filename_lock,
+            )
+            for idx, row in jobs
+        ]
+        for future in tqdm(
+            as_completed(futures), total=len(futures), desc=f"{state_name} reports"
         ):
-            for chunk in response.iter_content(chunk_size=chunk_size):
-                if not chunk:
-                    continue
-                output_file.write(chunk)
-                bar.update(len(chunk))
-
-        # Tracking the number of reports downloaded and logging progress
-        num_dl += 1
-        row["Downloaded Filename"] = output_file_path.name
-
-        # For non-zip files, keep Document List populated with the downloaded filename.
-        # Zip rows are left blank for the extract stage to replace with extracted names.
-        if not output_file_path.name.lower().endswith(".zip"):
-            row["Document List"] = output_file_path.name
-        else:
-            row["Document List"] = ""
-
-        logger.info(f"Downloaded report {idx} of {num_reports}")
+            num_dl += int(future.result())
 
     # Rewrite the CSV so downstream steps can map extracted docs back to the correct row
     with open(csv_path, "w", newline="", encoding="utf-8") as csv_file:
