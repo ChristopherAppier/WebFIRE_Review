@@ -29,7 +29,9 @@ def review_chunks(config, paths):
         file_info = pull_file_info(paths, file_name)
 
         # Loads the system prompt based on the file type/name being reviewed
-        system_prompt = load_system_prompt(paths, file_info.get("Prompt Name"))
+        system_prompt, prompt_name = load_system_prompt(
+            paths, file_info.get("Prompt Name"), return_prompt_name=True
+        )
 
         # Load text from chunk_name.txt
         with open(chunk_name, "r") as f:
@@ -78,7 +80,7 @@ def review_chunks(config, paths):
             "review_end_time": t_end,
             "total_review_time": t_total,
             "think_output": think_output,
-            "prompt_name": file_info.get("Prompt Name"),
+            "prompt_name": prompt_name,
         }
 
         for key, value in payload.items():
@@ -149,7 +151,7 @@ def single_analysis(config, chunk_name, chunk_text, sys_prompt):
         )
 
 
-def load_system_prompt(paths, prompt_name):
+def load_system_prompt(paths, prompt_name, return_prompt_name=False):
     """Loads the appropriate system prompt based on the file type/name being reviewed (currently just uses a single default prompt for MVP implementation)"""  # TODO update
 
     # Load the list of prompts available from the prompts.yml
@@ -158,8 +160,20 @@ def load_system_prompt(paths, prompt_name):
     with open(prompt_bank_dir, "r", encoding="utf-8") as f:
         prompt_bank = yaml.safe_load(f)
 
-    # Selecting the appropriate prompt based on the file type/name (currently all use one default)
-    prompt = prompt_bank["review"][prompt_name]
+    review_prompts = prompt_bank["review"]
+    prompt_name = (prompt_name or "").strip() or "generic"
+
+    if prompt_name not in review_prompts:
+        logger.warning(
+            f"Invalid or missing prompt name '{prompt_name}'. Defaulting to 'generic'."
+        )
+        prompt_name = "generic"
+
+    # Selecting the appropriate prompt based on the file type/name
+    prompt = review_prompts[prompt_name]
+
+    if return_prompt_name:
+        return prompt, prompt_name
 
     return prompt
 

@@ -12,9 +12,7 @@ audit:
 json: 'default json prompt'
 
 # Prompt Bank Descriptions
-review:
-  stack_test: "This prompt is used to review stack tests reports and relative accuracy test audits for potential compliance issues."
-  generic: "This prompt is used to review reports other than stack tests and relative accuracy test audits for potential compliance issues."
-
-# Overall Context Prompts
-overall_context: 'default overall context prompt'
+selection: "Your goal is to review a chunk of a Clean Air Act compliance report and determine the appropriate system prompt for it based on the report contents. You will be provided with the chunk of the report and descriptions of each of the system prompts that can be chosen. Respond with the name of the most suitable system prompt for the report. Do not include any other text in your response and use the exact prompt names as defined in the choices given to you."
+review_desc:
+  stack_test: "This system prompt is used to review stack tests reports and relative accuracy test audits for potential compliance issues."
+  generic: "This system prompt is used to review reports other than stack tests and relative accuracy test audits for potential compliance issues."
