@@ -2,182 +2,82 @@
 
 ## Purpose
 
-- Explain how the WebFIRE Deviation Scanner is organized
-- Describe how the major scripts and folders work together
-- Show how data moves through the system from input to final report
+WebFIRE Review retrieves EPA WebFIRE submissions for configured states, converts the downloaded files into reviewable text, sends each text chunk to a locally hosted OpenAI-compatible model, and compiles validated model responses into a CSV summary.
 
-## Overview
+The executable workflow is orchestrated by `src/main.py`. Each stage receives the same configuration mapping and `common.startup.Paths` object, which keeps filesystem layout in configuration rather than hard-coding it in the pipeline modules.
 
-- High-level description of the full workflow
-- Main system parts and what each part is responsible for
-- Short explanation of why the project is split into retrieval, review, validation, and reporting stages
+## Runtime Workflow
 
-## Main Pipeline Stages
+The top-level `main()` function runs these stages in order:
 
-- Document Retrieval and Routing
-  - Timer trigger
-  - Last-run timestamp check
-  - Pull request creation
-  - Downloading reports
-  - Extraction from zip/database structure
-  - OCR processing
-  - File routing by document type
-  - Renaming of non-spreadsheets
+1. `common.startup.initialize_project()` loads `config/settings.yml`, resolves configured directories beneath the project root, configures console and rotating-file logging, and creates or cleans the `data` directories. `remove_data: true` removes prior data while preserving the configured log directory.
+2. `retrieve.pipeline.main()` queries WebFIRE for each configured state and date range, downloads report files, extracts nested ZIP archives, routes files by MIME type, and applies OCR to PDFs.
+3. `review.pipeline.main()` creates text chunks, selects a review prompt for each document, calls the review model, validates the returned JSON, and writes one JSON result per chunk.
+4. `audit.pipeline.main()` is called after review, but is currently a placeholder and returns without processing anything.
+5. `summarize.pipeline.main()` reads valid review JSON files and writes `data/summary_report/summary_report.csv`.
 
-- Spreadsheet Review
-  - Scan for deviation or excess-emission flags
-  - Write compliance results to JSON
-  - Write scan statistics to JSON
+## Modules
 
-- PDF Review
-  - PDF chunking
-  - AI-based chunk review
-  - JSON output creation
-  - Random audit sampling for compliant cases
-  - Live auditor routing for non-compliant cases
+### `src/common`
 
-- Summary Reporting
-  - Compile JSON outputs
-  - Generate human-readable spreadsheets
-  - Build further review spreadsheet
-  - Prepare email summary and links
+- `startup.py` defines the `Paths` object, project-root discovery, YAML configuration loading, directory initialization/cleanup, and logging setup.
+- `prompts.py` calls the configured review model to select a prompt from `config/prompts.yml` using each document's first chunk. The selected name is written to the `Prompt Name` column in `data/http/report_table.csv`; invalid selections fall back to `generic`.
 
-- Accuracy Oversight Workflows
-  - Live AI auditor for non-compliance flags
-  - Random AI auditor for compliance determinations
-  - Random Python auditor for spreadsheet reviews
-  - Accuracy threshold handling and escalation
+### `src/retrieve`
 
-## Folder / Module Structure
+- `time.py` derives the WebFIRE search window from `last_run_timestamp` or `default_interval_days`. The current implementation reads the timestamp but does not persist a new one.
+- `download.py` performs the WebFIRE search flow, saves per-state HTML and CSV metadata, downloads reports concurrently with retries, and builds the combined `report_table.csv`.
+- `extract.py` repeatedly extracts nested ZIP files, flattens extracted directories, records the files associated with each archive in `Document List`, and routes PDFs, Excel workbooks, and other files to their configured directories. Name collisions receive `_copy` suffixes.
+- `ocr.py` runs `ocrmypdf` through the active Python interpreter on every PDF in `data/pdfs`, replacing each source PDF only after successful processing.
+- `pipeline.py` coordinates download, extraction/routing, and OCR.
 
-- `document_retrieval`
-  - Main retrieval entry point
-  - Download, extraction, OCR, timer, and file routing helpers
+### `src/review`
 
-- `file_rename`
-  - File renaming workflow and naming standardization
+- `chunk.py` extracts PDF text with `pdfplumber` and writes overlapping word-based chunks. PDFs use `chunk_size`, `chunk_overlap`, and optional `chunk_cap`; spreadsheets and XML files become one text chunk per file.
+- `review.py` maps chunks back to report metadata, loads the selected prompt, calls the configured OpenAI-compatible endpoint, validates required response fields, adds timing and document metadata, and writes JSON to `data/reviews`.
+- `pipeline.py` orders chunking, prompt selection, and model review.
 
-- `llm_review`
-  - AI-based PDF review workflow
-  - Chunk handling, analysis, and JSON compilation
+The required model response is a JSON object containing `issue_flag` (`0` or `1`), `issue_descr` (string), `conf_score` (0-10), and `importance` (0-10). Each result also includes `audit_flag`, which is true for flagged issues or for a random percentage controlled by `audit_chance`.
 
-- `python_review`
-  - Python-based spreadsheet review workflow
+### `src/audit`
 
-- `llm_audit`
-  - AI audit review entry points and related logic
+`pipeline.py` defines the audit-stage entry point, but `main()` is currently empty. The repository does not yet implement the downstream auditor, escalation rules, or audit output generation described in earlier project plans.
 
-- `sub_agents`
-  - Supporting agent workflows or shared review automation
+### `src/summarize`
 
-- `summary_report`
-  - Final report generation and email packaging
+`compile.py` reads JSON objects from `data/reviews`, skips malformed or non-object files, and writes the union of encountered keys as rows in `data/summary_report/summary_report.csv`. It does not currently merge audit results, generate additional spreadsheets, or send email.
 
-- `validate`
-  - Validation workflow and checks
+## Data Layout
 
-## Data Flow
+The configured directories under `data/` are:
 
-- Source reports are discovered and retrieved
-- Files are extracted and routed by type
-- PDFs are OCR’d and chunked when needed
-- Spreadsheet and PDF reviews generate structured JSON outputs
-- Audit workflows consume selected review outputs
-- Summary reporting compiles all JSON results into spreadsheets and email-ready outputs
-- Final QA and audit information is delivered to staff or workflow managers
+| Directory | Role |
+| --- | --- |
+| `audits` | Reserved for audit artifacts; not currently populated by the audit pipeline |
+| `chunks` | Extracted PDF, spreadsheet, and XML text chunks |
+| `evals` | Reserved evaluation output |
+| `http` | WebFIRE HTML responses, per-state tables, and master `report_table.csv` |
+| `logs` | Rotating `webfire_review.log` output |
+| `other` | Files that are neither PDFs nor supported Excel workbooks, including XML inputs |
+| `pdfs` | Routed and OCR-processed PDFs |
+| `raw` | Downloaded files and temporary archive contents before routing |
+| `reviews` | One validated review JSON file per processed chunk |
+| `spreadsheets` | Routed `.xlsx` and `.xlsm` workbooks |
+| `summary_report` | Compiled `summary_report.csv` |
 
-## Component Interactions
+The main metadata handoff is `data/http/report_table.csv`. Retrieval populates document and facility metadata; extraction adds archive contents; prompt selection adds `Prompt Name`; review reads these fields when constructing each JSON result.
 
-- Retrieval output feeds file routing and downstream review
-- Renaming standardizes files before review
-- OCR output feeds PDF chunking and AI review
-- Review JSON feeds reporting and audit workflows
-- Audit results feed final summary materials
-- Validation checks can run alongside or after review stages
+## External Services and Configuration
 
-## Key Design Decisions
+- WebFIRE is queried through the configured `http_endpoints.webfire` endpoint. Network access is required for retrieval.
+- OCR depends on the `ocrmypdf` Python module and its Tesseract installation.
+- Prompt selection and review use the OpenAI Python client against `llm_url`, with the configured review model. The configured endpoint is local (`http://localhost:11436/v1`); an API key, timeout, and retry count are still required by the client setup.
+- States, date interval, download concurrency/retries, OCR settings, chunking limits, model names, and audit sampling percentage are all configured in `config/settings.yml`.
 
-- Use separate workflows for spreadsheets and PDFs because their processing methods differ
-- Use JSON as the intermediate format between stages for consistency
-- Use AI for text-heavy PDF review and human/auditor oversight for accuracy
-- Save some compliant cases for random audit sampling to monitor quality
-- Keep summary reporting separate from review logic so reporting can change without rewriting analysis code
+## Current Limitations and Integration Notes
 
-## Dependencies
-
-- Retrieval must happen before review
-- OCR must happen before chunking and PDF AI review
-- Review must happen before audits and summary reporting
-- Audit outputs depend on the main review outputs
-- Reporting depends on the full set of review and audit JSON files
-
-## Limitations
-
-- OCR quality may affect downstream review accuracy
-- AI review may miss edge cases or interpret text inconsistently
-- Hard-coded spreadsheet logic may require maintenance when formats change
-- Audit sampling only covers a subset of compliant determinations
-- Accuracy thresholds and escalation rules still need final tuning
-- Workflow reliability depends on source file structure and consistent naming
-
-############### ^^^^ Use these sections to complete this doc ^^^^ ###################
-
-WebFIRE Deviation Scanner Workflow
-
-Main Workflow
-Document Retrieval and Routing (Python)
-
-- Automated timer triggers the script to run
-- Check last run timestamp
-- Create Pull request for all reports since last timestamp
-- Download all reports returned
-- Extract documents from zip/database structure
-- OCR all PDFs (if needed)
-- Split route based on PDF vs spreadsheet
-- Standardized renaming of all non-spreadsheets based on content (AI)
-
-Spreadsheet Review (Python) - Loop
-
-- Scan for deviation / excess emission flags
-- Output all compliance info to JSON
-- Output all scan stats to JSON
-
-PDF Review (AI + Python) - Loop
-
-- PDF chunking (python)
-- PDF chunk review w document content specific instructions and summary output as JSON (AI)
-- Save X% of reviews marked as in compliance to audit folder
-- Send all reviews marked as out of compliance to Live Auditor workflow
-- Output all compliance info to JSON
-- Output all scan stats to JSON
-
-Summary Reporting (Python)
-
-- Compiles all JSONs into human readable spreadsheets
-- Packages the Further Review Spreadsheet into an email summary with the spreadsheet linked
-- Includes links to further information for QA reviews (auditor information, etc.)
-
-Accuracy Oversight Workflows
-Live AI Auditor (Non-compliance Flag Audit)
-
-- When compliance issue is flagged by the standard AI workflow, an auditor AI agent is passed the information that was used to create the flag and the output JSON. The auditor scrutinizes the review to ensure that it is correct
-- Increases confidence in reports flagged for further review by humans (save time)
-- This live auditor is used to review all non-compliance flags
-- The results of the live auditor’s review will be presented alongside the compliance summary spreadsheet in the emails to staff
-
-Random AI Auditor (Compliance Flag Audit)
-
-- X% of the compliance determinations made (only in compliance determinations) by the AI in the standard workflows will save their information reviewed and output JSON to a random auditor folder that will run after the main workflow.
-- The random auditor agent will scrutinize the work of the main workflow AI agents and create a report on their accuracy
-- This random auditor is used to review X% of all compliance flags
-- The results of the random auditor’s review will be presented to workflow manager (human) when the audit is ran and will include stats.
-
-Random Python Auditor
-
-- X% of the spreadsheets that were reviewed via python scripts will be set aside for random AI auditor agent review
-- Ensures that the python script isn’t creating unexpected errors due to its hard coded logic
-- Report results to workflow manager
-
-Poor Accuracy Handling
-
-- If the live or random audits fall below a certain percentage (decided later), then the entire process will be reviewed and overhauled to maintain accurate checks
+- The audit stage is intentionally unimplemented, so `audit_flag` currently records sampling intent but does not cause a second model review or escalation.
+- The timer calculates a start date from `last_run_timestamp`, but no code currently updates that setting after a successful run.
+- The checked-in review pipeline imports `ai_review.chunk` and `ai_review.review`, while the implementation directories are named `src/review`. This package-name mismatch must be resolved for the top-level review stage and its corresponding tests to run from a clean checkout.
+- Spreadsheet review is model-based text review; there is no separate deterministic spreadsheet deviation scanner in the current `src/` tree.
+- OCR failures are logged and skipped, so downstream results may be incomplete without causing the entire retrieval stage to fail.
