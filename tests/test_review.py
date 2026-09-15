@@ -47,7 +47,7 @@ class ChunkingTests(unittest.TestCase):
         opened_pdf.__enter__ = Mock(return_value=SimpleNamespace(pages=[page]))
         opened_pdf.__exit__ = Mock(return_value=False)
 
-        with patch("ai_review.chunk.pdfplumber.open", return_value=opened_pdf):
+        with patch("review.chunk.pdfplumber.open", return_value=opened_pdf):
             count = chunk.process_single_pdf(self.config, self.chunk_dir, pdf_path)
 
         self.assertEqual(count, 2)
@@ -66,14 +66,14 @@ class ChunkingTests(unittest.TestCase):
         )
         empty_pdf.__exit__ = Mock(return_value=False)
 
-        with patch("ai_review.chunk.pdfplumber.open", return_value=empty_pdf):
+        with patch("review.chunk.pdfplumber.open", return_value=empty_pdf):
             self.assertEqual(
                 chunk.process_single_pdf(self.config, self.chunk_dir, pdf_path), 0
             )
 
         with (
             patch(
-                "ai_review.chunk.pdfplumber.open",
+                "review.chunk.pdfplumber.open",
                 side_effect=OSError("damaged PDF"),
             ),
             self.assertRaisesRegex(chunk.PdfExtractionError, pdf_path.name),
@@ -89,10 +89,10 @@ class ChunkingTests(unittest.TestCase):
 
         with (
             patch(
-                "ai_review.chunk.process_single_pdf",
+                "review.chunk.process_single_pdf",
                 side_effect=[chunk.PdfExtractionError("damaged"), 2],
             ) as process_pdf,
-            self.assertLogs("ai_review.chunk", level="ERROR") as logs,
+            self.assertLogs("review.chunk", level="ERROR") as logs,
         ):
             counts = chunk.chunk_pdfs(self.config, paths)
 
@@ -110,7 +110,7 @@ class ChunkingTests(unittest.TestCase):
         }
 
         with patch(
-            "ai_review.chunk.spreadsheet_to_text",
+            "review.chunk.spreadsheet_to_text",
             return_value="Workbook: report.xlsx\nSheet: Data\nvalue\n",
         ):
             counts = chunk.chunk_spreadsheets(self.config, paths)
@@ -132,7 +132,7 @@ class ChunkingTests(unittest.TestCase):
             [["Facility", "Status"], ["A", "OK"]]
         )
 
-        with patch("ai_review.chunk.pd.ExcelFile", return_value=workbook):
+        with patch("review.chunk.pd.ExcelFile", return_value=workbook):
             text = chunk.spreadsheet_to_text(spreadsheet_path)
 
         self.assertIn("Workbook: report.xlsx", text)
@@ -192,7 +192,7 @@ class ChunkingTests(unittest.TestCase):
             "chunk_dir": self.chunk_dir,
         }
 
-        with self.assertLogs("ai_review.chunk", level="ERROR"):
+        with self.assertLogs("review.chunk", level="ERROR"):
             counts = chunk.chunk_spreadsheets(self.config, paths)
 
         self.assertEqual(counts, {"total": 1, "chunked": 0, "empty": 0, "failed": 1})
@@ -244,19 +244,19 @@ class ReviewPipelineTests(unittest.TestCase):
 
         with (
             patch(
-                "ai_review.pipeline.chunk_pdfs",
+                "review.pipeline.chunk_pdfs",
                 side_effect=lambda *_: calls.append("pdfs"),
             ),
             patch(
-                "ai_review.pipeline.chunk_spreadsheets",
+                "review.pipeline.chunk_spreadsheets",
                 side_effect=lambda *_: calls.append("spreadsheets"),
             ),
             patch(
-                "ai_review.pipeline.select_prompts",
+                "review.pipeline.select_prompts",
                 side_effect=lambda *_: calls.append("prompts"),
             ),
             patch(
-                "ai_review.pipeline.review_chunks",
+                "review.pipeline.review_chunks",
                 side_effect=lambda *_: calls.append("review"),
             ),
         ):
@@ -281,7 +281,7 @@ class ReviewProcessingTests(unittest.TestCase):
         self.config = {"llm": {"review": "test-model"}}
 
     def test_review_chunks_warns_and_returns_zero_counts_when_empty(self):
-        with self.assertLogs("ai_review.review", level="WARNING") as logs:
+        with self.assertLogs("review.review", level="WARNING") as logs:
             counts = review.review_chunks(self.config, self.paths)
 
         self.assertEqual(
@@ -297,10 +297,10 @@ class ReviewProcessingTests(unittest.TestCase):
 
         with (
             patch(
-                "ai_review.review.review_single_chunk",
+                "review.review.review_single_chunk",
                 side_effect=[OSError("unreadable"), None],
             ) as review_one,
-            self.assertLogs("ai_review.review", level="ERROR") as logs,
+            self.assertLogs("review.review", level="ERROR") as logs,
         ):
             counts = review.review_chunks(self.config, self.paths)
 
@@ -325,7 +325,7 @@ class ReviewProcessingTests(unittest.TestCase):
         }
 
         with (
-            patch("ai_review.review.OpenAI", return_value=client),
+            patch("review.review.OpenAI", return_value=client),
             patch.object(review.openai, "APIConnectionError", FakeConnectionError),
             self.assertRaisesRegex(
                 review.ReviewRequestError, "connection failed"

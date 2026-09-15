@@ -1,6 +1,6 @@
-from ai_review.chunk import chunk_pdfs, chunk_spreadsheets
-from ai_review.review import review_chunks
 from common.prompts import select_prompts
+from review.chunk import chunk_pdfs, chunk_spreadsheets
+from review.review import review_chunks
 
 
 def main(config, paths):
