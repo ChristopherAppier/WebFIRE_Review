@@ -1,7 +1,7 @@
 # Proposal: Controlled AI-Assisted WebFIRE Review Pilot
 
-## Executive Summary
-
+## Executive Summary 
+###### REDO THIS ENTIRE SECTION #########
 This proposal requests approval to pilot **WebFIRE Review**, an AI-assisted screening tool for publicly available Clean Air Act compliance reports submitted through EPA's WebFIRE database.
 
 The system would not make compliance determinations, initiate enforcement, contact facilities, or replace professional judgment. It would identify documents and passages that may warrant staff attention and present them in a consolidated review spreadsheet. EPA staff would decide whether any item merits further investigation or action using existing enforcement and inspection processes.
@@ -11,19 +11,17 @@ The proposed pilot would cover EPA Region 7: Kansas, Missouri, Nebraska, and Iow
 The principal justification for this pilot is not cost reduction. It is that the project provides a relatively low-risk, bounded way to evaluate AI assistance while preserving data control, human authority, and traditional agency decision-making.
 
 ## Management Decision Requested
-
+###### CONFIRM THIS IS THE ACTUAL DECISION #########
 Approve a controlled Region 7 pilot that permits:
 
-- Processing publicly available WebFIRE documents with the system.
+- Reviewing publicly available WebFIRE documents with the system.
 - Use of the resulting summary spreadsheet by designated EPA staff for screening and investigative prioritization.
 - Evaluation of the system's accuracy, usefulness, limitations, and operational risks.
 - Development of requirements for any future operational release.
 
-The approval would authorize a pilot, not permanent production deployment.
-
 ## Program Need
 
-WebFIRE contains a large and varied collection of facility-submitted Clean Air Act reports. Staff generally do not review this repository comprehensively. Existing review is typically connected to specific facilities selected for inspection and is therefore intensive but limited in breadth.
+WebFIRE contains a large and varied collection of facility-submitted Clean Air Act reports. Staff generally do not review this repository comprehensively due to time constraints. Existing review is typically limited to specific facilities selected for inspection and physical reports received via mail.
 
 This creates an opportunity to identify potentially valuable information that may otherwise remain unreviewed.
 
@@ -35,6 +33,8 @@ WebFIRE Review would provide staff with a narrowed list of potentially relevant 
 - Take no further action if the issue is minor, unsupported, or not useful.
 
 The system would support prioritization. It would not determine which facilities are in violation.
+
+##### DISCUSS ADAPTABILITY AND OTHER PROJECTS #######
 
 ## Proposed Solution
 
@@ -50,15 +50,17 @@ The pipeline performs the following steps:
 
 The output is designed for human review. Each potential issue can be traced back to the relevant facility, document, and source material.
 
-## Safety and Responsible AI Design
+##### DISCUSS ADAPTABILITY AND OTHER PROJECTS #######
+
+## Safe and Responsible AI Use
 
 ### Local processing and data control
 
 The pilot uses an open-weight model hosted on an EPA-owned local workstation. Documents are processed locally rather than transmitted to a commercial AI service.
 
-The implementation can use an OpenAI-compatible endpoint, which provides flexibility if EPA later requires an approved internal server or another hosting arrangement. The model location would remain subject to Steering Committee, information-security, and infrastructure requirements.
+The implementation can use an OpenAI-compatible endpoint, which provides flexibility if EPA later requires an approved internal server or another hosting arrangement.
 
-WebFIRE is an appropriate pilot dataset because it is publicly available. The pilot would not require enforcement-confidential information, investigative records, or other restricted data.
+WebFIRE is an appropriate pilot dataset because it is publicly available. The pilot would not require enforcement-confidential information.
 
 ### Human authority remains central
 

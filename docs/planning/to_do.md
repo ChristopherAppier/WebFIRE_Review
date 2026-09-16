@@ -1,6 +1,6 @@
 # Extra Token Burn Tasks
-- [ ] Update documentation (after MVP finalized)
-- [ ] Update / cleanup comments in all scripts
+- [x] Update documentation (after MVP finalized)
+- [x] Update / cleanup comments in all scripts
 
 # Update environment.yml
 - [x] Update environment.yml with necessary dependencies for final MVP version
