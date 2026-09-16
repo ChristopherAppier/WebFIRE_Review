@@ -2,7 +2,7 @@
 
 ## Problem
 
-R7 ECAD receives a significant number of compliance reports from the regulated community. Reviewing every report consumes constrained agency resources. The AI tools currently available to EPA staff (chat bots) are impracticle for reviewing reports en masse due to number and length of the reports.
+R7 ECAD receives a significant number of compliance reports from the regulated community. Reviewing every report consumes constrained agency resources. The AI tools currently available to EPA staff (chat-bots) are impractical for reviewing reports en masse due to number and length of the reports.
 
 ## Proposed Solution
 
@@ -21,4 +21,4 @@ The project's code is designed to be easily adaptable to similar projects and th
 3.	Each report is sent to an LLM to determine the type of report (e.g. emissions test report).
 4.	Each report is broken down into chunks to avoid LLM context overload. Each chunk and a prompt, customized for the type of report, are sent to an LLM to screen for potential compliance issues.
 5.	Reports that are flagged for potential compliance issues are sent to a larger LLM to be audited. The initial review is over-eager to flag potential issues (reduces false negatives), while the audit is more discerning (reduces false positives).
-6.	A summary is provided to enforcement staff containing a list of all reports flagged for potential compliance issues. ECAD staff can then review the flagged reports to make their own determination of compliance and the appropriate follow-up action.
+6.	A summary is provided to enforcement staff containing a list of reports flagged for potential compliance issues. ECAD staff can then review the flagged reports to make their own determination of compliance and the appropriate follow-up action.
