@@ -46,7 +46,11 @@ def compile_reviews(config, paths):
 
     # Write the compiled data to a CSV file under the summary directory
     csv_output_path = paths["summary_dir"] / "summary_report.csv"
-    fieldnames = [key for review in review_data for key in review]
+    fieldnames = []
+    for review in review_data:
+        for field in review:
+            if field not in fieldnames:
+                fieldnames.append(field)
     try:
         with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)

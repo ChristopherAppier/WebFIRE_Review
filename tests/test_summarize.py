@@ -39,6 +39,29 @@ class CompileReviewsTests(unittest.TestCase):
         self.assertIn("Found 1 review files", "\n".join(logs.output))
         self.assertIn(str(output_path), "\n".join(logs.output))
 
+    def test_compiles_deduplicated_union_of_review_fields(self):
+        self.write_review("first.json", {"facility": "Alpha", "status": "pass"})
+        self.write_review(
+            "second.json",
+            {"facility": "Beta", "status": "fail", "extra": "later field"},
+        )
+
+        compile_reviews({}, self.paths)
+
+        output_path = self.summary_dir / "summary_report.csv"
+        with output_path.open(newline="", encoding="utf-8") as csvfile:
+            reader = csv.DictReader(csvfile)
+            rows = list(reader)
+
+        self.assertEqual(reader.fieldnames, ["facility", "status", "extra"])
+        self.assertEqual(
+            rows,
+            [
+                {"facility": "Alpha", "status": "pass", "extra": ""},
+                {"facility": "Beta", "status": "fail", "extra": "later field"},
+            ],
+        )
+
     def test_skips_malformed_review_and_compiles_valid_review(self):
         (self.review_dir / "bad.json").write_text("{not valid json", encoding="utf-8")
         self.write_review("not-an-object.json", ["unexpected", "list"])

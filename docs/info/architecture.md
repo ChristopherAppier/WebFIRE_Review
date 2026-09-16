@@ -45,7 +45,7 @@ The required model response is a JSON object containing `issue_flag` (`0` or `1`
 
 ### `src/summarize`
 
-`compile.py` reads JSON objects from `data/reviews`, skips malformed or non-object files, and writes the union of encountered keys as rows in `data/summary_report/summary_report.csv`. It does not currently merge audit results, generate additional spreadsheets, or send email.
+`compile.py` reads JSON objects from `data/reviews`, skips malformed or non-object files, and writes rows to `data/summary_report/summary_report.csv` using the de-duplicated, first-seen union of encountered keys as columns. It does not currently merge audit results, generate additional spreadsheets, or send email.
 
 ## Data Layout
 

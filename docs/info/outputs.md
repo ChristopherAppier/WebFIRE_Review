@@ -101,9 +101,9 @@ The summary stage reads valid JSON objects from `data/reviews/` and writes:
 
 - `data/summary_report/summary_report.csv`
 
-The CSV uses the union of keys found in the review JSON files as its columns.
-Because field order follows the loaded review objects, new JSON fields may add
-columns without a separate schema migration. There is currently no XLSX export,
+The CSV uses the de-duplicated union of keys found in the review JSON files as
+its columns. Because field order follows the loaded review objects, new JSON
+fields may add columns without a separate schema migration. There is currently no XLSX export,
 further-review workbook, email summary, attachment, or link package.
 
 ## Logging and Naming
