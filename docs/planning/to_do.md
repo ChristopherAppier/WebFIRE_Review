@@ -1,11 +1,14 @@
 # Extra Token Burn Tasks
+
 - [x] Update documentation (after MVP finalized)
 - [x] Update / cleanup comments in all scripts
 
 # Update environment.yml
+
 - [x] Update environment.yml with necessary dependencies for final MVP version
 
 # Prompt selection functionality
+
 - [x] Add basic prompt selector
   ## prompt_bank.yml
   - [x] Add prompt for stack test and one for other reports
@@ -24,22 +27,28 @@
   - [x] Save prompt choice to JSON w metadata
 
 # Overall context carry forward
+
 - [x] Add a mechanism to carry forward the overall context of the document into each analysis
 
 # Concurrent downloads
+
 - [x] Add concurrent download for webfire files
 
 # Add error handling / logging for each /src subfolder individually via Plan>Agent
+
 - [x] Logging fully implemented
 
 # Convert spreadsheets into text files for review
+
 - [x] Convert into .txt
 
 # Evaluation implementation
+
 - [x] Evaluation specifics (docs/info/evaluation.md)
 - [ ] Create a test harness for each pipeline
 
 # Run evaluation testing
+
 - [ ] Assemble data set
   - [ ] Good dataset of each type w answers
   - [ ] Bad/invalid data set
@@ -48,3 +57,7 @@
 - [ ] Revise / retest until criteria pass
 
 # Update documentation
+
+# Flow Diagrams
+
+- [ ] Create flow diagrams for each folder in /src
